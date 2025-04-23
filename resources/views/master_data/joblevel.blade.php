@@ -118,7 +118,7 @@
             </div>
           </div> -->
           <div class="nav-right col-8 pull-right right-header p-0">
-            <ul class="nav-menus">             
+            <ul class="nav-menus">
               <!-- <li class="onhover-dropdown">
                 <div class="notification-box"><i class="fa fa-bell-o"> </i><span class="badge rounded-pill badge-primary">4</span></div>
                 <ul class="notification-dropdown onhover-show-div">
@@ -131,7 +131,7 @@
                       <p><i class="fa fa-circle-o me-3 font-success"></i>Order Complete<span class="pull-right">1 hr</span></p></a></li>
                   <li><a href="email_read.html">
                       <p><i class="fa fa-circle-o me-3 font-info"></i>Tickets Generated<span class="pull-right">3 hr</span></p></a></li>
-                  <li><a href="email_read.html"> 
+                  <li><a href="email_read.html">
                       <p><i class="fa fa-circle-o me-3 font-danger"></i>Delivery Complete<span class="pull-right">6 hr</span></p></a></li>
                   <li><a class="btn btn-primary" href="email_read.html">Check all notification</a></li>
                 </ul>
@@ -178,7 +178,7 @@
                   <div class="flex-grow-1"><span>{{ Auth::user()->username }}</span>
                     <p class="mb-0 font-roboto">{{ Auth::user()->role}}<i class="middle fa fa-angle-down"></i></p>
                   </div>
-                  
+
                 </div>
                 <ul class="profile-dropdown onhover-show-div">
                   <li><a href="user-profile.html"><i data-feather="user"></i><span>Account </span></a></li>
@@ -190,7 +190,7 @@
             </ul>
           </div>
           <script class="result-template" type="text/x-handlebars-template">
-            <div class="ProfileCard u-cf">                        
+            <div class="ProfileCard u-cf">
             <div class="ProfileCard-avatar"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-airplay m-0"><path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path><polygon points="12 15 17 21 7 21 12 15"></polygon></svg></div>
             <div class="ProfileCard-details">
             <div class="ProfileCard-realName"></div>
@@ -236,7 +236,7 @@
                     <h5>Job Level Name List</h5>
                     <span>adalah daftar atau kumpulan aset yang dimiliki oleh seseorang, organisasi, atau perusahaan. Daftar ini biasanya mencakup rincian tentang setiap aset, seperti jenis aset, nilai, lokasi, dan informasi relevan lainnya.</span>
                   </div>
-					<div class="card-body"> 
+					<div class="card-body">
 						<div class="btn-showcase">
                             <div class="button_between">
                                 <!-- <button class="btn btn-square btn-primary" type="button" data-toggle="modal" data-target="#addDataJobLevel">+ Add Data Job Level</button> -->
@@ -403,7 +403,7 @@
             </div>
           </div>
           <!-- Container-fluid Ends-->
-        
+
         </div>
         <!-- footer start-->
         <footer class="footer">
@@ -487,7 +487,7 @@
                                 <a href="javascript:void(0);" class="edit-button" data-id="${joblevel.joblevel_id}" data-name="${joblevel.joblevel_name}" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form class="delete-form" action="{{ url('admin/joblevels/delete') }}/${joblevel.joblevel_id}" method="POST" style="display:inline;">
+                                <form class="delete-form" action="{{ url('/master-data/delete-new-data') }}/${joblevel.joblevel_id}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">
@@ -525,7 +525,7 @@
 
                 // Kirimkan data menggunakan Ajax
                 $.ajax({
-                    url: '/add-joblevel' + $('#joblevel_id').val(), // Pastikan ini adalah URL yang benar
+                    url: '/master-data/add-new-job-level' + $('#joblevel_id').val(), // Pastikan ini adalah URL yang benar
                     method: 'POST', // Pastikan ini menggunakan metode PUT
                     data: {
                     joblevel_name: joblevelName
@@ -568,7 +568,7 @@
             e.preventDefault(); // Cegah form reload halaman
 
             $.ajax({
-                url: '/admin/joblevels/edit/' + $('#joblevel_id').val(),
+                url: '/master-data/update-new-job-level/' + $('#joblevel_id').val(),
                 method: 'PUT', // Menggunakan PUT untuk memperbarui data
                 data: $(this).serialize(), // Serialisasi data form untuk dikirim
                 success: function(response) {
@@ -583,7 +583,7 @@
             });
         });
     </script>
-    
+
     {{-- Detail --}}
     <script>
       $(document).ready(function() {
@@ -592,17 +592,17 @@
               // Get brand data from the clicked button
               var joblevelId = $(this).data('id');
               var joblevelName = $(this).data('name');
-              
+
               // Set the data into the modal
               $('#joblevel-id').text(joblevelId);
               $('#joblevel-name').text(joblevelName);
-              
+
               // Show the modal
               $('#joblevelDetailModal').modal('show');
           });
       });
     </script>
-    
+
     {{-- Delete data JobLevel --}}
     <script>
         $(document).on('click', '.delete-button', function(e) {
@@ -613,7 +613,7 @@
         if (confirm('Apakah Anda yakin ingin menghapus JobLevel ini?')) {
             // Ambil URL dari action form
             const actionUrl = form.attr('action');
-            
+
             $.ajax({
                 url: actionUrl, // URL dari form
                 method: 'DELETE', // Method untuk delete
@@ -632,7 +632,7 @@
         }
     });
     </script>
-    
+
     <script>
       // JavaScript for searching/filtering the table rows
       document.getElementById('searchInput').addEventListener('keyup', function() {
@@ -641,11 +641,11 @@
           filter = input.value.toLowerCase();
           table = document.getElementById('coba');
           tr = table.getElementsByTagName('tr');
-          
+
           // Loop through all table rows, and hide those who don't match the search query
           for (i = 1; i < tr.length; i++) { // Start from 1 to skip table header
               tr[i].style.display = "none"; // Hide the row initially
-              
+
               // Loop through all columns in the row
               for (j = 0; j < tr[i].getElementsByTagName('td').length; j++) {
                   td = tr[i].getElementsByTagName('td')[j];
@@ -660,7 +660,7 @@
           }
       });
   </script>
-  
+
   <script>
     $(document).ready(function() {
         // This will handle all modals that have a button with the data-dismiss attribute

@@ -116,7 +116,7 @@
             </div>
           </div> -->
           <div class="nav-right col-8 pull-right right-header p-0">
-            <ul class="nav-menus">             
+            <ul class="nav-menus">
               <!-- <li class="onhover-dropdown">
                 <div class="notification-box"><i class="fa fa-bell-o"> </i><span class="badge rounded-pill badge-primary">4</span></div>
                 <ul class="notification-dropdown onhover-show-div">
@@ -129,7 +129,7 @@
                       <p><i class="fa fa-circle-o me-3 font-success"></i>Order Complete<span class="pull-right">1 hr</span></p></a></li>
                   <li><a href="email_read.html">
                       <p><i class="fa fa-circle-o me-3 font-info"></i>Tickets Generated<span class="pull-right">3 hr</span></p></a></li>
-                  <li><a href="email_read.html"> 
+                  <li><a href="email_read.html">
                       <p><i class="fa fa-circle-o me-3 font-danger"></i>Delivery Complete<span class="pull-right">6 hr</span></p></a></li>
                   <li><a class="btn btn-primary" href="email_read.html">Check all notification</a></li>
                 </ul>
@@ -176,7 +176,7 @@
                   <div class="flex-grow-1"><span>{{ Auth::user()->username }}</span>
                     <p class="mb-0 font-roboto">{{ Auth::user()->role}}<i class="middle fa fa-angle-down"></i></p>
                   </div>
-                  
+
                 </div>
                 <ul class="profile-dropdown onhover-show-div">
                   <li><a href="user-profile.html"><i data-feather="user"></i><span>Account </span></a></li>
@@ -188,7 +188,7 @@
             </ul>
           </div>
           <script class="result-template" type="text/x-handlebars-template">
-            <div class="ProfileCard u-cf">                        
+            <div class="ProfileCard u-cf">
             <div class="ProfileCard-avatar"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-airplay m-0"><path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path><polygon points="12 15 17 21 7 21 12 15"></polygon></svg></div>
             <div class="ProfileCard-details">
             <div class="ProfileCard-realName"></div>
@@ -234,16 +234,16 @@
                             <h5>Asset Name List</h5>
                             <span>Adalah daftar atau kumpulan aset yang dimiliki oleh seseorang, organisasi, atau perusahaan. Daftar ini biasanya mencakup rincian tentang setiap aset, seperti jenis aset, nilai, lokasi, dan informasi relevan lainnya.</span>
                         </div>
-        
+
                         <div class="card-body">
                             <div class="btn-showcase">
                                 <div class="button_between">
                                     <button class="btn btn-square btn-primary" type="button" data-toggle="modal" data-target="#addDataAsset">+ Add Data Asset</button>
                                     {{-- Uncomment if needed
-                                    <button class="btn btn-square btn-primary" type="button" data-toggle="modal" data-target="#importDataExcel"> 
-                                        <i class="fa fa-file-excel-o"></i> Import Data Excel 
+                                    <button class="btn btn-square btn-primary" type="button" data-toggle="modal" data-target="#importDataExcel">
+                                        <i class="fa fa-file-excel-o"></i> Import Data Excel
                                     </button>
-                                    <button class="btn btn-square btn-primary" type="button"> 
+                                    <button class="btn btn-square btn-primary" type="button">
                                         <i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download PDF Data
                                     </button>
                                     --}}
@@ -275,7 +275,7 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <form id="addAssetForm" enctype="multipart/form-data">  
+                                        <form id="addAssetForm" enctype="multipart/form-data">
                                             @csrf
                                             <div class="row">
                                                 <div class="col-sm-12">
@@ -292,14 +292,14 @@
                                                 </div>
                                                 <div class="col-sm-12">
     <label for="asset_quantity">Asset Quantity:</label>
-    <input 
-        type="number" 
-        name="asset_quantity" 
-        id="asset_quantity" 
-        class="form-control" 
-        placeholder="Enter Asset Quantity" 
-        required 
-        min="1" 
+    <input
+        type="number"
+        name="asset_quantity"
+        id="asset_quantity"
+        class="form-control"
+        placeholder="Enter Asset Quantity"
+        required
+        min="1"
         step="1"
         value="1"
         >
@@ -512,7 +512,7 @@
                                     </div>
                                 </div>
                             </div>
-        
+
                             <div class="table-responsive product-table" style="max-width: 100%; overflow-x: auto;">
                                 <div class="d-flex justify-content-between mb-3 mt-3">
                                     <h5>Asset Data</h5> <!-- Add a heading for the table if needed -->
@@ -551,37 +551,37 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                  
+
                                                 <td>
-                                                  <a href="javascript:void(0);" class="edit-button" 
-                                                  data-id="{{ $asseteqp->asset_id }}" 
-                                                  data-code="{{ $asseteqp->asset_code }}" 
-                                                  data-status="{{ $asseteqp->asset_status }}" 
-                                                  data-model="{{ $asseteqp->asset_model }}" 
-                                                  data-quantity="{{ $asseteqp->asset_quantity }}" 
-                                                  data-image="{{ $asseteqp->asset_image }}" 
-                                                  data-priority="{{ $asseteqp->priority_id }}" 
-                                                  data-category="{{ $asseteqp->cat_id }}" 
-                                                  data-type="{{ $asseteqp->type_id }}" 
-                                                  data-uom="{{ $asseteqp->uom_id }}" 
+                                                  <a href="javascript:void(0);" class="edit-button"
+                                                  data-id="{{ $asseteqp->asset_id }}"
+                                                  data-code="{{ $asseteqp->asset_code }}"
+                                                  data-status="{{ $asseteqp->asset_status }}"
+                                                  data-model="{{ $asseteqp->asset_model }}"
+                                                  data-quantity="{{ $asseteqp->asset_quantity }}"
+                                                  data-image="{{ $asseteqp->asset_image }}"
+                                                  data-priority="{{ $asseteqp->priority_id }}"
+                                                  data-category="{{ $asseteqp->cat_id }}"
+                                                  data-type="{{ $asseteqp->type_id }}"
+                                                  data-uom="{{ $asseteqp->uom_id }}"
                                                   title="Edit">
                                                      <i class="fas fa-edit"></i>
                                                </a>
-                                                    <a href="javascript:void(0);" class="detail-button" 
-                                                    data-id="{{ $asseteqp->asset_id }}" 
-                                                    data-code="{{ $asseteqp->asset_code }}" 
-                                                    data-status="{{ $asseteqp->asset_status }}" 
-                                                    data-model="{{ $asseteqp->asset_model }}" 
-                                                    data-quantity="{{ $asseteqp->asset_quantity }}" 
-                                                    data-image="{{ $asseteqp->asset_image }}" 
-                                                    data-priority="{{ $asseteqp->priority_name }}" 
-                                                    data-category="{{ $asseteqp->cat_name }}" 
-                                                    data-type="{{ $asseteqp->type_name }}" 
-                                                    data-uom="{{ $asseteqp->uom_name }}" 
+                                                    <a href="javascript:void(0);" class="detail-button"
+                                                    data-id="{{ $asseteqp->asset_id }}"
+                                                    data-code="{{ $asseteqp->asset_code }}"
+                                                    data-status="{{ $asseteqp->asset_status }}"
+                                                    data-model="{{ $asseteqp->asset_model }}"
+                                                    data-quantity="{{ $asseteqp->asset_quantity }}"
+                                                    data-image="{{ $asseteqp->asset_image }}"
+                                                    data-priority="{{ $asseteqp->priority_name }}"
+                                                    data-category="{{ $asseteqp->cat_name }}"
+                                                    data-type="{{ $asseteqp->type_name }}"
+                                                    data-uom="{{ $asseteqp->uom_name }}"
                                                     title="Detail">
                                                         <i class="fas fa-book"></i>
                                                     </a>
-                                                    <form class="delete-form" action="{{ url('admin/regists/delete', $asseteqp->asset_id) }}" method="POST" style="display:inline;">
+                                                    <form class="delete-form" action="{{ url('/master-data/delete-new-data-asset-equipment', $asseteqp->asset_id) }}" method="POST" style="display:inline;">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">
@@ -611,7 +611,7 @@
                                       @endif
                                   </div>
                                 </div>
-                              
+
                               <!-- Display current page and total pages -->
                               <div class="d-flex justify-content-center mt-2">
                                   <span>Page {{ $assets_equipment->currentPage() }} of {{ $assets_equipment->lastPage() }}</span>
@@ -623,9 +623,9 @@
                 <!-- Individual column searching (text inputs) Ends-->
             </div>
         </div>
-        
+
           <!-- Container-fluid Ends-->
-        
+
         </div>
         <!-- footer start-->
         <footer class="footer">
@@ -700,19 +700,19 @@
 
     {{-- Get Data asset --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  
+
 
     {{-- Add Data Asset --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
       $('#saveAssetButton').click(function (e) {
           e.preventDefault();
-          
+
           // Create a FormData object from the form
           var formData = new FormData($('#addAssetForm')[0]);
-  
+
           $.ajax({
-              url: '{{ route('add-regist') }}', // Correct URL
+              url: '{{ url('/master-data/add-new-data-asset-equipment') }}', // Correct URL
               method: 'POST',
               data: formData,
               contentType: false, // Important: Prevent jQuery from setting the content type
@@ -721,7 +721,7 @@
                   console.log(response);
                   if (response.status === 'success') {
                       $('#addDataAsset').modal('hide');
-                      window.location.href = '/admin/registeqp';
+                      window.location.href = response.redirect_url;
                   } else {
                       alert(response.message);
                   }
@@ -779,14 +779,14 @@
         e.preventDefault();
 
         $.ajax({
-            url: "/admin/regists/edit/" + $("#edit-asset_id").val(),
+            url: "/master-data/update-new-data-asset-equipment/" + $("#edit-asset_id").val(),
             method: "POST",
             data: new FormData(this),
             processData: false,
             contentType: false,
             success: function (response) {
                 if (response.status === "success") {
-                    window.location.href = '/admin/registeqp';
+                    window.location.href = response.redirect_url;
                 }
             },
             error: function (jqXHR) {
@@ -815,7 +815,7 @@
               var catId = $(this).data('category');
               var typeId = $(this).data('type');
               var uomId = $(this).data('uom');
-          
+
           // Set the data into the modal
           $('#asset-id').text(assetId);
               $('#asset-code').text(assetCode);
@@ -827,13 +827,13 @@
               $('#cat-id').text(catId);
               $('#type-id').text(typeId);
               $('#uom-id').text(uomId);
-          
+
           // Show the modal
           $('#assetDetailModal').modal('show');
       });
   });
 </script>
-    
+
     {{-- Delete data Asset --}}
     <script>
         $(document).on('click', '.delete-button', function(e) {
@@ -844,14 +844,14 @@
         if (confirm('Apakah Anda yakin ingin menghapus Asset ini?')) {
             // Ambil URL dari action form
             const actionUrl = form.attr('action');
-            
+
             $.ajax({
                 url: actionUrl, // URL dari form
                 method: 'DELETE', // Method untuk delete
                 data: form.serialize(), // Kirim data form
                 success: function(response) {
                     if (response.status === 'success') {
-                        window.location.href = '/admin/registeqp'; // Redirect ke Admin.Asset
+                        window.location.href = response.redirect_url; // Redirect ke Admin.Asset
                     } else {
                         alert(response.message); // Tampilkan pesan error jika gagal
                     }
@@ -871,11 +871,11 @@
           filter = input.value.toLowerCase();
           table = document.getElementById('coba');
           tr = table.getElementsByTagName('tr');
-          
+
           // Loop through all table rows, and hide those who don't match the search query
           for (i = 1; i < tr.length; i++) { // Start from 1 to skip table header
               tr[i].style.display = "none"; // Hide the row initially
-              
+
               // Loop through all columns in the row
               for (j = 0; j < tr[i].getElementsByTagName('td').length; j++) {
                   td = tr[i].getElementsByTagName('td')[j];
@@ -890,7 +890,7 @@
           }
       });
   </script>
-  
+
   <script>
     $(document).ready(function() {
         // This will handle all modals that have a button with the data-dismiss attribute
