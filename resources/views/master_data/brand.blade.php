@@ -417,7 +417,7 @@
                                         <a href="javascript:void(0);" class="detail-button" style="color: #000080;" data-id="{{ $brand->brand_id }}" data-name="{{ $brand->brand_name }}" title="Detail">
                                             <i class="fas fa-book"></i>
                                         </a>
-                                        <form class="delete-form" action="{{ url('/master-data/delete-new-data', $brand->brand_id) }}" method="POST" style="display:inline;">
+                                        <form class="delete-form" action="{{ url('/master-data/delete-new-brand', $brand->brand_id) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
                                             <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">

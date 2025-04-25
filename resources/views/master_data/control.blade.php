@@ -394,7 +394,7 @@
                                             <a href="javascript:void(0);" class="detail-button" data-id="{{ $control->control_id }}" data-name="{{ $control->control_name }}" title="Detail">
                                                 <i class="fas fa-book"></i>
                                             </a>
-                                            <form class="delete-form" action="{{ url('/master-data/delete-new-data', $control->control_id) }}" method="POST" style="display:inline;">
+                                            <form class="delete-form" action="{{ url('/master-data/delete-new-control-checklist', $control->control_id) }}" method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">

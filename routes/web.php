@@ -342,19 +342,19 @@ Route::middleware('auth')->group(function () {
         Route::get('master-data/brand', 'index')->middleware(['permission:view md brand']);
         Route::post('/master-data/add-new-brand', 'NewAddBrand')->middleware(['permission:view md brand']);
         Route::put('/master-data/update-new-brand/{id}', 'NewUpdateDataBrand')->middleware(['permission:view md brand']);
-        Route::delete('/master-data/delete-new-data/{id}', 'NewDeleteDataBrand')->middleware(['permission:view md brand']);
+        Route::delete('/master-data/delete-new-brand/{id}', 'NewDeleteDataBrand')->middleware(['permission:view md brand']);
     });
     Route::controller(MDCategory::class)->group(function(){
         Route::get('master-data/category', 'index')->middleware(['permission:view md kategori']);;
         Route::post('/master-data/add-new-category', 'NewAddDataCategory')->middleware(['permission:view md kategori']);
         Route::put('/master-data/update-new-category/{id}', 'NewUpdateDataCategory')->middleware(['permission:view md kategori']);
-        Route::delete('/master-data/delete-new-data/{id}', 'NewDeleteDataCategory')->middleware(['permission:view md kategori']);
+        Route::delete('/master-data/delete-new-category/{id}', 'NewDeleteDataCategory')->middleware(['permission:view md kategori']);
     });
     Route::controller(MDSubCategory::class)->group(function(){
         Route::get('master-data/sub-category', 'index')->middleware(['permission:view md sub kategori']);
         Route::post('/master-data/add-new-sub-category', 'NewAddDataSubCategory')->middleware(['permission:view md sub kategori']);
         Route::put('/master-data/update-new-sub-category/{id}', 'NewUpdateDataSubCategory')->middleware(['permission:view md sub kategori']);
-        Route::delete('/master-data/delete-new-data/{id}', 'NewDeleteDataSubCategory')->middleware(['permission:view md sub kategori']);
+        Route::delete('/master-data/delete-sub-category/{id}', 'NewDeleteDataSubCategory')->middleware(['permission:view md sub kategori']);
     });
     Route::controller(MDChecklist::class)->group(function(){
         Route::get('master-data/checklist', 'index')->middleware(['permission:view md checklist']);
@@ -363,43 +363,43 @@ Route::middleware('auth')->group(function () {
         Route::get('master-data/condition', 'index')->middleware(['permission:view md kondisi']);
         Route::post('/master-data/add-new-condition', 'NewAddDataCondition')->middleware(['permission:view md kondisi']);
         Route::put('/master-data/update-new-condition/{id}', 'NewUpdateDataCondition')->middleware(['permission:view md kondisi']);
-        Route::delete('/master-data/delete-new-data/{id}', 'NewDeleteDataCondition')->middleware(['permission:view md kondisi']);
+        Route::delete('/master-data/delete-new-condition/{id}', 'NewDeleteDataCondition')->middleware(['permission:view md kondisi']);
     });
     Route::controller(MDControl::class)->group(function(){
         Route::get('master-data/control-checklist', 'index')->middleware(['permission:view md kontrol checklist']);
         Route::post('/master-data/add-new-control-checklist', 'NewAddDataControlNameList')->middleware(['permission:view md kontrol checklist']);
         Route::put('/master-data/update-new-control-checklist/{id}', 'NewUpdateDataControlNameList')->middleware(['permission:view md kontrol checklist']);
-        Route::delete('/master-data/delete-new-data/{id}', 'NewDeleteDataControlNameList')->middleware(['permission:view md kontrol checklist']);
+        Route::delete('/master-data/delete-new-control-checklist/{id}', 'NewDeleteDataControlNameList')->middleware(['permission:view md kontrol checklist']);
     });
     Route::controller(MDDepartement::class)->group(function(){
         Route::get('master-data/departement', 'index')->middleware(['permission:view md departement']);
         Route::post('/master-data/add-new-departement', 'NewAddDataDepartement')->middleware(['permission:view md departement']);
         Route::put('/master-data/update-new-departement/{id}', 'NewUpdateDataDepartement')->middleware(['permission:view md departement']);
-        Route::delete('/master-data/delete-new-data/{id}', 'NewDeleteDataDepartement')->middleware(['permission:view md departement']);
+        Route::delete('/master-data/delete-new-departement/{id}', 'NewDeleteDataDepartement')->middleware(['permission:view md departement']);
     });
     Route::controller(MDDivision::class)->group(function(){
         Route::get('master-data/division', 'index')->middleware(['permission:view md division']);
         Route::post('/master-data/add-new-division', 'NewAddDataDivision')->middleware(['permission:view md division']);
         Route::put('/master-data/update-new-division/{id}', 'NewUpdateDataDivision')->middleware(['permission:view md division']);
-        Route::delete('/master-data/delete-new-data/{id}', 'NewDeleteDataDivision')->middleware(['permission:view md division']);
+        Route::delete('/master-data/delete-new-division/{id}', 'NewDeleteDataDivision')->middleware(['permission:view md division']);
     });
     Route::controller(MDGroupUser::class)->group(function(){
         Route::get('master-data/group-user', 'index')->middleware(['permission:view md group user']);
         Route::post('/master-data/add-new-group-user', 'NewAddDataGroupUser')->middleware(['permission:view md group user']);
         Route::put('/master-data/update-new-group-user/{id}', 'NewUpdateDataGroupUser')->middleware(['permission:view md group user']);
-        Route::delete('/master-data/delete-new-data/{id}', 'NewDeleteDataGroupUser')->middleware(['permission:view md group user']);
+        Route::delete('/master-data/delete-new-group-user/{id}', 'NewDeleteDataGroupUser')->middleware(['permission:view md group user']);
     });
     Route::controller(MDJobLevel::class)->group(function(){
         Route::get('master-data/job-level', 'index')->middleware(['permission:view md job level']);
         Route::post('/master-data/add-new-job-level', 'NewAddDataJobLevel')->middleware(['permission:view md job level']);
         Route::put('/master-data/update-new-job-level/{id}', 'NewUpdateDataJobLevel')->middleware(['permission:view md job level']);
-        Route::delete('/master-data/delete-new-data/{id}', 'NewDeleteDataJobLevel')->middleware(['permission:view md job level']);
+        Route::delete('/master-data/delete-new-job-level/{id}', 'NewDeleteDataJobLevel')->middleware(['permission:view md job level']);
     });
     Route::controller(MDLayout::class)->group(function(){
         Route::get('master-data/layout', 'index')->middleware(['permission:view md tata letak']);
         Route::post('/master-data/add-new-layout', 'NewAddDataLayout')->middleware(['permission:view md tata letak']);
         Route::put('/master-data/update-new-layout/{id}', 'NewUpdateDataLayout')->middleware(['permission:view md tata letak']);
-        Route::delete('/master-data/delete-new-data/{id}', 'NewDeleteDataLayout')->middleware(['permission:view md tata letak']);
+        Route::delete('/master-data/delete-new-layout/{id}', 'NewDeleteDataLayout')->middleware(['permission:view md tata letak']);
     });
     Route::controller(MDMaintenance::class)->group(function(){
         Route::get('master-data/maintenance', 'index')->middleware(['permission:view md maintenance']);
@@ -417,37 +417,68 @@ Route::middleware('auth')->group(function () {
         Route::get('master-data/type-asset', 'index')->middleware(['permission:view md tipe asset']);
         Route::post('/master-data/add-new-type-asset', 'NewAddDataAssetType')->middleware(['permission:view md tipe asset']);
         Route::put('/master-data/update-new-type-asset/{id}', 'NewUpdateDataAssetType')->middleware(['permission:view md tipe asset']);
-        Route::delete('/master-data/delete-new-data/{id}', 'NewDeleteDataAssetType')->middleware(['permission:view md tipe asset']);
+        Route::delete('/master-data/delete-new-type-asset/{id}', 'NewDeleteDataAssetType')->middleware(['permission:view md tipe asset']);
     });
     Route::controller(MDMaintenanceAsset::class)->group(function(){
         Route::get('master-data/type-maintenance-asset', 'index')->middleware(['permission:view md tipe maintenance asset']);
+        Route::post('/master-data/add-new-type-maintenance-asset', 'NewAddDataTypeMaintenance')->middleware(['permission:view md tipe maintenance asset']);
+        Route::put('/master-data/update-new-type-maintenance-asset/{id}', 'NewUpdateDataTypeMaintenance')->middleware(['permission:view md tipe maintenance asset']);
+        Route::delete('/master-data/delete-new-type-maintenance-asset/{id}', 'NewDeleteDataTypeMaintenance')->middleware(['permission:view md tipe maintenance asset']);
     });
     Route::controller(MDPriority::class)->group(function(){
         Route::get('master-data/priority', 'index')->middleware(['permission:view md prioritas']);
+        Route::post('/master-data/add-new-priority', 'NewAddDataPriority')->middleware(['permission:view md prioritas']);
+        Route::put('/master-data/update-new-priority/{id}', 'NewUpdateDataPriority')->middleware(['permission:view md prioritas']);
+        Route::delete('/master-data/delete-new-priority/{id}', 'NewDeleteDataPriority')->middleware(['permission:view md prioritas']);
     });
     Route::controller(MDAlasanMutasi::class)->group(function(){
         Route::get('master-data/alasan-mutasi', 'index')->middleware(['permission:view md alasan mutasi']);
+        Route::post('/master-data/add-new-alasan-mutasi', 'NewAddDataAlasanMutasi')->middleware(['permission:view md alasan mutasi']);
+        Route::put('/master-data/update-new-alasan-mutasi/{id}', 'NewUpdateDataAlasanMutasi')->middleware(['permission:view md alasan mutasi']);
+        Route::delete('/master-data/delete-new-alasan-mutasi/{id}', 'NewDeleteDataAlasanMutasi')->middleware(['permission:view md alasan mutasi']);
     });
     Route::controller(MDAlasanStockOpname::class)->group(function(){
         Route::get('master-data/alasan-stock-opname', 'index')->middleware(['permission:view md alasan stock opname']);
+        Route::post('/master-data/add-new-alasan-stock-opname', 'NewAddDataAlasanStockOpname')->middleware(['permission:view md alasan stock opname']);
+        Route::put('/master-data/update-new-alasan-stock-opname/{id}', 'NewUpdateDataAlasanStockOpname')->middleware(['permission:view md alasan stock opname']);
+        Route::delete('/master-data/delete-new-alasan-stock-opname/{id}', 'NewDeleteDataAlasanStockOpname')->middleware(['permission:view md alasan stock opname']);
     });
     Route::controller(MDRegional::class)->group(function(){
         Route::get('master-data/regional', 'index')->middleware(['permission:view md regional']);
+        Route::post('/master-data/add-new-regional', 'NewAddDataRegion')->middleware(['permission:view md regional']);
+        Route::put('/master-data/update-new-regional/{id}', 'NewUpdateDataRegion')->middleware(['permission:view md regional']);
+        Route::delete('/master-data/delete-new-regional/{id}', 'NewDeleteDataRegion')->middleware(['permission:view md regional']);
     });
     Route::controller(MDRepair::class)->group(function(){
         Route::get('master-data/repair', 'index')->middleware(['permission:view md perbaikan']);
+        Route::post('/master-data/add-new-repair', 'NewAddDataRepair')->middleware(['permission:view md perbaikan']);
+        Route::put('/master-data/update-new-repair/{id}', 'NewUpdateDataRepair')->middleware(['permission:view md perbaikan']);
+        Route::delete('/master-data/delete-new-repair/{id}', 'NewDeleteDataRepair')->middleware(['permission:view md perbaikan']);
     });
     Route::controller(MDSupplier::class)->group(function(){
         Route::get('master-data/supplier', 'index')->middleware(['permission:view md pemasok']);
+        Route::post('/master-data/add-new-supplier', 'NewAddDataSupplier')->middleware(['permission:view md pemasok']);
+        Route::put('/master-data/update-new-supplier/{id}', 'NewUpdateDataSupplier')->middleware(['permission:view md pemasok']);
+        Route::delete('/master-data/delete-new-supplier/{id}', 'NewDeleteDataSupplier')->middleware(['permission:view md pemasok']);
     });
     Route::controller(MDUOM::class)->group(function(){
         Route::get('master-data/uom', 'index')->middleware(['permission:view md satuan']);
+        Route::post('/master-data/add-new-uom', 'NewAddDataUOM')->middleware(['permission:view md satuan']);
+        Route::put('/master-data/update-new-uom/{id}', 'NewUpdateDataUOM')->middleware(['permission:view md satuan']);
+        Route::delete('/master-data/delete-new-uom/{id}', 'NewDeleteDataUOM')->middleware(['permission:view md satuan']);
     });
     Route::controller(MDWarranty::class)->group(function(){
         Route::get('master-data/warranty', 'index')->middleware(['permission:view md garansi']);
+        Route::post('/master-data/add-new-warranty', 'NewAddDataWarranty')->middleware(['permission:view md garansi']);
+        Route::put('/master-data/update-new-warranty/{id}', 'NewUpdateDataWarranty')->middleware(['permission:view md garansi']);
+        Route::delete('/master-data/delete-new-warranty/{id}', 'NewDeleteDataWarranty')->middleware(['permission:view md garansi']);
     });
     Route::controller(MDCity::class)->group(function(){
         Route::get('master-data/city', 'index')->middleware(['permission:view md kota']);
+        Route::post('/master-data/add-new-city', 'NewAddDataCity')->middleware(['permission:view md kota']);
+        Route::put('/master-data/update-new-city/{id}', 'NewUpdateDataCity')->middleware(['permission:view md kota']);
+        Route::delete('/master-data/delete-new-city/{id}', 'NewDeleteDataCity')->middleware(['permission:view md kota']);
+
     });
     Route::controller(MDResto::class)->group(function(){
         Route::get('master-data/resto', 'index')->middleware(['permission:view md resto']);

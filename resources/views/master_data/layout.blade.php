@@ -405,7 +405,7 @@
                                             <a href="javascript:void(0);" class="detail-button" data-id="{{ $layout->layout_id }}" data-name="{{ $layout->layout_name }}" data-code="{{ $layout->layout_code }}" title="Detail">
                                                 <i class="fas fa-book"></i>
                                             </a>
-                                            <form class="delete-form" action="{{ url('/master-data/delete-new-data', $layout->layout_id) }}" method="POST" style="display:inline;">
+                                            <form class="delete-form" action="{{ url('/master-data/delete-new-layout', $layout->layout_id) }}" method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">
@@ -533,7 +533,7 @@
                                 <a href="javascript:void(0);" class="edit-button" data-id="${layout.layout_id}" data-name="${layout.layout_name}" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form class="delete-form" action="{{ url('admin/layouts/delete') }}/${layout.layout_id}" method="POST" style="display:inline;">
+                                <form class="delete-form" action="{{ url('/master-data/delete-new-layout') }}/${layout.layout_id}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">

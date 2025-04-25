@@ -411,7 +411,7 @@
                                             data-name="{{ $type->type_name }}" title="Detail">
                                                 <i class="fas fa-book"></i>
                                             </a>
-                                            <form class="delete-form" action="{{ url('/master-data/delete-new-data', $type->type_id) }}" method="POST" style="display:inline;">
+                                            <form class="delete-form" action="{{ url('/master-data/delete-new-type-asset', $type->type_id) }}" method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">

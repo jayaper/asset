@@ -405,7 +405,7 @@
                                             <a href="javascript:void(0);" class="detail-button" data-id="{{ $groupuser->group_id }}" data-name="{{ $groupuser->group_name }}" data-roles="{{ $groupuser->group_roles }}" title="Detail">
                                                 <i class="fas fa-book"></i>
                                             </a>
-                                            <form class="delete-form" action="{{ url('/master-data/delete-new-data', $groupuser->group_id) }}" method="POST" style="display:inline;">
+                                            <form class="delete-form" action="{{ url('/master-data/delete-new-group-user', $groupuser->group_id) }}" method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">

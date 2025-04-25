@@ -413,7 +413,7 @@
                                             title="Detail">
                                                 <i class="fas fa-book"></i>
                                             </a>
-                                            <form class="delete-form" action="{{ url('/master-data/delete-new-data', $subcategory->subcat_id) }}" method="POST" style="display:inline;">
+                                            <form class="delete-form" action="{{ url('/master-data/delete-sub-category', $subcategory->subcat_id) }}" method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">

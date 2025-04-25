@@ -394,7 +394,7 @@
                                             <a href="javascript:void(0);" class="detail-button" data-id="{{ $dept->dept_id }}" data-name="{{ $dept->dept_name }}" title="Detail">
                                                 <i class="fas fa-book"></i>
                                             </a>
-                                            <form class="delete-form" action="{{ url('/master-data/delete-new-data', $dept->dept_id) }}" method="POST" style="display:inline;">
+                                            <form class="delete-form" action="{{ url('/master-data/delete-new-departement', $dept->dept_id) }}" method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">

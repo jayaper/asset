@@ -11,7 +11,7 @@ use Carbon\Carbon; // Untuk tanggal dan waktu
 class MasterRepair extends Model
 {
     use HasFactory;
-    use SoftDeletes;
+//    use SoftDeletes;
 
     protected $table = 'm_repair';
     protected $primaryKey = 'repair_id';
@@ -25,7 +25,7 @@ class MasterRepair extends Model
         'modified_by',
         'is_active'
     ];
-    
+
     public $timestamps = false; // Nonaktifkan pengelolaan otomatis kolom created_at dan updated_at
 
     protected static function boot()
