@@ -1,288 +1,6 @@
 <?php
 
-    
-
-// namespace App\Http\Controllers;
-
-    
-
-// use Illuminate\Http\Request;
-
-// use App\Http\Controllers\Controller;
-
-// use App\Models\User;
-
-// use Spatie\Permission\Models\Role;
-
-// use DB;
-
-// use Hash;
-
-// use Illuminate\Support\Arr;
-
-// use Illuminate\View\View;
-
-// use Illuminate\Http\RedirectResponse;
-
-    
-
-// class UserController extends Controller
-
-// {
-
-//     /**
-
-//      * Display a listing of the resource.
-
-//      *
-
-//      * @return \Illuminate\Http\Response
-
-//      */
-
-//     public function index(Request $request): View
-
-//     {
-
-//         $data = User::latest()->paginate(5);
-
-  
-
-//         return view('users.index',compact('data'))
-
-//             ->with('i', ($request->input('page', 1) - 1) * 5);
-
-//     }
-
-    
-
-//     /**
-
-//      * Show the form for creating a new resource.
-
-//      *
-
-//      * @return \Illuminate\Http\Response
-
-//      */
-
-//     public function create(): View
-
-//     {
-
-//         $roles = Role::pluck('name','name')->all();
-
-
-
-//         return view('users.create',compact('roles'));
-
-//     }
-
-    
-
-//     /**
-
-//      * Store a newly created resource in storage.
-
-//      *
-
-//      * @param  \Illuminate\Http\Request  $request
-
-//      * @return \Illuminate\Http\Response
-
-//      */
-
-//     public function store(Request $request): RedirectResponse
-
-//     {
-
-//         $this->validate($request, [
-
-//             'name' => 'required',
-
-//             'email' => 'required|email|unique:users,email',
-
-//             'password' => 'required|same:confirm-password',
-
-//             'roles' => 'required'
-
-//         ]);
-
-    
-
-//         $input = $request->all();
-
-//         $input['password'] = Hash::make($input['password']);
-
-    
-
-//         $user = User::create($input);
-
-//         $user->assignRole($request->input('roles'));
-
-    
-
-//         return redirect()->route('users.index')
-
-//                         ->with('success','User created successfully');
-
-//     }
-
-    
-
-//     /**
-
-//      * Display the specified resource.
-
-//      *
-
-//      * @param  int  $id
-
-//      * @return \Illuminate\Http\Response
-
-//      */
-
-//     public function show($id): View
-
-//     {
-
-//         $user = User::find($id);
-
-
-
-//         return view('users.show',compact('user'));
-
-//     }
-
-    
-
-//     /**
-
-//      * Show the form for editing the specified resource.
-
-//      *
-
-//      * @param  int  $id
-
-//      * @return \Illuminate\Http\Response
-
-//      */
-
-//     public function edit($id): View
-
-//     {
-
-//         $user = User::find($id);
-
-//         $roles = Role::pluck('name','name')->all();
-
-//         $userRole = $user->roles->pluck('name','name')->all();
-
-    
-
-//         return view('users.edit',compact('user','roles','userRole'));
-
-//     }
-
-    
-
-//     /**
-
-//      * Update the specified resource in storage.
-
-//      *
-
-//      * @param  \Illuminate\Http\Request  $request
-
-//      * @param  int  $id
-
-//      * @return \Illuminate\Http\Response
-
-//      */
-
-//     public function update(Request $request, $id): RedirectResponse
-
-//     {
-
-//         $this->validate($request, [
-
-//             'name' => 'required',
-
-//             'email' => 'required|email|unique:users,email,'.$id,
-
-//             'password' => 'same:confirm-password',
-
-//             'roles' => 'required'
-
-//         ]);
-
-    
-
-//         $input = $request->all();
-
-//         if(!empty($input['password'])){ 
-
-//             $input['password'] = Hash::make($input['password']);
-
-//         }else{
-
-//             $input = Arr::except($input,array('password'));    
-
-//         }
-
-    
-
-//         $user = User::find($id);
-
-//         $user->update($input);
-
-//         DB::table('model_has_roles')->where('model_id',$id)->delete();
-
-    
-
-//         $user->assignRole($request->input('roles'));
-
-    
-
-//         return redirect()->route('users.index')
-
-//                         ->with('success','User updated successfully');
-
-//     }
-
-    
-
-//     /**
-
-//      * Remove the specified resource from storage.
-
-//      *
-
-//      * @param  int  $id
-
-//      * @return \Illuminate\Http\Response
-
-//      */
-
-//     public function destroy($id): RedirectResponse
-
-//     {
-
-//         User::find($id)->delete();
-
-//         return redirect()->route('users.index')
-
-//                         ->with('success','User deleted successfully');
-
-//     }
-
-// }
-
-
-
 namespace App\Http\Controllers;
-
-
 
 use Illuminate\Http\Request;
 
@@ -303,7 +21,8 @@ use Illuminate\Support\Facades\DB;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 use Illuminate\Support\Facades\File;
-
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Spatie\Permission\Models\Role;
 
 use Spatie\Permission\Models\Permission;
@@ -315,6 +34,7 @@ class UserController extends Controller
 {
     public function Index()
     {
+        
         $users = DB::table('m_user')
             ->select('m_user.*', 'master_resto_v2.name_store_street', 'master_resto_v2.id as resto_id')
             ->leftJoin('master_resto_v2', 'master_resto_v2.id', '=', 'm_user.location_now') // Left join to include null values
@@ -329,7 +49,7 @@ class UserController extends Controller
     
         $permission = DB::table('permissions')->select('permissions.*')->get();
     
-        return view("Admin.user", [
+        return view("users.user", [
             'users' => $users,
             'restos' => $restos,
             'permission' => $permission,
@@ -340,9 +60,18 @@ class UserController extends Controller
     public function HalamanUser()
     {
         $users = DB::table('m_user')
-            ->select('m_user.*', 'master_resto_v2.name_store_street', 'master_resto_v2.id as resto_id')
-            ->leftJoin('master_resto_v2', 'master_resto_v2.id', '=', 'm_user.location_now') // Left join
-            ->paginate(10);
+        ->select(
+            'm_user.*',
+            'master_resto_v2.name_store_street',
+            'master_resto_v2.id as resto_id',
+            'roles.name as role_name',
+            'roles.id as role_id'
+        )
+        ->leftJoin('master_resto_v2', 'master_resto_v2.id', '=', 'm_user.location_now')
+        ->leftJoin('model_has_roles', 'm_user.id', '=', 'model_has_roles.model_id')
+        ->leftJoin('roles', 'roles.id', '=', 'model_has_roles.role_id')
+        ->where('model_has_roles.model_type', '=', \App\Models\Master\MasterUser::class)
+        ->paginate(20);
     
         $users1 = DB::table('m_user')
             ->select('m_user.*', 'master_resto_v2.name_store_street', 'master_resto_v2.id as resto_id')
@@ -352,8 +81,10 @@ class UserController extends Controller
         $restos = DB::table('master_resto_v2')->select('id', 'name_store_street')->get();
     
         $permission = DB::table('permissions')->select('permissions.*')->get();
+        $rolesUser = Role::all();
     
-        return view("Admin.user", [
+        return view("users.user", [
+            'rolesUser' => $rolesUser,
             'users' => $users,
             'restos' => $restos,
             'permission' => $permission,
@@ -382,81 +113,37 @@ class UserController extends Controller
 
     {
 
-        // Validasi data yang dikirimkan
-
         $request->validate([
-
-            'username' => 'required|string|max:255',
-
-            'password' => 'required|string|max:255',
-
-            'email' => 'required|string|max:255',
-
-            'role' => 'required|string|max:255'
-
+            'username' => 'required|string|max:255|unique:m_user,username',
+            'password' => 'required|string',
+            'email' => 'required|string|email|max:255|unique:m_user,email',
+            'role' => 'required|exists:roles,id',
+            'location_now' => 'nullable|exists:master_resto_v2,id'
         ]);
+        
+        // Buat instance dari model MasterUser
+        $user = new MasterUser();
+        $user->username = $request->username;
+        $user->password = Hash::make($request->password);
+        $user->email = $request->email;
+        $user->created_at = Carbon::now();
+        $user->updated_at = Carbon::now();
 
-
-
-        try {
-
-            // Buat instance dari model MasterUser
-
-            $user = new MasterUser();
-
-            $user->username = $request->input('username');
-
-            $user->password = md5($request->input('password'));
-
-            $user->email = $request->input('email');
-
-            $user->location_now = $request->input('location_now');
-
-            $user->role = $request->input('role');
-
-            $user->location_now = $request->input('location_now');
-            // Menghasilkan id secara otomatis
-
-            $maxUserId = MasterUser::max('id'); // Ambil nilai id maksimum
-
-            $user->id = $maxUserId ? $maxUserId + 1 : 1; // Set id, mulai dari 1 jika tidak ada
-
-            
-
-            $user->created_at = Carbon::now(); // Mengisi created_at dengan tanggal saat ini
-
-            $user->save(); // Simpan data
-
-
-
-            return response()->json([
-
-                'status' => 'success',
-
-                'message' => 'user berhasil ditambahkan',
-
-                'redirect_url' => route('Admin.user')
-
-            ]);
-
-            
-
-        } catch (\Exception $e) {
-
-            return response()->json([
-
-                'status' => 'error',
-
-                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-
-            ]);
-
+        if($request->role !== 1){
+            $user->location_now = $request->location_now;
         }
 
+        // Simpan data user
+        $user->save();
+        // Ambil berdasarkan ID, bukan nama
+        $role = Role::findById($request->role);
+
+        // Lalu assign role-nya ke user
+        $user->assignRole($role);
+
+        // Redirect ke halaman user
+        return redirect()->back()->with('success', 'User berhasil ditambahkan');
     }
-
-
-
     // Example push notification function
 
     private function sendPushNotification($expoPushToken, $title, $body)
@@ -512,14 +199,11 @@ class UserController extends Controller
     public function updateDataUser(Request $request, $id)
 
     {
-
         // Validasi input
 
         $request->validate([
 
             'username' => 'required|string|max:255',
-
-            'password' => 'required|string|max:255',
 
             'email' => 'required|string|max:255',
 
@@ -550,12 +234,17 @@ class UserController extends Controller
 
         $user->username = $request->username;
 
-        $user->password = md5($request->password);
-
-        $user->role = $request->role;
+        if($request->filled('password')){
+            $user->password = Hash::make($request->password);
+        }
 
         $user->location_now = $request->location_now;
 
+        // Ambil berdasarkan ID, bukan nama
+        $role = Role::findById($request->role);
+
+        // Lalu assign role-nya ke user
+        $user->assignRole($role);
         
 
         if ($user->save()) { // Menggunakan save() yang lebih aman daripada update()
@@ -566,7 +255,7 @@ class UserController extends Controller
 
                 'message' => 'user updated successfully.',
 
-                'redirect_url' => route('Admin.user'), // Sesuaikan dengan route index Anda
+                'redirect_url' => '/user', // Sesuaikan dengan route index Anda
 
             ]);
 

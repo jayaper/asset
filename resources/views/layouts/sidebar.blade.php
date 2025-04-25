@@ -95,17 +95,7 @@
                             
                             @can('view at head')
                               <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                              href="/asset-transfer/review-head"><span>Review Ops Head</span></a></li>
-                            @endcan
-
-                            @can('view at mnr')
-                              <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                              href="/asset-transfer/review-mnr"><span>Review MnR Area</span></a></li>
-                            @endcan
-
-                            @can('view at taf')
-                              <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                              href="/asset-transfer/review-taf"><span>Review TAF Accounting</span></a></li>
+                              href="/asset-transfer/review"><span>Review Movement Out</span></a></li>
                             @endcan
                             
                             
@@ -197,162 +187,170 @@
                 </li> --}}
 
 
-                <li class="sidebar-main-title">
-                    <h6>Master Data</h6>
-                </li>
+                @can('view master data')
+                        <li class="sidebar-main-title">
+                                <h6>Master Data</h6>
+                                </li>
 
-                <li class="menu-box">
-                    <ul>
-                        <li class="sidebar-list">
-                        <li class="sidebar-list"><a class="sidebar-link sidebar-title" href="javascript:void(0)"><i
-                                    data-feather="database"></i><span>Master Data</span></a>
-                            <ul class="sidebar-submenu">
-                                @can('view md asset')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/asset"><span>Asset</span></a></li>
-                                @endcan
+                                <li class="menu-box">
+                                <ul>
+                                        <li class="sidebar-list">
+                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title" href="javascript:void(0)"><i
+                                                data-feather="database"></i><span>Master Data</span></a>
+                                        <ul class="sidebar-submenu">
+                                                @can('view md asset')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/asset"><span>Asset</span></a></li>
+                                                @endcan
 
-                                @can('view md asset equipment')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/asset-equipment"><span>Asset Equipment</span></a></li>
-                                @endcan
-                                <!-- <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav" href="#"><span>Merk</span></a></li> -->
-                                @can('view md brand')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/brand"><span>Brand</span></a></li>
-                                @endcan
-                                @can('view md kategori')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/category"><span>Kategori</span></a></li>
-                                @endcan
-                                @can('view md sub kategori')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/sub-category"><span>Sub Kategori</span></a></li>
-                                @endcan
-                                @can('view md checklist')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/checklist"><span>Checklist</span></a></li>
-                                @endcan
-                                @can('view md kondisi')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/condition"><span>Kondisi</span></a></li>
-                                @endcan
-                                @can('view md kontrol checklist')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/control-checklist"><span>Kontrol Checklist</span></a></li>
-                                @endcan
-                                @can('view md departement')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/departement"><span>Departement</span></a></li>
-                                @endcan
-                                @can('view md division')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/division"><span>Division</span></a></li>
-                                @endcan
-                                @can('view md group user')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/group-user"><span>Group User</span></a></li>
-                                @endcan
-                                @can('view md job level')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/job-level"><span>Job Level</span></a></li>
-                                @endcan
-                                @can('view md tata letak')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/layout"><span>Tata Letak</span></a></li>
-                                @endcan
-                                {{-- @can('view md maintenance')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/admin/mtc"><span>Maintenance</span></a></li>
-                                @endcan --}}
-                                @can('view md people')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/people"><span>People</span></a></li>
-                                @endcan
-                                @can('view md tipe asset')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/type-asset"><span>Tipe Asset</span></a></li>
-                                @endcan
-                                @can('view md tipe maintenance asset')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/type-maintenance-asset"><span>Tipe Maintenance Asset</span></a></li>
-                                @endcan
-                                @can('view md periodic maintenance')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/admin/periodic"><span>Periodic Maintenance</span></a></li>
-                                @endcan
-                                @can('view md prioritas')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/priority"><span>Prioritas</span></a></li>
-                                @endcan
-                                @can('view md alasan mutasi')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/alasan-mutasi"><span>Alasan Mutasi</span></a></li>
-                                @endcan
-                                @can('view md alasan stock opname')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/alasan-stock-opname"><span>Alasan Stock Opname</span></a></li>
-                                @endcan
-                                @can('view md regional')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/regional"><span>Regional</span></a></li>
-                                @endcan
-                                @can('view md perbaikan')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/repair"><span>Perbaikan</span></a></li>
-                                @endcan
-                                @can('view md pemasok')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/supplier"><span>Pemasok</span></a></li>
-                                @endcan
-                                @can('view md satuan')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/uom"><span>Satuan</span></a></li>
-                                @endcan
-                                @can('view md garansi')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/warranty"><span>Garansi</span></a></li>
-                                @endcan
-                                @can('view md kota')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/city"><span>Kota</span></a></li>
-                                @endcan
-                                @can('view md resto')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/resto"><span>Resto</span></a></li>
-                                @endcan
-                                {{-- @can('view md approval maintenance')
-                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                        href="/master-data/approval-maintenance"><span>Approval Maintenance</span></a></li>
-                                @endcan --}}
+                                                @can('view md asset equipment')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/asset-equipment"><span>Asset Equipment</span></a></li>
+                                                @endcan
+                                                <!-- <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav" href="#"><span>Merk</span></a></li> -->
+                                                @can('view md brand')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/brand"><span>Brand</span></a></li>
+                                                @endcan
+                                                @can('view md kategori')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/category"><span>Kategori</span></a></li>
+                                                @endcan
+                                                @can('view md sub kategori')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/sub-category"><span>Sub Kategori</span></a></li>
+                                                @endcan
+                                                @can('view md checklist')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/checklist"><span>Checklist</span></a></li>
+                                                @endcan
+                                                @can('view md kondisi')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/condition"><span>Kondisi</span></a></li>
+                                                @endcan
+                                                @can('view md kontrol checklist')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/control-checklist"><span>Kontrol Checklist</span></a></li>
+                                                @endcan
+                                                @can('view md departement')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/departement"><span>Departement</span></a></li>
+                                                @endcan
+                                                @can('view md division')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/division"><span>Division</span></a></li>
+                                                @endcan
+                                                @can('view md group user')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/group-user"><span>Group User</span></a></li>
+                                                @endcan
+                                                @can('view md job level')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/job-level"><span>Job Level</span></a></li>
+                                                @endcan
+                                                @can('view md tata letak')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/layout"><span>Tata Letak</span></a></li>
+                                                @endcan
+                                                {{-- @can('view md maintenance')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/admin/mtc"><span>Maintenance</span></a></li>
+                                                @endcan --}}
+                                                @can('view md people')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/people"><span>People</span></a></li>
+                                                @endcan
+                                                @can('view md tipe asset')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/type-asset"><span>Tipe Asset</span></a></li>
+                                                @endcan
+                                                @can('view md tipe maintenance asset')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/type-maintenance-asset"><span>Tipe Maintenance Asset</span></a></li>
+                                                @endcan
+                                                @can('view md periodic maintenance')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/admin/periodic"><span>Periodic Maintenance</span></a></li>
+                                                @endcan
+                                                @can('view md prioritas')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/priority"><span>Prioritas</span></a></li>
+                                                @endcan
+                                                @can('view md alasan mutasi')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/alasan-mutasi"><span>Alasan Mutasi</span></a></li>
+                                                @endcan
+                                                @can('view md alasan stock opname')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/alasan-stock-opname"><span>Alasan Stock Opname</span></a></li>
+                                                @endcan
+                                                @can('view md regional')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/regional"><span>Regional</span></a></li>
+                                                @endcan
+                                                @can('view md perbaikan')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/repair"><span>Perbaikan</span></a></li>
+                                                @endcan
+                                                @can('view md pemasok')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/supplier"><span>Pemasok</span></a></li>
+                                                @endcan
+                                                @can('view md satuan')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/uom"><span>Satuan</span></a></li>
+                                                @endcan
+                                                @can('view md garansi')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/warranty"><span>Garansi</span></a></li>
+                                                @endcan
+                                                @can('view md kota')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/city"><span>Kota</span></a></li>
+                                                @endcan
+                                                @can('view md resto')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/resto"><span>Resto</span></a></li>
+                                                @endcan
+                                                {{-- @can('view md approval maintenance')
+                                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                                        href="/master-data/approval-maintenance"><span>Approval Maintenance</span></a></li>
+                                                @endcan --}}
 
 
 
-                            </ul>
+                                        </ul>
+                                        </li>
+                                </ul>
                         </li>
-                    </ul>
-                </li>
+                @endcan
 
 
 
-                <li class="sidebar-main-title">
-                    <h6>User Management</h6>
-                </li>
-                <li class="menu-box">
-                    <ul>
-                        <li class="sidebar-list"><a class="sidebar-link sidebar-title" href="javascript:void(0)"><i
-                                    data-feather="clipboard"></i><span>User</span></a>
-                            <ul class="sidebar-submenu">
-                                <li><a class="sidebar-link sidebar-title link-nav"
-                                        href="/user"><span>User</span></a></li>
+                @can('menu user')
+                        <li class="sidebar-main-title">
+                        <h6>User Management</h6>
                         </li>
-                        <li><a class="sidebar-link sidebar-title link-nav" href="/role"><span>Role</span></a></li>
-                </li>
-                <li><a class="sidebar-link sidebar-title link-nav" href="/permission"><span>Permission</span></a></li>
-                </li>
-                </ul>
-                </ul>
-                </li>
+                        <li class="menu-box">
+                        <ul>
+                                <li class="sidebar-list"><a class="sidebar-link sidebar-title" href="javascript:void(0)"><i
+                                        data-feather="clipboard"></i><span>User</span></a>
+                                <ul class="sidebar-submenu">
+                                        <li><a class="sidebar-link sidebar-title link-nav"
+                                                href="/user"><span>User</span></a></li>
+                                </li>
+                                @can('view role')
+                                        {{-- <li><a class="sidebar-link sidebar-title link-nav" href="/role"><span>Role</span></a></li> --}}
+                                @endcan
+                        </li>
+                                @can('view permission')
+                                        <li><a class="sidebar-link sidebar-title link-nav" href="/permission"><span>Permission</span></a></li>
+                                @endcan
+                        </li>
+                        </ul>
+                        </ul>
+                        </li>
+                @endcan
                 <li class="sidebar-main-title">
                     <h6>Report</h6>
                 </li>

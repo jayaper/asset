@@ -112,7 +112,7 @@ Route::group(['middleware' => ['auth']], function () {
 //api
     Route::get('/api/get-from-locations', [MovementOutController::class, 'getFromLocations']);
     Route::get('/api/get-dest-locations', [MovementOutController::class, 'getDestLocations']);
-    Route::get('/api/get-data-assets', [MovementOutController::class, 'getAjaxDataAssets']);
+    Route::get('/api/get-data-assets/{id}', [MovementOutController::class, 'getAjaxDataAssets']);
     Route::get('/api/get-asset-details/{id}', [MovementOutController::class, 'getAjaxAssetDetails']);
     Route::get('/admin/edit_data_movement/{id}', [MovementOutController::class, 'editDataDetailMovement']);
     Route::get('/api/get-location', [MovementOutController::class, 'getLocationUser']);
@@ -120,7 +120,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/api/ajax-get-location', [MovementOutController::class, 'getLocation']);
 
-    Route::get('/api/ajaxGetDataRegistAsset', [MovementOutController::class, 'ajaxGetDataRegistAsset']);
+    Route::get('/api/ajaxGetDataRegistAsset/{lokasi_user}', [MovementOutController::class, 'ajaxGetDataRegistAsset']);
     Route::get('/api/ajaxGetDataRegistDisposalAsset', [MovementOutController::class, 'ajaxGetDataRegistDisposalAsset']);
     Route::get('/api/searchRegisterAsset', [MovementOutController::class, 'searchRegisterAsset']);
     Route::get('/admin/get_detail_data_movement/{id}', [MovementOutController::class, 'dataDetailMovement']);
@@ -249,9 +249,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/asset-transfer/confirm-asset/edit/{id}', 'updateDataConfirm')->middleware(['permission:view at confirm asset']);
     });
     Route::controller(ReviewAssetTransfer::class)->group(function () {
-        Route::get('/asset-transfer/review-head', 'head')->middleware(['permission:view at head']);
-        Route::get('/asset-transfer/review-mnr', 'mnr')->middleware(['permission:view at mnr']);
-        Route::get('/asset-transfer/review-taf', 'taf')->middleware(['permission:view at taf']);
+        Route::get('/asset-transfer/review', 'head')->middleware(['permission:view at head']);
     });
     Route::controller(RequestDisposal::class)->group(function () {
         Route::get('/disposal/request-disposal', 'index')->middleware(['permission:view dis request disposal']);
@@ -326,6 +324,9 @@ Route::middleware('auth')->group(function () {
     });
     Route::controller(MDAsset::class)->group(function(){
         Route::get('/master-data/asset', 'HalamanAssets')->middleware(['permission:view md asset']);
+        Route::post('/master-data/asset/add{id}', 'add')->middleware(['permission:view md asset']);
+        Route::put('/master-data/asset/update{id}', 'update')->middleware(['permission:view md asset']);
+        Route::post('/master-data/asset/delete{id}', 'delete')->middleware(['permission:view md asset']);
     });
     Route::controller(MDAssetEquipment::class)->group(function(){
         Route::get('master-data/asset-equipment', 'index')->middleware(['permission:view md asset equipment']);
@@ -410,10 +411,23 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::controller(UserController::class)->group(function () {
-        Route::get('/permission', 'userPermission')->name('permission');
-        Route::post('/permission/add-permission', 'addPermission');
-        Route::put('/permission/{id}/update-permission', 'updatePermission')->name('permission.update');
+        Route::get('/user', 'HalamanUser')->middleware('permission:view user');
+        Route::post('/user/add-user', 'AddDataUser')->middleware('permission:view user');
+        Route::put('/user/update-user/{id}', 'updateDataUser')->middleware('permission:view user');
+        Route::get('/permission', 'userPermission')->middleware(['permission:view permission'])->name('permission');
+        Route::post('/permission/add-permission', 'addPermission')->middleware(['permission:view permission']);
+        Route::put('/permission/{id}/update-permission', 'updatePermission')->middleware(['permission:view permission'])->name('permission.update');
         Route::get('role', 'userRole');
+
+        Route::get('/admin/user', [UserController::class, 'HalamanUser']);
+        Route::get('/admin/user', [UserController::class, 'HalamanUser'])->name('Admin.user');
+        Route::post('/add-user', [UserController::class, 'AddDataUser'])->name('add.user');
+        Route::get('/get-user', [UserController::class, 'GetUser'])->name('get.user');
+        Route::get('/admin/users', [UserController::class, 'Index'])->name('Admin.user');
+        Route::get('/admin/users/edit/{id}', [UserController::class, 'showEditForm'])->name('edit.user');
+        Route::put('/admin/users/edit/{id}', [UserController::class, 'updateDataUser'])->name('update.user');
+        Route::delete('/admin/users/delete/{id}', [UserController::class, 'deleteDataUser'])->name('delete.user');
+
     });
 
     // Route::get('/admin/dashboard', [AdminController::class, 'index']);

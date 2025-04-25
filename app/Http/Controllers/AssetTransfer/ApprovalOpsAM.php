@@ -7,11 +7,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Models\Master\MasterMoveOut;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class ApprovalOpsAM extends Controller
 {
     public function index() 
     {
+        $user = Auth::user();
+        $from_loc =  auth()->user()->location_now;  
+
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
         $assets = DB::table('table_registrasi_asset')->select('id', 'asset_name')->get();
@@ -27,11 +31,17 @@ class ApprovalOpsAM extends Controller
                 'toResto.name_store_street as dest_location',
         )
         ->whereIn('appr_1', ['1', '2', '3', '4'])
-        ->whereNull('t_out.deleted_at')
-        ->orderBy('t_out.created_at', 'desc')
-        ->paginate(10);
+        ->whereNull('t_out.deleted_at');
+
+        if (!$user->hasRole('Admin')) {
+            $moveouts->where('t_out.from_loc', $from_loc)
+            ->orWhere('t_out.dest_loc', $from_loc);
+        }
+        $moveouts = $moveouts->orderBy('t_out.created_at', 'desc')->paginate(10);
+        
 
         return view("asset_transfer.apprmoveout-am", [
+            'user' => $user,
             'reasons' => $reasons,
             'approvals' => $approvals,
             'assets' => $assets,

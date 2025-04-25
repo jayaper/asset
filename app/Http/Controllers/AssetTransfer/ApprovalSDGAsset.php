@@ -7,11 +7,14 @@ use Illuminate\Http\Request;
 use App\Models\Master\MasterMoveOut;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class ApprovalSDGAsset extends Controller
 {
     function index()
     {
+        $user = Auth::User();
+        $from_loc = auth()->user()->location_now;
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
         $assets = DB::table('table_registrasi_asset')->select('id', 'asset_name')->get();
@@ -26,11 +29,15 @@ class ApprovalSDGAsset extends Controller
                 'fromResto.name_store_street as from_location', 
                 'toResto.name_store_street as dest_location',
         )
-        ->whereIn('appr_1', ['1', '2', '3', '4'])
-        ->orderBy('t_out.created_at', 'desc')
-        ->paginate(10);
+        ->whereIn('appr_1', ['1', '2', '3', '4']);
+        if(!$user->hasRole('Admin')){
+            $moveouts->where('t_out.from_loc', $from_loc)->orWhere('t_out.dest_loc', $from_loc);
+        }
+
+        $moveouts = $moveouts->orderBy('t_out.created_at', 'desc')->paginate(10);
 
         return view("asset_transfer.apprmoveout-sdgasset", [
+            'user' => $user,
             'reasons' => $reasons,
             'assets' => $assets,
             'conditions' => $conditions,

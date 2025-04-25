@@ -209,6 +209,11 @@
             position: relative;
             top: -40px;
         }
+
+        .disabled-row {
+            pointer-events: none;
+            user-select: none;
+        }
     </style>
 
 </head>
@@ -616,6 +621,7 @@
     </script>
 
     <script>
+        let selectedAssetIds = [];
         $(document).ready(function() {
             function initializeAssetSelect2(element) {
                 $(element).select2({
@@ -623,7 +629,7 @@
                     allowClear: true,
                     width: '100%',
                     ajax: {
-                        url: '/api/get-data-assets',
+                        url: '/api/get-data-assets/{{ $user->location_now }}',
                         type: 'GET',
                         dataType: 'json',
                         delay: 250,
@@ -633,8 +639,10 @@
                             };
                         },
                         processResults: function(data) {
+                            // Filter data supaya tidak menampilkan asset yang sudah dipilih
+                            const filtered = data.filter(item => !selectedAssetIds.includes(item.id));
                             return {
-                                results: $.map(data, function(item) {
+                                results: $.map(filtered, function(item) {
                                     return {
                                         id: item.id,
                                         text: item.asset_model
@@ -644,11 +652,15 @@
                         },
                         cache: true
                     }
-                }).on('select2:clear', function() {
-                    var $parent = $(this).closest('.asset-fields');
-                    $parent.find('input').val('');
+                })
+                .on('select2:select', function(e) {
+                    const selectedId = e.params.data.id;
+                    if (!selectedAssetIds.includes(selectedId)) {
+                        selectedAssetIds.push(selectedId);
+                    }
                 });
             }
+
 
             function initializeConditionSelect2(element) {
                 $(element).select2({
@@ -961,12 +973,13 @@
 
 
     <script>
+        
         $(document).ready(function() {
             const table = $('#assetTable').DataTable({
                 processing: true,
                 serverSide: false,
                 ajax: {
-                    url: '/api/ajaxGetDataRegistAsset',
+                    url: '/api/ajaxGetDataRegistAsset/{{ $user->location_now }}',
                     type: 'GET'
                 },
                 columns: [{
@@ -997,36 +1010,40 @@
             });
 
             // Handle row click event
-            $('#assetTable tbody').on('click', 'tr', function() {
-                const rowData = table.row(this).data(); // Get row data
+            $('#assetTable tbody').on('click', 'tr', function () {
+                const row = table.row(this);
+                const rowData = row.data(); // Get row data
 
                 if (!rowData) {
                     alert('No data found for this row.');
                     return;
                 }
 
-                // Create a new asset field
+                // Buat field baru
                 const $newField = createFreshAssetField();
 
-                // Populate the new field with the selected data
+                // Isi field dengan data
                 $newField.find('select.asset-select').html(
                     `<option value="${rowData.id}" selected>${rowData.asset_name}</option>`);
                 $newField.find('input[name="merk_display[]"]').val(rowData.merk);
-                $newField.find('input[name="merk[]"]').val(rowData.brand_id)
+                $newField.find('input[name="merk[]"]').val(rowData.brand_id);
                 $newField.find('input[name="qty[]"]').val(rowData.qty);
                 $newField.find('input[name="satuan_display[]"]').val(rowData.satuan);
                 $newField.find('input[name="satuan[]"]').val(rowData.uom_id);
                 $newField.find('input[name="serial_number[]"]').val(rowData.serial_number);
                 $newField.find('input[name="register_code[]"]').val(rowData.register_code);
 
-                // Append the new field
+                // Append ke form
                 $('#assetFieldsContainer').append($newField);
 
-                // Initialize Select2 for new fields
+                // Inisialisasi Select2
                 initializeAssetSelect2($newField.find('.asset-select'));
                 initializeConditionSelect2($newField.find('select[name="condition_id[]"]'));
 
-                // Close modal
+                // Hapus baris dari DataTable
+                row.remove().draw();
+
+                // Tutup modal
                 $('#searchRegistData').modal('hide');
             });
 
@@ -1065,7 +1082,7 @@
                 return $newField;
             }
 
-
+            //ini tidak dipakai
             function initializeAssetSelect2(element) {
                 $(element).select2({
                     placeholder: 'Pilih Asset',
@@ -1082,8 +1099,9 @@
                             };
                         },
                         processResults: function(data) {
+                            const filteredData = data.filter(item => !selectedAssetIds.includes(item.id));
                             return {
-                                results: $.map(data, function(item) {
+                                results: $.map(filteredData, function(item) {
                                     return {
                                         id: item.id,
                                         text: item.asset_model
@@ -1093,11 +1111,21 @@
                         },
                         cache: true
                     }
-                }).on('select2:clear', function() {
-                    var $parent = $(this).closest('.asset-fields');
-                    $parent.find('input').val('');
+                })
+                .on('select2:select', function(e) {
+                    const selectedId = e.params.data.id;
+                    if (!selectedAssetIds.includes(selectedId)) {
+                        selectedAssetIds.push(selectedId);
+                    }
+                })
+                .on('select2:unselecting', function(e) {
+                    // user menghapus pilihannya secara manual
+                    const removedId = $(this).val();
+                    selectedAssetIds = selectedAssetIds.filter(id => id != removedId);
                 });
             }
+
+
 
             function initializeConditionSelect2(element) {
                 $(element).select2({

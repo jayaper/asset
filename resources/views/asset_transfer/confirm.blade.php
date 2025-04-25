@@ -964,14 +964,15 @@
 
                                         <td class="text-center">
 
-                                        @can("btn at action confirm")
-                                            <a href="javascript:void(0);" class="edit-button" 
-                                            data-id="{{ $movein->out_id }}" 
-                                            title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                        @endcan
-
+                                        @if ($user->location_now == $movein->dest_loc && $movein->is_confirm !== 3)
+                                          @can("btn at action confirm")
+                                              <a href="javascript:void(0);" class="edit-button" 
+                                              data-id="{{ $movein->out_id }}" 
+                                              title="Edit">
+                                                  <i class="fas fa-edit"></i>
+                                              </a>
+                                          @endcan
+                                        @endif
                                             <a href="{{ url('/asset-transfer/pdf-request-moveout', $movein->out_id) }}" target="_blank"><i class="fas fa-print mx-1"></i></a>
 
                                         </td>

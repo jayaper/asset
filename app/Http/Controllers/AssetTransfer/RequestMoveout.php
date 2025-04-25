@@ -174,6 +174,10 @@ class RequestMoveout extends Controller
             $moveoutsQuery->whereBetween('t_out.out_date', [$startDate, $endDate]);
         }
 
+        $user = Auth::User();
+        if($user->hasRole('SM')){
+            $moveoutsQuery->where('from_loc', $user->location_now);
+        }
         $moveouts = $moveoutsQuery->paginate(10);
 
         // dd($fromLoc);
@@ -193,6 +197,7 @@ class RequestMoveout extends Controller
 
     public function LihatFormMoveOut()
     {
+        $user = Auth::user();
 
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
@@ -271,6 +276,8 @@ class RequestMoveout extends Controller
 
 
         return view('asset_transfer.add_data_movement', [
+
+            'user' => $user,
 
             'lokasi_user' => $lokasi_user,
 
@@ -1813,10 +1820,10 @@ class RequestMoveout extends Controller
             ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
             ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
             ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
-            ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
             ->leftJoin('m_warranty', 'table_registrasi_asset.warranty', '=', 'm_warranty.warranty_id')
             ->leftJoin('m_periodic_mtc', 'table_registrasi_asset.periodic_maintenance', '=', 'm_periodic_mtc.periodic_mtc_id')
             ->leftJoin('t_out_detail', 'table_registrasi_asset.id', '=', 't_out_detail.asset_id')
+            ->leftJoin('m_condition', 't_out_detail.condition', '=', 'm_condition.condition_id')
             ->where('table_registrasi_asset.qty', '>', 0)
             ->get();
 

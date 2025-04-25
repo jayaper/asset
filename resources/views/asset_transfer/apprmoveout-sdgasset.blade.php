@@ -397,10 +397,12 @@
                                         <td>{{ $moveout->approval_name }}</td>
                                         <td class="text-center">
                                             @can('btn at action approval sdg')
-                                              @if($moveout->appr_3 != 2 && $moveout->appr_3 != 4)
-                                                <a href="javascript:void(0);" class="edit-button" data-id="{{ $moveout->out_id }}" data-no="{{ $moveout->out_no }}" title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
+                                              @if($user->location_now == $moveout->from_loc)
+                                                @if($moveout->appr_3 != 2 && $moveout->appr_3 != 4)
+                                                  <a href="javascript:void(0);" class="edit-button" data-id="{{ $moveout->out_id }}" data-no="{{ $moveout->out_no }}" title="Edit">
+                                                      <i class="fas fa-edit"></i>
+                                                  </a>
+                                                @endif
                                               @endif
                                             @endcan
                                             <a href="{{ url('/asset-transfer/pdf-request-moveout', $moveout->out_id) }}" target="_blank"><i class="fas fa-print mx-1"></i></a>

@@ -278,6 +278,9 @@
                                                 <input type="text" name="register_code" id="register_code"
                                                     class="form-control" placeholder="Masukkan Kode Registrasi..."
                                                     readonly>
+                                                @error('register_code')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="asset_name">Asset Name : </label>
@@ -285,12 +288,18 @@
                                                     <option value="" selected disabled> --- Pilih Asset Name ---
                                                     </option>
                                                 </select>
+                                                @error('asset_name')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="serial_number">Serial Number : </label>
-                                                <input type="text" name="serial_number" id="serial_number"
+                                                <input value="{{ old('serial_number') }}" type="text" name="serial_number" id="serial_number"
                                                     class="form-control" placeholder="Masukkan Serial Number"
                                                     required>
+                                                @error('serial_number')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="type_asset">Type Asset : </label>
@@ -298,6 +307,9 @@
                                                     <option value="" selected disabled>--- Pilih Type ----
                                                     </option>
                                                 </select>
+                                                @error('type_asset')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="category_asset">Category Asset : </label>
@@ -306,6 +318,9 @@
                                                     <option value="" selected disabled> --- PILIH CATEGORY ASSET
                                                         ---- </option>
                                                 </select>
+                                                @error('category_asset')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="prioritas">Priority : </label>
@@ -313,6 +328,9 @@
                                                     <option value="" selected disabled> --- PILIH PRIORITAS ----
                                                     </option>
                                                 </select>
+                                                @error('prioritas')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="merk">Merk : </label>
@@ -320,6 +338,9 @@
                                                     <option value="" selected disabled> --- Pilih Merk ---
                                                     </option>
                                                 </select>
+                                                @error('merk')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="qty">Quantity : </label>
@@ -327,7 +348,10 @@
                                                     class="form-control" placeholder="Masukkan Quantity" required
                                                     min="1"
                                                     oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-                                                    value="1">
+                                                    value="1" readonly>
+                                                @error('qty')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="satuan">Satuan : </label>
@@ -335,6 +359,9 @@
                                                     <option value="" selected disabled> --- PILIH SATUAN ----
                                                     </option>
                                                 </select>
+                                                @error('satuan')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="width">Width : </label>
@@ -343,6 +370,9 @@
                                                     min="1"
                                                     oninput="this.value = this.value.replace(/[^0-9]/g, '');"
                                                     value="1">
+                                                @error('width')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="height">Height : </label>
@@ -351,6 +381,9 @@
                                                     min="1"
                                                     oninput="this.value = this.value.replace(/[^0-9]/g, '');"
                                                     value="1">
+                                                @error('height')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="depth">Depth : </label>
@@ -359,6 +392,9 @@
                                                     min="1"
                                                     oninput="this.value = this.value.replace(/[^0-9]/g, '');"
                                                     value="1">
+                                                @error('depth')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="register_location">Register Location :</label>
@@ -366,6 +402,9 @@
                                                     class="form-control">
                                                     <option value=""> --- Pilih Register Location ---- </option>
                                                 </select>
+                                                @error('register_location')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="layout">Layout : </label>
@@ -373,6 +412,9 @@
                                                     <option value="" selected disabled> --- Pilih Layout ---
                                                     </option>
                                                 </select>
+                                                @error('layout')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="asset_model">Condition : </label>
@@ -380,12 +422,18 @@
                                                     <option value="" selected disabled> --- Pilih Condition
                                                         Barang ---</option>
                                                 </select>
+                                                @error('condition')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="register_date">Register Date : </label>
                                                 <input type="date" name="register_date" id="register_date"
                                                     class="form-control" placeholder="Masukkan Register Date"
                                                     required>
+                                                @error('register_date')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="supplier">Supplier : </label>
@@ -393,18 +441,27 @@
                                                     <option value="" selected disabled> --- Pilih Supplier ---
                                                     </option>
                                                 </select>
+                                                @error('supplier')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="purchase_number">Purchase Number : </label>
-                                                <input type="text" name="purchase_number" id="purchase_number"
+                                                <input value="{{ old('purchase_number') }}" type="text" name="purchase_number" id="purchase_number"
                                                     class="form-control" placeholder="Masukkan Purchase Number"
                                                     required>
+                                                @error('purchase_number')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="purchase_date">Purchase Date : </label>
                                                 <input type="date" name="purchase_date" id="purchase_date"
                                                     class="form-control" placeholder="Masukkan Purchase Date"
                                                     required>
+                                                @error('purchase_date')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <input type="hidden" name="approve_status" id="approve_status"
                                                 class="form-control">
@@ -413,6 +470,9 @@
                                                 <select name="warranty" id="warranty" class="form-control">
                                                     <option value=""> --- PILIH WARRANTY ---- </option>
                                                 </select>
+                                                @error('warranty')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-6 mb-3">
                                                 <label for="periodic_maintenance">Periodic Maintenance : </label>
@@ -421,6 +481,9 @@
                                                     <option value="" selected disabled> --- Pilih Periodic
                                                         Maintenance ---</option>
                                                 </select>
+                                                @error('periodic_maintenance')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-sm-12 text-right mt-3">
                                                 <button type="submit" class="btn btn-primary">Submit</button>

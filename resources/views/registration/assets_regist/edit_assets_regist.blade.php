@@ -339,7 +339,7 @@
                                     <input type="number" name="qty" id="qty" class="form-control"
                                         placeholder="Masukkan Quantity" required min="1"
                                         oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-                                        value="{{ $asset->qty }}" />
+                                        value="{{ $asset->qty }}" readonly/>
                                 </div>
 
                                 <!-- Satuan -->
@@ -383,9 +383,12 @@
                                 <div class="col-sm-6 mb-3">
                                     <label for="register_location">Register Location :</label>
                                     <select name="register_location" id="register_location" class="form-control">
-                                        <option value="{{ $asset->master_resto_id }}" selected>
-                                            {{ $asset->name_store_street }}
-                                        </option>
+                                        @foreach ($restos as $resto)
+                                            <option value="{{ $resto->id }}"
+                                                @if (old('register_location', $asset->master_resto_id) == $resto->id) selected @endif>
+                                                {{ $resto->name_store_street }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </div>
 

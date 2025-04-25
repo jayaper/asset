@@ -43,8 +43,6 @@ class MasterUser extends Authenticatable
 
     protected $fillable = [
 
-        'id',
-
         'username',
 
         'password',

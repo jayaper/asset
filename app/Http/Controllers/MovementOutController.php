@@ -1523,7 +1523,7 @@ foreach ($request->input('asset_id') as $index => $assetId) {
     return response()->json($locations);
 }
 
-public function getAjaxDataAssets() {
+public function getAjaxDataAssets($lokasi_user) {
 
 
     $assets = DB::table('table_registrasi_asset')
@@ -1561,7 +1561,8 @@ public function getAjaxDataAssets() {
         ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
         ->leftJoin('m_warranty', 'table_registrasi_asset.warranty', '=', 'm_warranty.warranty_id')
         ->leftJoin('m_periodic_mtc', 'table_registrasi_asset.periodic_maintenance', '=', 'm_periodic_mtc.periodic_mtc_id')
-        ->where('table_registrasi_asset.qty', '>', 0) 
+        ->where('table_registrasi_asset.qty', '>', 0)
+        ->where('table_registrasi_asset.location_now', '=', $lokasi_user)
         ->get();
     
         return response()->json($assets);
@@ -1656,7 +1657,7 @@ public function searchRegisterAsset(Request $request)
     }
 
 
-    public function ajaxGetDataRegistAsset(Request $request)
+    public function ajaxGetDataRegistAsset(Request $request, $lokasi_user)
     {
         $loc_user = $request->input('user_loc');
         $assets =  DB::table('table_registrasi_asset')
@@ -1707,6 +1708,7 @@ public function searchRegisterAsset(Request $request)
             return $query->where('table_registrasi_asset.register_location', $loc_user);
         })
         ->where('table_registrasi_asset.qty', '>', 0)
+        ->where('table_registrasi_asset.location_now', '=', $lokasi_user)
         ->get();
         $data = [];
         foreach ($assets as $asset) {

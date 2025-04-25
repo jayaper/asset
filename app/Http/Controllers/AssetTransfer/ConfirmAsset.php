@@ -19,7 +19,6 @@ class ConfirmAsset extends Controller
         $conditions = DB::table('m_condition')->select('condition_id', 'condition_name')->get();
     
         $user = Auth::user();
-        $roles = $user->getRoleNames();
         $lokasi_user = auth()->user()->location_now;
 
         $query = DB::table('t_out')
@@ -40,14 +39,14 @@ class ConfirmAsset extends Controller
             ->where('t_out.appr_1', '=', '2')
             ->where('t_out.appr_2', '=', '2')
             ->where('t_out.appr_3', '=', '2');
-            foreach ($roles as $role) {
-                if($role == "SM"){
-                    $query->where('t_out.dest_loc', $lokasi_user);
-                }
+            if (!$user->hasRole('Admin')) {
+                // Logika untuk role SM
+                $query->where('t_out.from_loc', $lokasi_user)->orWhere('t_out.dest_loc', $lokasi_user);
             }
         $moveins = $query->paginate(10);
     
         return view("asset_transfer.confirm", [
+            'user' => $user,
             'reasons' => $reasons,
             'assets' => $assets,
             'conditions' => $conditions,

@@ -264,7 +264,7 @@
                                             <div class="form-group">
                                                 <label for="data_excel">Import Data Excel:</label>
                                                 <input type="file" name="file" class="form-control"
-                                                    placeholder="Upload File Excel" required accept=".xlsx,.xls">
+                                                    placeholder="Upload File Excel" required accept=".xlsx,.xls,.csv">
                                             </div>
                                     </div>
                                     <div class="modal-footer">
@@ -304,13 +304,15 @@
                                             <tr>
                                                 <th style="width: 10px;">Asset Tag</th>
                                                 <th>Asset Name</th>
+                                                <th>Register Location</th>
+                                                <th>Location Now</th>
+                                                <th>Qty</th>
                                                 <th>Serial Number</th>
                                                 <th>Type Asset</th>
                                                 <th>Category Asset</th>
                                                 <th>Priority</th>
                                                 <th>Merk</th>
                                                 <th>Satuan</th>
-                                                <th>Register Location</th>
                                                 <th>Layout</th>
                                                 <th>Register Date</th>
                                                 <th>Supplier</th>
@@ -435,6 +437,15 @@
                     "data": "asset_model"
                 },
                 {
+                    "data": "name_store_street"
+                },
+                {
+                    "data": "location_now"
+                },
+                {
+                    "data": "qty"
+                },
+                {
                     "data": "serial_number"
                 },
                 {
@@ -465,9 +476,6 @@
                 },
                 {
                     "data": "uom_name"
-                },
-                {
-                    "data": "name_store_street"
                 },
                 {
                     "data": "layout_name"
@@ -517,10 +525,10 @@
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton${row.id}">
                                 <a class="dropdown-item" href="/registration/generate-pdf/${row.register_code}" target="_blank">Cetak QR Code</a>
                                 <a class="dropdown-item" href="/registration/tracking-asset-registration/${row.register_code}">Tracking History</a>
-                                <a class="dropdown-item" href="/registration/detail_data_registrasi_asset/${row.id}" target="_blank">Detail Barang Asset</a>
+                                <a class="dropdown-item" href="/registration/detail_data_registrasi_asset/${row.register_code}" target="_blank">Detail Barang Asset</a>
 
                                 @can('btn action edit registration')
-                                    <a class="dropdown-item" href="/registration/edit-assets-registration/${row.id}">Update</a>
+                                    <a class="dropdown-item" href="/registration/edit-assets-registration/${row.register_code}">Update</a>
                                 @endcan
 
                                 @can('btn action delete registration')

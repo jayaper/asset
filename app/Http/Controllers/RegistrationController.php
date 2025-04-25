@@ -81,6 +81,7 @@ class RegistrationController extends Controller
                 'table_registrasi_asset.purchase_date',
                 'table_registrasi_asset.approve_status',
                 'table_registrasi_asset.serial_number',
+                DB::raw('COALESCE(table_registrasi_asset.qty, 0) as qty'),
                 'm_assets.asset_model',
                 'm_type.type_name',
                 'm_category.cat_name',
@@ -88,6 +89,7 @@ class RegistrationController extends Controller
                 'm_brand.brand_name',
                 'm_uom.uom_name',
                 'master_resto_v2.name_store_street',
+                'restoo.name_store_street as location_now',
                 'm_layout.layout_name',
                 'm_supplier.supplier_name',
                 'm_condition.condition_name',
@@ -102,6 +104,7 @@ class RegistrationController extends Controller
             ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
             ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
             ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+            ->leftJoin('master_resto_v2 as restoo', 'table_registrasi_asset.location_now', '=', 'restoo.id')
             ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
             ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
             ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -321,58 +324,37 @@ class RegistrationController extends Controller
     {
 
         // Validate the request data
-
+        // dd($request->all());
+    try{
         $validatedData = $request->validate([
-
             'register_code' => 'required|string|max:255',
-
             'asset_name' => 'required|string|max:255',
-
             'serial_number' => 'required|string',
-
             'type_asset' => 'required|string|max:255',
-
             'category_asset' => 'required|string|max:255',
-
             'prioritas' => 'required|string|max:255',
-
             'merk' => 'required|string|max:255',
-
             'qty' => 'required',
-
             'satuan' => 'required|string|max:255',
-
-
-            'register_location' => 'required|string|max:255',
-
+            'register_location' => 'required|string|max:255|exists:master_resto_v2,id',
             'layout' => 'required|string|max:255',
-
             'register_date' => 'required',
-
             'supplier' => 'required|string|max:255',
-
             'condition' => 'required|string|max:255',
-
             'purchase_number' => 'required|string|max:255',
-
             'purchase_date' => 'required',
-
             'warranty' => 'required',
-
             'periodic_maintenance' => 'required',
-
             'approve_status' => 'nullable|string|max:255',
-
             'width' => 'nullable|int',
-
             'height' => 'nullable|int',
-
             'depth' => 'nullable|int',
-
-            'location_now' => 'nullable|string|max:255',
-
-
         ]);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return redirect()->back()
+        ->withErrors($e->validator)
+        ->withInput();              
+    }
 
 
 
@@ -444,6 +426,7 @@ class RegistrationController extends Controller
 
         if ($qrImage === false) {
 
+            dd('gagal');
             return response()->json(['status' => 'error', 'message' => 'Failed to create image from QR code.'], 500);
         }
 
@@ -735,6 +718,8 @@ class RegistrationController extends Controller
 
     public function EditAssetsRegist($id)
     {
+        $restos = DB::table('master_resto_v2')->get();
+
         $asset = DB::table('table_registrasi_asset')
             ->select(
                 'table_registrasi_asset.*',
@@ -774,7 +759,7 @@ class RegistrationController extends Controller
             ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
             ->leftJoin('m_warranty', 'table_registrasi_asset.warranty', '=', 'm_warranty.warranty_id')
             ->leftJoin('m_periodic_mtc', 'table_registrasi_asset.periodic_maintenance', '=', 'm_periodic_mtc.periodic_mtc_id')
-            ->where('table_registrasi_asset.id', $id)
+            ->where('table_registrasi_asset.register_code', $id)
             ->first();
 
         // $asset = MasterRegistrasiModel::findOrFail($id); // This will return null if not found
@@ -783,7 +768,7 @@ class RegistrationController extends Controller
             return redirect()->back()->with('error', 'Asset not found.');
         }
 
-        return view('registration.assets_regist.edit_assets_regist', compact('asset'));
+        return view('registration.assets_regist.edit_assets_regist', compact('asset', 'restos'));
     }
 
 
@@ -815,7 +800,9 @@ class RegistrationController extends Controller
         $asset = MasterRegistrasiModel::findOrFail($id);
 
         // Update the asset data
+        
         $updateData = $request->all();
+        $updateData['location_now'] = $request->input('register_location');
         $asset->update($updateData);
 
         // Generate the new QR code URL
@@ -1144,6 +1131,7 @@ class RegistrationController extends Controller
                         'periodic_maintenance' => $periodicMaintenanceDataId,
                         'qty' => $quantityAsset,
                         'register_location' => $masterRestoDataId,
+                        'location_now' => $masterRestoDataId,
                         'register_date' => $registerDateAsset,
                         'condition' => $conditionDataId,
                         'purchase_number' => $purchaseNumberAsset,
@@ -1536,7 +1524,7 @@ class RegistrationController extends Controller
                 ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
                 ->leftJoin('m_warranty', 'table_registrasi_asset.warranty', '=', 'm_warranty.warranty_id')
                 ->leftJoin('m_periodic_mtc', 'table_registrasi_asset.periodic_maintenance', '=', 'm_periodic_mtc.periodic_mtc_id')
-                ->where('table_registrasi_asset.id', $id)
+                ->where('table_registrasi_asset.register_code', $id)
                 ->first();
 
             // $asset = MasterRegistrasiModel::findOrFail($id);

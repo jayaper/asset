@@ -352,6 +352,7 @@
             @include('layouts.sidebar')
             <!-- Page Sidebar Ends-->
             <div class="page-body">
+                <div class="card p-5">
                 <!-- Container-fluid starts-->
                 <br>
                 <h3><b>Edit Data Asset Movement</b></h3>
@@ -391,18 +392,19 @@
                 <div class="container-fluid">
                     <div class="section">
                         <div class="form-group">
-                            <form action="{{ url('/asset-transfer/request-moveout/update', $moveOutAssets->out_id) }}" method="POST">
+                            <form action="{{ url('/asset-transfer/request-moveout/update', $moveOutAssets->out_id) }}"
+                                method="POST">
                                 @csrf
                                 @method('PUT')
                                 <div class="row">
                                     <input type="hidden" id="out_id" value="{{ $moveOutAssets->out_id }}">
                                     <!-- <input type="hidden" id="out_det_id" value="{{ $moveOutAssets->out_det_id }}"> -->
-                                    <div class="col-sm-12">
+                                    <div class="col-sm-12 pb-2">
                                         <label for="out_date">Tanggal Movement Out:</label>
                                         <input type="date" name="out_date" id="out_date" class="form-control"
                                             value="{{ $moveOutAssets->out_date }}" required>
                                     </div>
-                                    <div class="col-sm-12">
+                                    <div class="col-sm-12 pb-3">
                                         <label for="from_loc">Lokasi Asal:</label>
                                         <!-- Visible input for name_store_street -->
                                         <input type="text" id="from_loc" class="form-control" readonly>
@@ -410,7 +412,7 @@
                                         <input type="hidden" id="from_loc_id" name="from_loc_id">
                                     </div>
 
-                                    <div class="col-sm-12">
+                                    <div class="col-sm-12 pb-3">
                                         <label for="dest_loc">Lokasi Tujuan:</label>
                                         <select name="dest_loc" id="dest_loc" class="form-control" required>
                                             <option value="{{ $moveOutAssets->dest_loc }}">
@@ -420,12 +422,12 @@
 
 
 
-                                    <div class="col-sm-12">
+                                    <div class="col-sm-12 pb-3">
                                         <label for="out_desc">Deskripsi Movement Out:</label>
                                         <input type="text" name="out_desc" id="out_desc" class="form-control"
                                             value="{{ $moveOutAssets->out_desc }}" required>
                                     </div>
-                                    <div class="col-sm-12">
+                                    <div class="col-sm-12 pb-3">
                                         <label for="reason_id">Alasan Movement Out:</label>
                                         <select name="reason_id" id="reason_id" class="form-control" required>
                                             @foreach ($reasons as $reason)
@@ -455,7 +457,7 @@
                                                 </div>
                                                 <div class="col-sm-4">
                                                     <label for="merk">Merk:</label>
-                                                    <input type="text" name="merk_display[]" readonly>
+                                                    <input type="text" name="merk_display[]" class="form-control" readonly>
                                                     <input type="hidden" name="merk[]">
                                                 </div>
                                                 <div class="col-sm-4">
@@ -465,7 +467,7 @@
                                                 </div>
                                                 <div class="col-sm-3">
                                                     <label for="satuan">Satuan:</label>
-                                                    <input type="text" name="satuan_display[]" readonly>
+                                                    <input type="text" name="satuan_display[]" class="form-control" readonly>
                                                     <input type="hidden" name="satuan[]">
                                                 </div>
                                                 <div class="col-sm-3">
@@ -519,6 +521,7 @@
                         </form>
                     </div>
                 </div>
+            </div>
             </div>
             <!-- Container-fluid Ends-->
 
