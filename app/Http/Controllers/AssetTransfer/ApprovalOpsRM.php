@@ -24,15 +24,20 @@ class ApprovalOpsRM extends Controller
         ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
         ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
         ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id') 
-        ->select('t_out.*', 't_out_detail.*', 'm_reason.reason_name', 'mc_approval.approval_name', 
+        ->select('t_out.*', 
+        DB::RAW('SUM(t_out_detail.qty) as qty'), 
+                'm_reason.reason_name', 
+                'mc_approval.approval_name', 
                 'fromResto.name_store_street as from_location', 
                 'toResto.name_store_street as dest_location',
         )
-        ->whereIn('appr_1', ['1', '2', '3', '4']);
+        ->whereIn('appr_1', ['1', '2', '3', '4'])
+        ->groupBy('t_out.out_id', 'm_reason.reason_name', 'mc_approval.approval_name', 'from_location', 'dest_location');
 
         if (!$user->hasRole('Admin')) {
-            $moveouts->where('t_out.from_loc', $from_loc)
-            ->orWhere('t_out.dest_loc', $from_loc);
+            $moveouts->where(function($q) use ($from_loc){
+                $q->where('t_out.from_loc', $from_loc);
+            });
         }
 
         $moveouts = $moveouts->orderBy('t_out.created_at', 'desc')->paginate(10);
@@ -61,8 +66,11 @@ class ApprovalOpsRM extends Controller
         $moveout->appr_2_user = auth()->user()->username;
 
         if ($request->appr_2 == '2') {
+
             $moveout->appr_3 = '1'; 
+
         } elseif ($request->appr_2 == '4') {
+
             $moveout->is_confirm = '4';
     
             DB::table('t_out_detail')
@@ -75,23 +83,26 @@ class ApprovalOpsRM extends Controller
             ->get();
 
         foreach ($details as $detail) {
-            if (!isset($detail->id)) {
-                continue;
-            }
-
             // Reduce qty and store in qty_final
             $newQty = max(0, $detail->qty - 1);
             DB::table('t_out_detail')
-                ->where('id', $detail->id)
+                ->where('out_id', $detail->out_id)
                 ->update([
                     'qty' => $newQty,
-                    'qty_final' => $detail->qty,
                 ]);
 
             // Increment qty in table_registrasi_asset
-            DB::table('table_registrasi_asset')
-                ->where('id', $detail->asset_id)
-                ->increment('qty', 1);
+            $t_regist = DB::table('table_registrasi_asset')
+                ->where('register_code', $detail->asset_tag)->get();
+
+            foreach($t_regist as $table){
+                DB::table('table_registrasi_asset')->where('register_code', $table->register_code)
+                ->update([
+                    'location_now' => $moveout->from_loc,
+                    'qty' => 1
+                ]);
+            }
+            
         }
 
         // Update t_transaction_qty

@@ -130,55 +130,67 @@ class RequestMoveout extends Controller
             ->get();
 
 
-        $moveoutsQuery = DB::table('t_out')
-            ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
-            ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-            ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-            ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id')
-            ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')
-            ->where('t_out.is_active', 1);
+            $moveoutsQuery = DB::table('t_out');
 
-        if ($request->filled('is_confirm') && $request->input('is_confirm') == 2) {
-            $moveoutsQuery = DB::table('t_out')
-                ->select(
-                    't_out.out_id',
-                    't_out_detail.qty',
-                    't_out.dest_loc',
-                    't_out.is_confirm',
-                    'master_resto_v2.name_store_street',
-                    'm_user.role',
-                    'm_user.location_now',
-                    't_in.from_location'
-                )
-                ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
-                ->join('m_user', 't_out.dest_loc', '=', 'm_user.location_now')
-                ->join('master_resto_v2', 't_out.dest_loc', '=', 'm_user.location_now')
-                ->join('t_in', 't_out.in_id', '=', 't_in.in_id')
-                ->where('m_user.location_now', $fromLoc)
-                ->where('m_user.role', 'am')
-                ->where('t_out.is_confirm', 3);
-        } else {
-            $moveoutsQuery->select(
-                't_out.*',
-                't_out_detail.*',
-                'm_reason.reason_name',
-                'mc_approval.approval_name',
-                'fromResto.name_store_street as from_location',
-                'toResto.name_store_street as dest_location'
-            );
-        }
-
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $startDate = $request->input('start_date') . ' 00:00:00'; // start of the day
-            $endDate = $request->input('end_date') . ' 23:59:59'; // end of the day
-            $moveoutsQuery->whereBetween('t_out.out_date', [$startDate, $endDate]);
-        }
-
-        $user = Auth::User();
-        if($user->hasRole('SM')){
-            $moveoutsQuery->where('from_loc', $user->location_now);
-        }
-        $moveouts = $moveoutsQuery->paginate(10);
+            // Cek jika request is_confirm == 2
+            if ($request->filled('is_confirm') && $request->input('is_confirm') == 2) {
+                $moveoutsQuery->select(
+                        't_out.out_id',
+                        't_out_detail.qty',
+                        't_out.dest_loc',
+                        't_out.is_confirm',
+                        'master_resto_v2.name_store_street',
+                        'm_user.role',
+                        'm_user.location_now',
+                        't_in.from_location'
+                    )
+                    ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
+                    ->join('m_user', 't_out.dest_loc', '=', 'm_user.location_now')
+                    ->join('master_resto_v2', 't_out.dest_loc', '=', 'm_user.location_now')
+                    ->join('t_in', 't_out.in_id', '=', 't_in.in_id')
+                    ->where([
+                        ['m_user.location_now', '=', $fromLoc],
+                        ['m_user.role', '=', 'am'],
+                        ['t_out.is_confirm', '=', 3],
+                        ['t_out.is_active', '=', 1],
+                    ])
+                    ->orderBy('t_out_detail.out_id')->distinc();
+            } else {
+                $moveoutsQuery->select(
+                        't_out.*',
+                        DB::raw('SUM(t_out_detail.qty) as qty'),
+                        'm_reason.reason_name',
+                        'mc_approval.approval_name',
+                        'fromResto.name_store_street as from_location',
+                        'toResto.name_store_street as dest_location'
+                    )
+                    ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
+                    ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
+                    ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
+                    ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id')
+                    ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')
+                    ->where('t_out.is_active', 1)
+                    ->groupBy('t_out_detail.out_id', 'm_reason.reason_name', 'mc_approval.approval_name', 'from_location', 'dest_location')
+                    ->orderBy('t_out.out_id', 'DESC');
+            }
+            
+            // Filter tanggal jika ada
+            if ($request->filled('start_date') && $request->filled('end_date')) {
+                $moveoutsQuery->whereBetween('t_out.out_date', [
+                    $request->input('start_date') . ' 00:00:00',
+                    $request->input('end_date') . ' 23:59:59'
+                ]);
+            }
+            
+            // Filter lokasi berdasarkan role user
+            if (Auth::user()->hasRole('SM')){
+                $moveoutsQuery->where(function($q){
+                    $q->where('from_loc', Auth::user()->location_now);
+                });
+            }
+            
+            // Ambil data paginated
+            $moveouts = $moveoutsQuery->paginate(10);
 
         // dd($fromLoc);
 
@@ -1446,7 +1458,7 @@ class RequestMoveout extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'MoveOut and related details deactivated successfully.',
-                'redirect_url' => route('Admin.moveout')
+                'redirect_url' => '/asset-transfer/request-moveout'
             ]);
         } else {
             return response()->json(['status' => 'error', 'message' => 'Data MoveOut not found.'], 404);
@@ -1992,7 +2004,7 @@ class RequestMoveout extends Controller
 
             DB::commit();
 
-            return redirect()->to('/admin/moveout')->with('success', 'Move out updated successfully');
+            return redirect()->to('/asset-transfer/request-moveout')->with('success', 'Move out updated successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors('Failed to update move out: ' . $e->getMessage());

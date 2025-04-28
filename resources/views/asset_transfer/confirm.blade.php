@@ -928,6 +928,8 @@
 
                                     <th>Lokasi Tujuan</th>
 
+                                    <th>Quantity</th>
+
                                     <!-- <th>ID Movement In</th> -->
 
                                     <th>Deskripsi</th>
@@ -956,6 +958,8 @@
 
                                         <td>{{ $movein->destination_location }}</td>
 
+                                        <td>{{ $movein->qty }}</td>
+
                                         <td>{{ $movein->out_desc }}</td>
 
                                         <td>{{ $movein->reason_name }}</td>
@@ -964,7 +968,7 @@
 
                                         <td class="text-center">
 
-                                        @if ($user->location_now == $movein->dest_loc && $movein->is_confirm !== 3)
+                                        @if ($user->location_now == $movein->dest_loc && $movein->is_confirm !== 3 && $movein->is_confirm !== 4)
                                           @can("btn at action confirm")
                                               <a href="javascript:void(0);" class="edit-button" 
                                               data-id="{{ $movein->out_id }}" 

@@ -11,36 +11,50 @@ class ReviewAssetTransfer extends Controller
 {
     public function head() 
     {
-        $user = Auth::User();
-        
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
         $assets = DB::table('table_registrasi_asset')->select('id', 'asset_name')->get();
         $conditions = DB::table('m_condition')->select('condition_id', 'condition_name')->get();
-        $delivery = DB::table('t_transit')->select('transit_id')->get();
-        $moveins = DB::table('t_out')
-        ->leftjoin('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->leftjoin('t_in', 't_out.out_id', '=', 't_in.out_id')
-        ->leftjoin('mc_approval', 't_in.is_confirm', '=', 'mc_approval.approval_id')
-        ->leftjoin('t_in_detail', 't_in_detail.in_id', '=', 't_in.in_id')
-        ->leftjoin('t_transit', 't_in_detail.in_det_id', '=', 't_transit.in_det_id')
-        ->select('t_out.*', 't_in.*', 't_in_detail.*', 't_transit.*', 'm_reason.reason_name', 'mc_approval.approval_name', 't_in.is_confirm')
-        ->where('t_out.appr_3', '=', '2');
+    
+        $user = Auth::user();
+        $lokasi_user = auth()->user()->location_now;
 
-        if(!$user->hasRole('Admin')){
-            $moveins->where('from_loc', $user->location_now);
-        }
-        $moveins = $moveins->paginate(10);
-
+        $query = DB::table('t_out')
+            ->select(
+                't_out.*',
+                DB::RAW('SUM(t_out_detail.qty) as qty'),
+                'm_reason.reason_name',
+                'mc_approval.approval_name',
+                'fromResto.name_store_street AS from_location',
+                'toResto.name_store_street AS destination_location'
+            )
+            ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
+            ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
+            ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
+            ->join('master_resto_v2 AS fromResto', 't_out.from_loc', '=', 'fromResto.id')
+            ->join('master_resto_v2 AS toResto', 't_out.dest_loc', '=', 'toResto.id')
+            ->where('t_out.appr_1', '=', '2')
+            ->where('t_out.appr_2', '=', '2')
+            ->where('t_out.appr_3', '=', '2')
+            ->groupBy('t_out.out_id', 'm_reason.reason_name', 'mc_approval.approval_name', 'from_location', 'destination_location');
+            if (!$user->hasRole('Admin')) {
+                $query->where(function($q) use ($lokasi_user) {
+                    $q->where('t_out.from_loc', $lokasi_user)
+                      ->orWhere('t_out.dest_loc', $lokasi_user);
+                });
+            }
+        $moveins = $query->paginate(10);
+    
         return view("asset_transfer.rev-head", [
+            'user' => $user,
             'reasons' => $reasons,
             'assets' => $assets,
             'conditions' => $conditions,
             'approvals' => $approvals,
             'moveins' => $moveins,
-            'delivery' => $delivery
         ]);
     }
+    
     public function mnr() 
     {
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();

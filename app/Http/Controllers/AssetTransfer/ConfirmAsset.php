@@ -22,26 +22,28 @@ class ConfirmAsset extends Controller
         $lokasi_user = auth()->user()->location_now;
 
         $query = DB::table('t_out')
-            ->distinct()
             ->select(
                 't_out.*',
-                't_out_detail.*',
+                DB::RAW('SUM(t_out_detail.qty) as qty'),
                 'm_reason.reason_name',
                 'mc_approval.approval_name',
                 'fromResto.name_store_street AS from_location',
                 'toResto.name_store_street AS destination_location'
             )
             ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
-            ->join('m_reason', DB::raw('t_out.reason_id COLLATE utf8mb4_unicode_ci'), '=', DB::raw('m_reason.reason_id COLLATE utf8mb4_unicode_ci'))
-            ->join('mc_approval', DB::raw('t_out.is_confirm COLLATE utf8mb4_unicode_ci'), '=', DB::raw('mc_approval.approval_id COLLATE utf8mb4_unicode_ci'))
-            ->join('master_resto_v2 AS fromResto', DB::raw('t_out.from_loc COLLATE utf8mb4_unicode_ci'), '=', DB::raw('fromResto.id COLLATE utf8mb4_unicode_ci'))
-            ->join('master_resto_v2 AS toResto', DB::raw('t_out.dest_loc COLLATE utf8mb4_unicode_ci'), '=', DB::raw('toResto.id COLLATE utf8mb4_unicode_ci'))
+            ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
+            ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
+            ->join('master_resto_v2 AS fromResto', 't_out.from_loc', '=', 'fromResto.id')
+            ->join('master_resto_v2 AS toResto', 't_out.dest_loc', '=', 'toResto.id')
             ->where('t_out.appr_1', '=', '2')
             ->where('t_out.appr_2', '=', '2')
-            ->where('t_out.appr_3', '=', '2');
+            ->where('t_out.appr_3', '=', '2')
+            ->groupBy('t_out.out_id', 'm_reason.reason_name', 'mc_approval.approval_name', 'from_location', 'destination_location');
             if (!$user->hasRole('Admin')) {
-                // Logika untuk role SM
-                $query->where('t_out.from_loc', $lokasi_user)->orWhere('t_out.dest_loc', $lokasi_user);
+                $query->where(function($q) use ($lokasi_user) {
+                    $q->where('t_out.from_loc', $lokasi_user)
+                      ->orWhere('t_out.dest_loc', $lokasi_user);
+                });
             }
         $moveins = $query->paginate(10);
     
@@ -54,10 +56,11 @@ class ConfirmAsset extends Controller
             'moveins' => $moveins,
         ]);
     }
+    
     public function updateDataConfirm(Request $request, $id)
     {
         $request->validate([
-            'is_confirm' => 'required|in:1,2,3',
+            'is_confirm' => 'required|in:3,4',
         ]);
 
         $moveout = MasterMoveOut::find($id);
@@ -92,6 +95,53 @@ class ConfirmAsset extends Controller
                     'register_code' => $detail->asset_tag,
                     'out_id' => $id,
                 ]);
+            }
+        }else if($request->is_confirm == 4){
+
+            $moveout->is_confirm = '4';
+            $moveout->in_id = null;
+
+            DB::table('t_out_detail')
+                ->where('out_id', $id)
+                ->update(['status' => 4]);
+
+            $details = DB::table('t_out_detail')
+                ->where('out_id', $id)
+                ->get();
+
+            foreach ($details as $detail) {
+
+                $newQty = max(0, $detail->qty - 1);
+                DB::table('t_out_detail')
+                    ->where('out_id', $detail->out_id)
+                    ->update([
+                        'qty' => $newQty,
+                    ]);
+
+                $t_regist = DB::table('table_registrasi_asset')
+                    ->where('register_code', $detail->asset_tag)->get();
+    
+                foreach($t_regist as $table){
+                    DB::table('table_registrasi_asset')->where('register_code', $table->register_code)
+                    ->update([
+                        'location_now' => $moveout->from_loc,
+                        'qty' => 1
+                    ]);
+                }
+            }
+
+            $transactions = DB::table('t_transaction_qty')
+                ->where('out_id', $id)
+                ->get();
+
+            foreach ($transactions as $transaction) {
+                DB::table('t_transaction_qty')
+                    ->where('id', $transaction->id)
+                    ->update([
+                        'qty' => $transaction->qty_continue,
+                        'qty_continue' => 0,
+                        'qty_disposal' => 0
+                    ]);
             }
         }
 
