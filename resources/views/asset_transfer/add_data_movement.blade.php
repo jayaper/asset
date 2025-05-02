@@ -455,7 +455,7 @@
 
                                 <!-- Search Data Button -->
                                 <div class="mb-4">
-                                    <button class="btn btn-primary" type="button" data-toggle="modal"
+                                    <button id="btn-search" class="btn btn-primary" type="button" data-toggle="modal"
                                         data-target="#searchRegistData">
                                         <i class="fa fa-search"></i> Search Data
                                     </button>
@@ -522,7 +522,7 @@
 
                                 <!-- Submit Buttons -->
                                 <div class="text-right">
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="window.location.reload()">Refresh</button>
                                     <button type="submit" id="submit-btn" class="btn btn-primary">Submit</button>
                                 </div>
                             </form>
@@ -719,6 +719,8 @@
 
             // Handle asset selection change
             $(document).on('change', '.asset-select', function() {
+                const btnSearch = $("#btn-search");
+                btnSearch.prop('disabled', true);
                 const assetId = $(this).val();
                 const $parent = $(this).closest('.asset-fields');
 

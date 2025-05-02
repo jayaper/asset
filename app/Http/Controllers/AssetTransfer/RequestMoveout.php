@@ -130,7 +130,7 @@ class RequestMoveout extends Controller
             ->get();
 
 
-            $moveoutsQuery = DB::table('t_out');
+        $moveoutsQuery = DB::table('t_out');
 
             // Cek jika request is_confirm == 2
             if ($request->filled('is_confirm') && $request->input('is_confirm') == 2) {
@@ -146,7 +146,7 @@ class RequestMoveout extends Controller
                     )
                     ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
                     ->join('m_user', 't_out.dest_loc', '=', 'm_user.location_now')
-                    ->join('master_resto_v2', 't_out.dest_loc', '=', 'm_user.location_now')
+                    ->join('master_resto_v2', 't_out.dest_loc', '=', 'master_resto_v2.id')
                     ->join('t_in', 't_out.in_id', '=', 't_in.in_id')
                     ->where([
                         ['m_user.location_now', '=', $fromLoc],
@@ -154,24 +154,35 @@ class RequestMoveout extends Controller
                         ['t_out.is_confirm', '=', 3],
                         ['t_out.is_active', '=', 1],
                     ])
-                    ->orderBy('t_out_detail.out_id')->distinc();
+                    ->orderBy('t_out_detail.out_id')->distinct();
             } else {
-                $moveoutsQuery->select(
-                        't_out.*',
-                        DB::raw('SUM(t_out_detail.qty) as qty'),
-                        'm_reason.reason_name',
-                        'mc_approval.approval_name',
-                        'fromResto.name_store_street as from_location',
-                        'toResto.name_store_street as dest_location'
+                $moveoutsQuery = DB::table('t_out as a')
+                    ->select(
+                        'a.*',
+                        'b.qty',
+                        'c.reason_name',
+                        'd.approval_name',
+                        'e.name_store_street as from_location',
+                        'f.name_store_street as dest_location',
+                        'b.total_qr as total_qr'
                     )
-                    ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
-                    ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-                    ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-                    ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id')
-                    ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')
-                    ->where('t_out.is_active', 1)
-                    ->groupBy('t_out_detail.out_id', 'm_reason.reason_name', 'mc_approval.approval_name', 'from_location', 'dest_location')
-                    ->orderBy('t_out.out_id', 'DESC');
+                    ->leftJoin(DB::raw('(
+                        SELECT 
+                            b.out_id, 
+                            SUM(b.qty) AS qty,
+                            count(c.qr_code_path) as total_qr
+                        FROM t_out_detail AS b
+                        LEFT JOIN table_registrasi_asset AS c ON c.register_code = b.asset_tag
+                        GROUP BY b.out_id
+                    ) as b'), 'b.out_id', '=', 'a.out_id')
+                    ->leftJoin('m_reason as c', 'c.reason_id', '=', 'a.reason_id')
+                    ->leftJoin('mc_approval as d', 'd.approval_id', '=', 'a.is_confirm')
+                    ->leftJoin('master_resto_v2 as e', 'e.id', '=', 'a.from_loc')
+                    ->leftJoin('master_resto_v2 as f', 'f.id', '=', 'a.dest_loc')
+                    ->where('a.is_active', 1)
+                    ->where('a.out_id', 'like', 'AM%')
+                    ->orderBy('a.out_id', 'DESC');
+                    // ->get();
             }
             
             // Filter tanggal jika ada
@@ -185,7 +196,7 @@ class RequestMoveout extends Controller
             // Filter lokasi berdasarkan role user
             if (Auth::user()->hasRole('SM')){
                 $moveoutsQuery->where(function($q){
-                    $q->where('from_loc', Auth::user()->location_now);
+                    $q->where('a.from_loc', Auth::user()->location_now);
                 });
             }
             
@@ -1789,6 +1800,8 @@ class RequestMoveout extends Controller
 
     public function editDataDetailMovement($id)
     {
+
+        $user = Auth::User();
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
         $conditions = DB::table('m_condition')->select('condition_id', 'condition_name')->get();
 
@@ -1858,7 +1871,7 @@ class RequestMoveout extends Controller
 
 
         // dd($assets);
-        return view('asset_transfer.edit_data_movement', compact('moveOutAssets', 'reasons', 'conditions', 'assets', 'selectConditionId'));
+        return view('asset_transfer.edit_data_movement', compact('moveOutAssets', 'reasons', 'conditions', 'assets', 'selectConditionId', 'user'));
     }
 
 

@@ -416,6 +416,7 @@
                                                     <th>No Disposal Out</th>
                                                     <th>Tanggal Disposal Out</th>
                                                     <th>Lokasi Asal</th>
+                                                    <th>Quantity</th>
                                                     <th>ID Movement In</th>
                                                     <th>Deskripsi</th>
                                                     <th>Alasan</th>
@@ -430,6 +431,7 @@
                                                         <td>{{ $moveout->out_no }}</td>
                                                         <td>{{ $moveout->out_date }}</td>
                                                         <td>{{ $moveout->from_location }}</td>
+                                                        <td>{{ $moveout->qty }}</td>
                                                         <td>{{ $moveout->in_id }}</td>
                                                         <td>{{ $moveout->out_desc }}</td>
                                                         <td>{{ $moveout->reason_name }}</td>

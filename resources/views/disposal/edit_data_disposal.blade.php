@@ -877,7 +877,7 @@
             processing: true,
             serverSide: false,
             ajax: {
-                url: '/api/ajaxGetDataRegistAsset',
+                url: '/api/ajaxGetDataRegistAsset/{{ $user->location_now }}',
                 type: 'GET'
             },
             columns: [{

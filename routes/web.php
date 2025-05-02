@@ -254,11 +254,12 @@ Route::middleware('auth')->group(function () {
     Route::controller(RequestDisposal::class)->group(function () {
         Route::get('/disposal/request-disposal', 'index')->middleware(['permission:view dis request disposal']);
         Route::get('/disposal/add-request-disposal', 'AddRequestDisposal')->middleware(['permission:view dis request disposal']);
-        Route::get('/disposal/add-request-disposal', 'AddRequestDisposal')->middleware(['permission:view dis request disposal']);
         Route::post('/disposal/add-request-disposal', 'AddDataDisOut')->middleware(['permission:view dis request disposal']);
         Route::get('/disposal/request-disposal/get_detail_data_disposal_out/{id}', 'detailPageDataDisposalOut')->middleware(['permission:view dis request disposal']);
         Route::get('/disposal/request-disposal/get_pdf/{id}', 'previewPDF')->middleware(['permission:view dis request disposal']);
         Route::get('/disposal/request-disposal/edit_data_disposal/{id}', 'editDetailDataDisout')->middleware(['permission:view dis request disposal']);
+        Route::get('/disposal/request-disposal/delete/{id}', 'deleteDataDisOut')->middleware(['permission:view dis request disposal']);
+        Route::get('/disposal/request-disposal/filter_data_disposal', 'filter')->middleware(['permission:view dis request disposal']);
 
         // Disposal
         Route::get('/admin/disout', [DisposalOutController::class, 'HalamanDisOut']);
@@ -282,7 +283,7 @@ Route::middleware('auth')->group(function () {
 
         Route::put('/admin/update_data_disposal_out/{outId}', [DisposalOutController::class, 'updateDataDisOut']);
 
-        Route::get('/api/get_data_disposal', [DisposalOutController::class, 'getAjaxDataDisposal']);
+        Route::get('/api/get_data_disposal/{lokasi}', [DisposalOutController::class, 'getAjaxDataDisposal']);
 
 
         Route::delete('/admin/disouts/delete/{id}', [DisposalOutController::class, 'deleteDataDisOut'])->name('delete.disout');
@@ -307,7 +308,7 @@ Route::middleware('auth')->group(function () {
     Route::controller(DisApprovalOpsSDG::class)->group(function () {
         Route::get('/disposal/approval-sdg-asset', 'index')->middleware(['permission:view dis approval ops sdg']);
         Route::put('/disposal/approval-sdg-asset/update/{id}', 'Update')->middleware(['permission:view dis approval ops sdg']);
-        Route::get('/disposal/approval-sdg-asset/detail/{id}', 'DetailApprovalSdg')->middleware(['permission:view dis approval ops rm']);
+        Route::get('/disposal/approval-sdg-asset/detail/{id}', 'DetailApprovalSdg')->middleware(['permission:view dis approval ops sdg']);
 
         Route::get('/admin/apprdis-sdgasset', [DisposalController::class, 'HalamanAmd3']);
          Route::get('/admin/apprdis-sdgasset', [DisposalController::class, 'HalamanAmd3'])->name('Admin.apprdis-sdgasset');
@@ -483,6 +484,41 @@ Route::middleware('auth')->group(function () {
     Route::controller(MDApprovalMaintenance::class)->group(function(){
         Route::get('master-data/approval-maintenance', 'index')->middleware(['permission:view md approval maintenance']);
     });
+
+    // REPORT ROUTES
+    Route::get('/reports/registrasi_asset_report', [ReportController::class, 'ReportRegistrasiAsset']);
+    Route::get('/reports/registration/generate-pdf/{id}', [RegistrationController::class, 'generatePDF']);
+    Route::get('/reports/registration/detail_data_registrasi_asset/{id}', [RegistrationController::class, 'DetailDataRegistrasiAsset']);
+
+    Route::get('/reports/get_data_registrasi_asset_report', [ReportController::class, 'ReportGetDataRegistrasiAsset']);
+
+    Route::get('/reports/mutasi_stock_asset', [ReportController::class, 'ReportMutasiStock']);
+    Route::get('/reports/get_data_mutasi_stock', [ReportController::class, 'ReportMutasiStockData']);
+
+    Route::get('/reports/kartu_stock_asset', [ReportController::class, 'ReportKartuStock']);
+    Route::get('/reports/get_data_kartu_stock_asset', [ReportController::class, 'GetDataKartuStock']);
+
+    Route::get('/reports/export_excel_mutasi_stock', [ReportController::class, 'ExportExcelMutasiStock']);
+
+    Route::get('/reports/checklist_asset', [ReportController::class, 'ReportChecklistAsset']);
+    Route::get('/reports/maintenance_asset', [ReportController::class, 'ReportMaintenaceAsset']);
+    Route::get('/reports/history_maintenance_asset', [ReportController::class, 'ReportHistoryMaintenace']);
+
+    Route::get('/reports/stock_asset_per_location', [ReportController::class, 'ReportStockAssetPerLocation']);
+    Route::get('/reports/get_data_stock_assset_per_location', [ReportController::class, 'GetDataStockAssetPerLocation']);
+
+
+    Route::get('/reports/garansi_asset', [ReportController::class, 'ReportGaransiAsset']);
+    Route::get('/reports/disposal_asset', [ReportController::class, 'ReportDisposalAsset']);
+
+    Route::get('/reports/export_excel_disposal_out', [ReportController::class, 'ExportExcelDisposalAssetData']);
+
+    Route::get('/reports/get_data_disposal_asset', [ReportController::class, 'ReportDisposalAssetData']);
+
+    Route::get('/reports/stock_opname', [ReportController::class, 'ReportStockOpname']);
+    Route::get('/reports/get_data_stock_opname', [ReportController::class, 'ReportStockOpnameData']);
+
+    Route::get('/reports/trend_issue_maintenace', [ReportController::class, 'ReportTrendIssue']);
 
     Route::controller(UserController::class)->group(function () {
         Route::get('/user', 'HalamanUser')->middleware('permission:view user');
@@ -1132,39 +1168,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/tipe_maintenance/edit/{id}', [TipeMaintenanceController::class, 'showEditForm'])->name('edit.tipe_maintenance');
         Route::put('/admin/tipe_maintenance/edit/{id}', [TipeMaintenanceController::class, 'updateDataTipeMaintenance'])->name('update.tipe_maintenance');
         Route::delete('/admin/tipe_maintenance/delete/{id}', [TipeMaintenanceController::class, 'deleteDataTipeMaintenance'])->name('delete.tipe_maintenance');
-
-        // REPORT ROUTES
-        Route::get('/reports/registrasi_asset_report', [ReportController::class, 'ReportRegistrasiAsset']);
-
-        Route::get('/reports/get_data_registrasi_asset_report', [ReportController::class, 'ReportGetDataRegistrasiAsset']);
-
-        Route::get('/reports/mutasi_stock_asset', [ReportController::class, 'ReportMutasiStock']);
-        Route::get('/reports/get_data_mutasi_stock', [ReportController::class, 'ReportMutasiStockData']);
-
-        Route::get('/reports/kartu_stock_asset', [ReportController::class, 'ReportKartuStock']);
-        Route::get('/reports/get_data_kartu_stock_asset', [ReportController::class, 'GetDataKartuStock']);
-
-        Route::get('/reports/export_excel_mutasi_stock', [ReportController::class, 'ExportExcelMutasiStock']);
-
-        Route::get('/reports/checklist_asset', [ReportController::class, 'ReportChecklistAsset']);
-        Route::get('/reports/maintenance_asset', [ReportController::class, 'ReportMaintenaceAsset']);
-        Route::get('/reports/history_maintenance_asset', [ReportController::class, 'ReportHistoryMaintenace']);
-
-        Route::get('/reports/stock_asset_per_location', [ReportController::class, 'ReportStockAssetPerLocation']);
-        Route::get('/reports/get_data_stock_assset_per_location', [ReportController::class, 'GetDataStockAssetPerLocation']);
-
-
-        Route::get('/reports/garansi_asset', [ReportController::class, 'ReportGaransiAsset']);
-        Route::get('/reports/disposal_asset', [ReportController::class, 'ReportDisposalAsset']);
-
-        Route::get('/reports/export_excel_disposal_out', [ReportController::class, 'ExportExcelDisposalAssetData']);
-
-        Route::get('/reports/get_data_disposal_asset', [ReportController::class, 'ReportDisposalAssetData']);
-
-        Route::get('/reports/stock_opname', [ReportController::class, 'ReportStockOpname']);
-        Route::get('/reports/get_data_stock_opname', [ReportController::class, 'ReportStockOpnameData']);
-
-        Route::get('/reports/trend_issue_maintenace', [ReportController::class, 'ReportTrendIssue']);
 
 
         //Route Master Resto

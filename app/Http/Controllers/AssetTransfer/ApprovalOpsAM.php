@@ -21,21 +21,29 @@ class ApprovalOpsAM extends Controller
         $assets = DB::table('table_registrasi_asset')->select('id', 'asset_name')->get();
         $conditions = DB::table('m_condition')->select('condition_id', 'condition_name')->get();
         $moveouts = DB::table('t_out')
-        ->join('mc_approval', 't_out.appr_1', '=', 'mc_approval.approval_id')
-        ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
-        ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
-        ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id') 
-        ->select('t_out.*',
-            DB::RAW('SUM(t_out_detail.qty) as qty'),
-            'm_reason.reason_name',
-            'mc_approval.approval_name', 
-            'fromResto.name_store_street as from_location', 
-            'toResto.name_store_street as dest_location',
-        )
-        ->whereIn('appr_1', ['1', '2', '3', '4'])
-        ->whereNull('t_out.deleted_at')
-        ->groupBy('t_out.out_id', 'm_reason.reason_name', 'mc_approval.approval_name', 'from_location', 'dest_location');
+            ->select(
+                't_out.*',
+                'b.qty',
+                'm_reason.reason_name',
+                'mc_approval.approval_name',
+                'fromResto.name_store_street as from_location',
+                'toResto.name_store_street as dest_location'
+            )
+            ->leftJoin(
+                DB::RAW('(
+                SELECT
+                    b.out_id,
+                    SUM(b.qty) as qty
+                FROM t_out_detail AS b
+                GROUP BY b.out_id
+                ) AS b'), 'b.out_id', '=', 't_out.out_id')
+            ->leftJoin('mc_approval', 'mc_approval.approval_id', '=', 't_out.appr_1')
+            ->leftJoin('m_reason', 'm_reason.reason_id', '=', 't_out.reason_id')
+            ->leftJoin('master_resto_v2 as fromResto', 'fromResto.id', '=', 't_out.from_loc')
+            ->leftJoin('master_resto_v2 as toResto', 'toResto.id', '=', 't_out.dest_loc')
+            ->whereIn('appr_1', ['1', '2', '3', '4'])
+            ->whereNull('t_out.deleted_at')
+            ->where('t_out.out_id', 'like', 'AM%');
 
         if (!$user->hasRole('Admin')) {
             $moveouts->where(function($q) use ($from_loc){

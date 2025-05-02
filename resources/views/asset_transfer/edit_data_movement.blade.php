@@ -399,7 +399,7 @@
                                 <div class="row">
                                     <input type="hidden" id="out_id" value="{{ $moveOutAssets->out_id }}">
                                     <!-- <input type="hidden" id="out_det_id" value="{{ $moveOutAssets->out_det_id }}"> -->
-                                    <div class="col-sm-12 pb-2">
+                                    <div class="col-sm-12 pb-3">
                                         <label for="out_date">Tanggal Movement Out:</label>
                                         <input type="date" name="out_date" id="out_date" class="form-control"
                                             value="{{ $moveOutAssets->out_date }}" required>
@@ -840,7 +840,7 @@
                 contentType: false,
                 success: function(response) {
                     alert('Data submitted successfully');
-                    window.location.href = '/admin/moveout';
+                    window.location.href = '/asset-transfer/request-moveout';
                 },
                 error: function(xhr) {
                     alert('Error submitting form: ' + xhr.responseText);
@@ -861,7 +861,7 @@
             processing: true,
             serverSide: false,
             ajax: {
-                url: '/api/ajaxGetDataRegistAsset',
+                url: '/api/ajaxGetDataRegistAsset/{{ $user->location_now }}',
                 type: 'GET'
             },
             columns: [{

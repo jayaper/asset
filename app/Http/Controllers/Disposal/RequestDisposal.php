@@ -60,44 +60,38 @@ class RequestDisposal extends Controller
 
         // Mulai query builder
         $query = DB::table('t_out')
-            ->distinct()
             ->select(
                 't_out.*',
-                't_out_detail.*',
+                'b.qty',
                 'm_reason.reason_name',
                 'mc_approval.approval_name',
-                'master_resto_v2.*',
-                't_out_detail.*',
-                'm_uom.uom_name',
-                'm_brand.brand_name'
+                'master_resto_v2.*'
             )
-            ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-            ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-            ->join(
+            ->leftjoin(DB::RAW('(
+                SELECT
+                    b.out_id, 
+                    SUM(b.qty) AS qty
+                FROM t_out_detail AS b
+                GROUP BY b.out_id) AS b'), 'b.out_id', '=', 't_out.out_id')
+
+            ->leftjoin('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
+            ->leftjoin('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
+            ->leftjoin(
                 'master_resto_v2',
                 DB::raw('CONVERT(t_out.from_loc USING utf8mb4) COLLATE utf8mb4_unicode_ci'),
                 '=',
                 DB::raw('CONVERT(master_resto_v2.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
             )
-            ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
-            ->join('m_uom', 't_out_detail.uom', '=', 'm_uom.uom_id')
-            ->join('m_brand', 't_out_detail.brand', '=', 'm_brand.brand_id')
-            ->join(
-                'm_user',
-                DB::raw('CONVERT(t_out.from_loc USING utf8mb4) COLLATE utf8mb4_unicode_ci'),
-                '=',
-                DB::raw('CONVERT(m_user.location_now USING utf8mb4) COLLATE utf8mb4_unicode_ci')
-            );
-
+            ->where('t_out.out_id', 'like', 'DA%')
+            ->orderBy('t_out.out_id', 'DESC');
             // Jika yang login bukan admin, tambahkan filter berdasarkan `user_loc`
-            if ($username !== 'admin') {
-                $query->where(
-                DB::raw('CONVERT(m_user.location_now USING utf8mb4) COLLATE utf8mb4_unicode_ci'),
-                '=', $user_loc);
+            $user = Auth::User();
+            if (!$user->hasRole('Admin')) {
+                $query->where(function ($q){
+                    $q->where('t_out.from_loc', Auth::User()->location_now);
+                });
             }
-
-            $moveouts = $query->where('t_out.out_id', 'like', 'DA%')
-            ->paginate(10);
+            $moveouts = $query->paginate(10);
     
 
         return view("disposal.disout", [
@@ -112,6 +106,7 @@ class RequestDisposal extends Controller
     }
     public function AddRequestDisposal() {
 
+        $user = Auth::User();
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
         $assets = DB::table('table_registrasi_asset')->select('id', 'asset_name')->get();
@@ -125,7 +120,12 @@ class RequestDisposal extends Controller
         ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
         ->get();
 
+        $location_user = DB::table('master_resto_v2')->where('id', $user->location_now)->first();
+        $location_user_display = $location_user->name_store_street;
+
         return view('disposal.add_data_disposal', [
+            'location_user_display' => $location_user_display,
+            'user' => $user,
             'reasons' => $reasons,
             'assets' => $assets, 
             'conditions' => $conditions,
@@ -134,7 +134,7 @@ class RequestDisposal extends Controller
     }
     public function AddDataDisOut(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'out_date' => 'required|date',
             'from_loc_id' => 'required|string|max:255',
             'out_desc' => 'required|string|max:255',
@@ -272,6 +272,7 @@ class RequestDisposal extends Controller
         ->leftjoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
         ->select('m_assets.asset_model', 'm_brand.brand_name', 't_transaction_qty.qty', 'm_uom.uom_name', 'table_registrasi_asset.serial_number', 'table_registrasi_asset.register_code', 'm_condition.condition_name', 't_out_detail.image')
         ->where('t_out.out_id', 'like', 'DA%')
+        ->where('t_out_detail.out_id', $id)
         ->get();
 
         // dd($moveOutAssets);
@@ -333,6 +334,7 @@ class RequestDisposal extends Controller
     }
 
     public function editDetailDataDisout($id) {
+        $user = Auth::User();
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
         $conditions = DB::table('m_condition')->select('condition_id', 'condition_name')->get();
         
@@ -400,6 +402,24 @@ class RequestDisposal extends Controller
 
         // dd($moveOutAssets);
 
-            return view('disposal.edit_data_disposal', compact('moveOutAssets','reasons','conditions','assets'));
+            return view('disposal.edit_data_disposal', compact('moveOutAssets','reasons','conditions','assets', 'user'));
+    }
+
+    public function deleteDataDisOut($id)
+    {
+        $moveout = MasterDisOut::find($id);
+
+        if ($moveout) {
+            $moveout->is_active = 0;
+            $moveout->deleted_at = Carbon::now();
+            $moveout->delete();
+            return response()->json([
+                'status' => 'success', 
+                'message' => 'Disposal deleted successfully.',
+                'redirect_url' => '/disposal/request-disposal'
+            ]);
+        } else {
+            return response()->json(['status' => 'Error', 'message' => 'Data move$moveout Gagal Terhapus'], 404);
+        }
     }
 }

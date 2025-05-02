@@ -15,7 +15,7 @@ use App\Exports\ReportDisposalData;
 class ReportController extends Controller {
 
     public function ReportRegistrasiAsset() {
-        return view('Admin.report.report_registrasi_asset');
+        return view('report.report_registrasi_asset');
     }
 
 
@@ -107,7 +107,7 @@ class ReportController extends Controller {
 }
 
     public function ReportMutasiStock() {
-        return view('Admin.report.report_mutasi_stock');
+        return view('report.report_mutasi_stock');
     }
 
 
@@ -146,7 +146,7 @@ class ReportController extends Controller {
     }
 
     public function ReportKartuStock() {
-        return view('Admin.report.report_kartu_stock');
+        return view('report.report_kartu_stock');
     }
 
     public function GetDataKartuStock() {
@@ -197,7 +197,7 @@ class ReportController extends Controller {
 
     
     public function ReportStockAssetPerLocation() {
-        return view('Admin.report.report_stock_asset_per_location');
+        return view('report.report_stock_asset_per_location');
     }
 
     public function GetDataStockAssetPerLocation() {
@@ -243,7 +243,7 @@ class ReportController extends Controller {
     }
 
     public function ReportDisposalAsset() {
-        return view('Admin.report.report_disposal_asset');
+        return view('report.report_disposal_asset');
     }
 
     public function ReportDisposalAssetData() : JsonResponse {
@@ -276,7 +276,7 @@ class ReportController extends Controller {
     }
 
     public function ReportStockOpname() {
-        return view('Admin.report.report_stock_opname');
+        return view('report.report_stock_opname');
     }
 
 

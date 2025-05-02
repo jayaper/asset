@@ -628,7 +628,7 @@
                                                 </div>
                                                 <div class="col-md-4 d-flex align-items-end">
                                                     <button type="submit" class="btn btn-primary">Filter</button>
-                                                    <a href="{{ route('Admin.disout') }}"
+                                                    <a href="/disposal/request-disposal"
                                                         class="btn btn-secondary ml-2">Reset</a>
                                                 </div>
                                             </div>
@@ -651,8 +651,6 @@
                                                     <th>Tanggal Disposal Out</th>
                                                     <th>Lokasi Asal</th>
                                                     <th>Quantity Barang</th>
-                                                    <th>Satuan</th>
-                                                    <th>Merk</th>
                                                     <th>Deskripsi</th>
                                                     <th>Alasan</th>
                                                     <th>Status Disposal</th>
@@ -673,8 +671,6 @@
                                                         <td>{{ $moveout->out_date }}</td>
                                                         <td>{{ $moveout->name_store_street }}</td>
                                                         <td>{{ $moveout->qty }}</td>
-                                                        <td>{{ $moveout->uom_name }}</td>
-                                                        <td>{{ $moveout->brand_name }}</td>
                                                         <td>{{ $moveout->out_desc }}</td>
                                                         <td>{{ $moveout->reason_name }}</td>
                                                         <td>{{ $moveout->approval_name }}</td>
@@ -695,7 +691,7 @@
                                                             @endif
                                                         </td>
                                                         <td class="text-center">
-                                                            @if ($moveout->appr_1 != 2)
+                                                            @if ($moveout->appr_1 ==1)
                                                               @can('btn dis action edit request disposal')
                                                                 <a href="{{ url('/disposal/request-disposal/edit_data_disposal', $moveout->out_id) }}"
                                                                   data-id="{{ $moveout->out_id }}" title="Edit">
@@ -704,7 +700,7 @@
                                                               @endcan
                                                               @can('btn dis action delete request disposal')
                                                                 <form class="delete-form"
-                                                                    action="{{ url('admin/disouts/delete', $moveout->out_id) }}"
+                                                                    action="{{ url('disposal/request-disposal/delete', $moveout->out_id) }}"
                                                                     method="POST" style="display:inline;">
                                                                     @csrf
                                                                     @method('DELETE')
@@ -724,7 +720,7 @@
                                                             </a>
                                                             <a href="/disposal/request-disposal/get_pdf/{{ $moveout->out_id }}"
                                                                 target="_blank"><i
-                                                                    class="fas fa-print mx-1"></i></a></a>
+                                                                    class="fas fa-print mx-1"></i></a>
                                                         </td>
                                                     </tr>
                                                     {{-- @endif --}}

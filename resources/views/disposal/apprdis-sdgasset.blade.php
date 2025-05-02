@@ -373,6 +373,7 @@
                                     <th>No Disposal Out</th>
                                     <th>Tanggal Disposal Out</th>
                                     <th>Lokasi Asal</th>
+                                    <th>Quantity</th>
                                     <th>ID Disposal In</th>
                                     <th>Deskripsi</th>
                                     <th>Alasan</th>
@@ -387,12 +388,13 @@
                                         <td>{{ $moveout->out_no }}</td>
                                         <td>{{ $moveout->out_date }}</td>
                                         <td>{{ $moveout->from_location }}</td>
+                                        <td>{{ $moveout->qty }}</td>
                                         <td>{{ $moveout->in_id }}</td>
                                         <td>{{ $moveout->out_desc }}</td>
                                         <td>{{ $moveout->reason_name }}</td>
                                         <td>{{ $moveout->approval_name }}</td>
                                         <td class="text-center">
-                                            @if($moveout->appr_3 != 3)
+                                            @if($moveout->appr_3 == 1)
                                               @can('btn dis action edit approval sdg')
                                                 <a href="javascript:void(0);" class="edit-button" data-id="{{ $moveout->out_id }}" data-no="{{ $moveout->out_no }}" title="Edit">
                                                     <i class="fas fa-edit"></i>

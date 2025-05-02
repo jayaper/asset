@@ -4,8 +4,8 @@ namespace App\Http\Controllers\AssetTransfer;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\support\Facades\DB;
-use Illuminate\support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class ReviewAssetTransfer extends Controller
 {
@@ -20,23 +20,28 @@ class ReviewAssetTransfer extends Controller
         $lokasi_user = auth()->user()->location_now;
 
         $query = DB::table('t_out')
-            ->select(
-                't_out.*',
-                DB::RAW('SUM(t_out_detail.qty) as qty'),
-                'm_reason.reason_name',
-                'mc_approval.approval_name',
-                'fromResto.name_store_street AS from_location',
-                'toResto.name_store_street AS destination_location'
-            )
-            ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
-            ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-            ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-            ->join('master_resto_v2 AS fromResto', 't_out.from_loc', '=', 'fromResto.id')
-            ->join('master_resto_v2 AS toResto', 't_out.dest_loc', '=', 'toResto.id')
-            ->where('t_out.appr_1', '=', '2')
-            ->where('t_out.appr_2', '=', '2')
-            ->where('t_out.appr_3', '=', '2')
-            ->groupBy('t_out.out_id', 'm_reason.reason_name', 'mc_approval.approval_name', 'from_location', 'destination_location');
+                ->select(
+                    't_out.*',
+                    'b.qty',
+                    'm_reason.reason_name',
+                    'mc_approval.approval_name',
+                    'fromResto.name_store_street AS from_location',
+                    'toResto.name_store_street AS destination_location'
+                )
+                ->leftJoin(
+                    DB::RAW('(
+                    SELECT
+                        b.out_id,
+                        SUM(b.qty) as qty
+                    FROM t_out_detail AS b
+                    GROUP BY b.out_id
+                    ) AS b'), 'b.out_id', '=', 't_out.out_id')
+                ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
+                ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
+                ->join('master_resto_v2 AS fromResto', 't_out.from_loc', '=', 'fromResto.id')
+                ->join('master_resto_v2 AS toResto', 't_out.dest_loc', '=', 'toResto.id')
+                ->where('t_out.is_confirm', '=', '3')
+                ->where('t_out.out_id', 'like', 'AM%');
             if (!$user->hasRole('Admin')) {
                 $query->where(function($q) use ($lokasi_user) {
                     $q->where('t_out.from_loc', $lokasi_user)

@@ -387,7 +387,7 @@
                                     <th class="col-sm-3">Serial Number</th>
                                     <td class="col-sm-3">{{ $asset->serial_number }}</td>
                                     <th class="col-sm-3">Registrasi Code</th>
-                                    <td class="col-sm-3">{{ $asset->register_code }}</td>
+                                    <th class="col-sm-3">{{ $asset->register_code }}</th>
                                 </tr>
                                 <tr>
                                     <th class="col-sm-3">Kondisi Asset</th>

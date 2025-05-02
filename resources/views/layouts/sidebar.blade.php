@@ -1,6 +1,6 @@
 <div class="sidebar-wrapper">
     <div>
-        <div class="logo-wrapper"><a href="/admin/dashboard"><img class="img-fluid for-light"
+        <div class="logo-wrapper"><a href="/dashboard"><img class="img-fluid for-light"
                     src="{{ asset('assets/images/header-card.png') }}"></a>
         </div>
         <div class="logo-icon-wrapper"><a href="index.html"><img class="img-fluid"
@@ -136,7 +136,7 @@
                                 data-feather="archive"></i><span>Stock Opname</span></a>
                         <ul class="sidebar-submenu">
                             <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                    href="/admin/stockopname"><span>Data Stock Opname</span></a></li>
+                                    href="/stockopname"><span>Data Stock Opname</span></a></li>
                             <!-- <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav" href="/admin/adjustmentstock"><span>Adjustment Stock</span></a></li> -->
                         </ul>
                     </li>

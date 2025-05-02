@@ -17,17 +17,42 @@ class ApprovalOpsAM extends Controller
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
         $assets = DB::table('table_registrasi_asset')->select('id', 'asset_name')->get();
         $conditions = DB::table('m_condition')->select('condition_id', 'condition_name')->get();
-        $moveouts = DB::table('t_out')
-        ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->join('mc_approval', 't_out.appr_1', '=', 'mc_approval.approval_id')
-        ->join('master_resto_v2 AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
-        ->select('t_out.*', 'm_reason.reason_name', 'mc_approval.approval_name',
-        'from_loc.name_store_street AS from_location'
-        )
-        ->where('t_out.out_id', 'like', 'DA%')
-        ->whereIn('t_out.appr_1', ['1', '2', '3', '4'])
-        ->whereNull('t_out.deleted_at')
-        ->paginate(10);
+
+        $query = DB::table('t_out')
+            ->select(
+                't_out.*',
+                'b.qty',
+                'm_reason.reason_name',
+                'mc_approval.approval_name',
+                'fromloc.name_store_street AS from_location'
+            )
+            ->leftjoin(DB::RAW('(
+                SELECT
+                    b.out_id, 
+                    SUM(b.qty) AS qty
+                FROM t_out_detail AS b
+                GROUP BY b.out_id) AS b'), 'b.out_id', '=', 't_out.out_id')
+
+            ->leftjoin('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
+            ->leftjoin('mc_approval', 't_out.appr_1', '=', 'mc_approval.approval_id')
+            ->leftjoin(
+                'master_resto_v2 AS fromloc',
+                DB::raw('CONVERT(t_out.from_loc USING utf8mb4) COLLATE utf8mb4_unicode_ci'),
+                '=',
+                DB::raw('CONVERT(fromloc.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
+            )
+            ->whereIn('t_out.appr_1', ['1', '2', '3', '4'])
+            ->whereNull('t_out.deleted_at')
+            ->where('t_out.out_id', 'like', 'DA%')
+            ->orderBy('t_out.out_id', 'DESC');
+            // Jika yang login bukan admin, tambahkan filter berdasarkan `user_loc`
+            $user = Auth::User();
+            if (!$user->hasRole('Admin')) {
+                $query->where(function ($q){
+                    $q->where('t_out.from_loc', Auth::User()->location_now);
+                });
+            }
+        $moveouts = $query->paginate(10);
 
 
         $user = Auth::user();
@@ -79,13 +104,21 @@ class ApprovalOpsAM extends Controller
                     ->where('id', $detail->id)
                     ->update([
                         'qty' => $newQty,
-                        'qty_final' => $detail->qty,
                     ]);
 
                 // Increment qty in table_registrasi_asset
-                DB::table('table_registrasi_asset')
-                    ->where('id', $detail->asset_id)
-                    ->increment('qty', 1);
+                $t_regist = DB::table('table_registrasi_asset')
+                    ->where('register_code', $detail->asset_tag)
+                    ->get();
+
+                foreach($t_regist as $table){
+                    DB::table('table_registrasi_asset')
+                    ->where('id', $table->id)
+                    ->update([
+                        'qty' => 1
+                    ]);
+                }
+
             }
 
             // Update t_transaction_qty
@@ -149,6 +182,7 @@ class ApprovalOpsAM extends Controller
         ->leftjoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
         ->select('m_assets.asset_model', 'm_brand.brand_name', 't_transaction_qty.qty', 'm_uom.uom_name', 'table_registrasi_asset.serial_number', 'table_registrasi_asset.register_code', 'm_condition.condition_name', 't_out_detail.image')
         ->where('t_out.out_id', 'like', 'DA%')
+        ->where('t_out_detail.out_id', $id)
         ->get();
 
         // dd($moveOutAssets);
