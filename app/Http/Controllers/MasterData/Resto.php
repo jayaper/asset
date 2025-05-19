@@ -12,7 +12,7 @@ class Resto extends Controller
     {
         $cities = DB::table('miegacoa_keluhan.master_city')->select('id', 'city')->get();
 
-        $regions = DB::table('miegacoa_keluhan.master_regional')->select('region_id', 'region_name')->get();
+        $regions = DB::table('miegacoa_keluhan.master_regional')->select('id', 'regional')->get();
 
         $countresto = DB::table('miegacoa_keluhan.master_resto')
             ->select('miegacoa_keluhan.master_resto.*')
@@ -22,89 +22,15 @@ class Resto extends Controller
             ->select(
                 'a.*',
                 'b.city AS nama_city',
-                'c.region_name AS nama_regional',
+                'c.regional AS nama_regional',
                 
             )
             ->leftjoin('miegacoa_keluhan.master_city AS b', 'b.id', '=', 'a.kode_city')
-            ->leftjoin('miegacoa_keluhan.master_regional AS c', 'c.region_id', '=', 'a.id_regional')
+            ->leftjoin('miegacoa_keluhan.master_regional AS c', 'c.id', '=', 'a.id_regional')
+            ->orderBy('id', 'ASC')
             ->paginate(25);
         
         return view('master_data.resto', compact('datas', 'countresto', 'cities', 'regions'));
-    }
-
-    public function addResto(Request $request){
-
-        $request->validate([
-            'kode_resto' => 'required',
-            'resto' => 'required',
-            'id_regional' => 'required',
-            'kode_city' => 'required',
-            'kom_resto' => 'required',
-            'store_code' => 'required',
-            'name_store_street' => 'required'
-        ]);
-
-        $cities = DB::table('miegacoa_keluhan.master_city')->where('id', $request->kode_city)->first();
-        $nama_city = $cities->city;
-
-        $regions = DB::table('miegacoa_keluhan.master_regional')->where('region_id', $request->id_regional)->first();
-        $nama_region = $regions->region_name;
-
-        $resto = DB::table('miegacoa_keluhan.master_resto')
-                ->insert([
-                    'kode_resto' => $request->kode_resto,
-                    'resto' => $request->resto,
-                    'kode_city' => $request->kode_city,
-                    'city' => $nama_city,
-                    'kom_resto' => $request->kom_resto,
-                    'rm' => $nama_region,
-                    'id_regional' => $request->id_regional,
-                    'store_code' => $request->store_code,
-                    'name_store_street' => $request->name_store_street
-                ]);
-        if($resto){
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Berhasil menambah data Resto!',
-                'redirect_url' => '/master-data/resto'
-            ]);
-        }else{
-            return response()->json(['status' => 'error', 'message' => 'Failed to update Resto.'], 500);
-        }
-
-    }
-
-    public function updateResto(Request $request, $id){
-
-        $request->validate([
-            'kode_resto' => 'required',
-            'resto' => 'required',
-            'id_regional' => 'required',
-            'kode_city' => 'required',
-            'store_code' => 'nullable',
-            'name_store_street' => 'required'
-        ]);
-
-        $resto = DB::table('miegacoa_keluhan.master_resto')
-                ->where('id', $id)
-                ->update([
-                    'kode_resto' => $request->kode_resto,
-                    'resto' => $request->resto,
-                    'id_regional' => $request->id_regional,
-                    'kode_city' => $request->kode_city,
-                    'store_code' => $request->store_code,
-                    'name_store_street' => $request->name_store_street
-                ]);
-        if($resto){
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Berhasil mengubah data Resto',
-                'redirect_url' => '/master-data/resto'
-            ]);
-        }else{
-            return response()->json(['status' => 'error', 'message' => 'Failed to update Resto.'], 500);
-        }
-
     }
 
     public function getCities()
@@ -118,7 +44,7 @@ class Resto extends Controller
     public function getRegions()
     {
 
-        $cities = DB::table('miegacoa_keluhan.master_regional')->select('region_id', 'region_name')->get();
+        $cities = DB::table('miegacoa_keluhan.master_regional')->select('id', 'regional')->get();
         return response()->json($cities);
 
     }

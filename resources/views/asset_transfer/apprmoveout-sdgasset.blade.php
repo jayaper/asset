@@ -281,7 +281,7 @@
                                                       <select name="appr_3" id="appr_3" class="form-control" required>
                                                         <option value="" disabled>Pilih Status</option>
                                                         @foreach($approvals as $approval)
-                                                          @if ($approval->approval_id !== 1 && $approval->approval_id !==3)  
+                                                          @if ($approval->approval_id != 1 && $approval->approval_id !=3)  
                                                             <option value="{{ $approval->approval_id }}">{{ $approval->approval_name }}</option>
                                                           @endif
                                                         @endforeach

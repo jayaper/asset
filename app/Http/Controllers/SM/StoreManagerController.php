@@ -978,7 +978,7 @@ class StoreManagerController extends Controller
             );
 
         // Jika yang login bukan admin, tambahkan filter berdasarkan `user_loc`
-        if ($username !== 'admin') {
+        if ($username != 'admin') {
             $query->where(
                 DB::raw('CONVERT(m_user.location_now USING utf8mb4) COLLATE utf8mb4_unicode_ci'),
                 '=',

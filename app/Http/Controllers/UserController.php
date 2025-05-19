@@ -129,7 +129,7 @@ class UserController extends Controller
         $user->created_at = Carbon::now();
         $user->updated_at = Carbon::now();
 
-        if($request->role !== 1){
+        if($request->role != 1){
             $user->location_now = $request->location_now;
         }
 

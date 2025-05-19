@@ -290,7 +290,7 @@
                                               <select id="add_id_regional" class="form-control" name="id_regional" required>
                                                 <option value="" disabled>~~ SELECT REGIONAL ~~</option>
                                                 @foreach ($regions as $region)
-                                                  <option value="{{ $region->region_id }}">{{ $region->region_name }}</option>
+                                                  <option value="{{ $region->id }}">{{ $region->regional }}</option>
                                                 @endforeach
                                               </select>
                                           </div>
@@ -678,8 +678,8 @@
               success: function (regions) {
                 let option = '<option value="">~~ SELECT REGIONAL ~~</option>';
                 regions.forEach(function (region) {
-                    const selected = region.region_id == id_regional ? 'selected' : '';
-                    options += `<option value ="${region.region_id}" ${selected}>${region.region_name}</option>`;
+                    const selected = region.id == id_regional ? 'selected' : '';
+                    options += `<option value ="${region.id}" ${selected}>${region.regional}</option>`;
                 });
 
                 $("#id_regional").html(options).trigger('change');

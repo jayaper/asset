@@ -742,7 +742,7 @@
 
                                                     @foreach($approvals as $approval)
 
-                                                      @if ($approval->approval_id !== 1 && $approval->approval_id !==2)  
+                                                      @if ($approval->approval_id != 1 && $approval->approval_id !=2)  
                                                         <option value="{{ $approval->approval_id }}">{{ $approval->approval_name }}</option>
                                                       @endif
 

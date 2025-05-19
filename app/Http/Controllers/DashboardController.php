@@ -28,7 +28,7 @@ class DashboardController extends Controller
                         $asset_move->where(function($q) {
                             $q->where('resto.kode_city', Auth::User()->location_now);
                         });
-                    }else if(Auth::User()->hasRole('AM')){
+                    }else if(Auth::User()->hasRole('RM')){
                         $asset_move->where(function($q) {
                             $q->where('resto.id_regional', Auth::User()->location_now);
                         });
@@ -52,7 +52,7 @@ class DashboardController extends Controller
                         $asset_in->where(function($q) {
                             $q->where('resto.kode_city', Auth::User()->location_now);
                         });
-                    }else if(Auth::User()->hasRole('AM')){
+                    }else if(Auth::User()->hasRole('RM')){
                         $asset_in->where(function($q) {
                             $q->where('resto.id_regional', Auth::User()->location_now);
                         });
@@ -78,7 +78,7 @@ class DashboardController extends Controller
                         $good_assets->where(function($q) {
                             $q->where('resto.kode_city', Auth::User()->location_now);
                         });
-                    }else if(Auth::User()->hasRole('AM')){
+                    }else if(Auth::User()->hasRole('RM')){
                         $good_assets->where(function($q) {
                             $q->where('resto.id_regional', Auth::User()->location_now);
                         });
@@ -104,7 +104,7 @@ class DashboardController extends Controller
                         $bad_assets->where(function($q) {
                             $q->where('resto.kode_city', Auth::User()->location_now);
                         });
-                    }else if(Auth::User()->hasRole('AM')){
+                    }else if(Auth::User()->hasRole('RM')){
                         $bad_assets->where(function($q) {
                             $q->where('resto.id_regional', Auth::User()->location_now);
                         });
@@ -126,7 +126,7 @@ class DashboardController extends Controller
                         $asset_dis->where(function($q) {
                             $q->where('resto.kode_city', Auth::User()->location_now);
                         });
-                    }else if(Auth::User()->hasRole('AM')){
+                    }else if(Auth::User()->hasRole('RM')){
                         $asset_dis->where(function($q) {
                             $q->where('resto.id_regional', Auth::User()->location_now);
                         });
@@ -151,7 +151,7 @@ class DashboardController extends Controller
                         $good_asset_disp->where(function($q) {
                             $q->where('resto.kode_city', Auth::User()->location_now);
                         });
-                    }else if(Auth::User()->hasRole('AM')){
+                    }else if(Auth::User()->hasRole('RM')){
                         $good_asset_disp->where(function($q) {
                             $q->where('resto.id_regional', Auth::User()->location_now);
                         });
@@ -174,7 +174,7 @@ class DashboardController extends Controller
                     $bad_asset_disp->where(function($q) {
                         $q->where('resto.kode_city', Auth::User()->location_now);
                     });
-                }else if(Auth::User()->hasRole('AM')){
+                }else if(Auth::User()->hasRole('RM')){
                     $bad_asset_disp->where(function($q) {
                         $q->where('resto.id_regional', Auth::User()->location_now);
                     });
@@ -192,7 +192,7 @@ class DashboardController extends Controller
                     $t_regist->where(function($q) {
                         $q->where('resto.kode_city', Auth::User()->location_now);
                     });
-                }else if(Auth::User()->hasRole('AM')){
+                }else if(Auth::User()->hasRole('RM')){
                     $t_regist->where(function($q) {
                         $q->where('resto.id_regional', Auth::User()->location_now);
                     });

@@ -1724,7 +1724,7 @@ class RequestMoveout extends Controller
             ->leftJoin('m_warranty', 'table_registrasi_asset.warranty', '=', 'm_warranty.warranty_id')
             ->leftJoin('m_periodic_mtc', 'table_registrasi_asset.periodic_maintenance', '=', 'm_periodic_mtc.periodic_mtc_id')
             ->leftJoin('t_out_detail', 'table_registrasi_asset.id', '=', 't_out_detail.asset_id')
-            ->when($loc_user !== NULL, function ($query) use ($loc_user) {
+            ->when($loc_user != NULL, function ($query) use ($loc_user) {
                 return $query->where('table_registrasi_asset.register_location', $loc_user);
             })
             ->where('table_registrasi_asset.qty', '>', 0)

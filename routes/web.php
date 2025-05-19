@@ -474,8 +474,6 @@ Route::middleware('auth')->group(function () {
     });
     Route::controller(MDResto::class)->group(function(){
         Route::get('/master-data/resto', 'index')->middleware(['permission:view md resto']);
-        Route::post('/master-data/resto/add/', 'addResto')->middleware(['permission:view md resto']);
-        Route::put('/master-data/resto/update/{id}', 'updateResto')->middleware(['permission:view md resto']);
         Route::get('/master-data/resto/get-cities', 'getCities')->middleware(['permission:view md resto']);
         Route::get('/master-data/resto/get-regions', 'getRegions')->middleware(['permission:view md resto']);
     });

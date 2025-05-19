@@ -135,7 +135,7 @@ class ApprovalSDGAsset extends Controller
     
                 $previous_asset_tag = null;
                 foreach ($moveoutDetails as $index => $detail) {
-                    if ($previous_asset_tag !== $detail->asset_tag) {
+                    if ($previous_asset_tag != $detail->asset_tag) {
                         $transaction_number++;
                         $transaction_number_str = str_pad($transaction_number, 3, '0', STR_PAD_LEFT);
                         $new_in_id = "{$trx_code}.{$today}.{$request->input('reason_id')}.{$request->input('from_loc_id')}.{$transaction_number_str}";
