@@ -236,16 +236,6 @@
                     <h5>City Name List</h5>
                     <span>adalah daftar atau kumpulan aset yang dimiliki oleh seseorang, organisasi, atau perusahaan. Daftar ini biasanya mencakup rincian tentang setiap aset, seperti jenis aset, nilai, lokasi, dan informasi relevan lainnya.</span>
                   </div>
-					<div class="card-body">
-						<div class="btn-showcase">
-                            <div class="button_between">
-                                <button class="btn btn-square btn-primary" type="button" data-toggle="modal" data-target="#addDataCity">+ Add Data City</button>
-                                {{-- <button class="btn btn-square btn-primary" type="button" data-toggle="modal" data-target="#importDataExcel"> <i class="fa fa-file-excel-o" ></i> Import Data Excel </button>
-                                <button class="btn btn-square btn-primary" type="button"> <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                                Download PDF Data</button> --}}
-                            </div>
-						  </div>
-						</div>
 
 
                     <!-- Button trigger modal -->
@@ -405,22 +395,9 @@
                                     <tr class="text-center">
                                         <td>{{ $city->city }}</td>
                                         <td class="text-center">
-                                            <a href="javascript:void(0);" class="edit-button"
-                                            data-id="{{ $city->id }}"
-                                            data-name="{{ $city->city }}"
-                                            title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
                                             <a href="javascript:void(0);" class="detail-button" data-id="{{ $city->id }}" data-name="{{ $city->city }}" title="Detail">
                                                 <i class="fas fa-book"></i>
                                             </a>
-                                            <form class="delete-form" action="{{ url('/master-data/delete-new-city', $city->id) }}" method="POST" style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">
-                                                    <i class="fas fa-trash-alt" style="color: red;"></i>
-                                                </button>
-                                            </form>
                                         </td>
                                     </tr>
                                 @endforeach

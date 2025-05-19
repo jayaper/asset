@@ -17,21 +17,21 @@ class RegionController extends Controller
 {
     public function Index()
     {
-        $regions = DB::table('m_region')->select('m_region.*')->paginate(10);
+        $regions = DB::table('miegacoa_keluhan.master_regional')->select('miegacoa_keluhan.master_regional.*')->paginate(10);
 
         return view("Admin.region", ['regions' => $regions]);
     }
 
     public function HalamanRegion() 
     {
-        $regions = DB::table('m_region')->select('m_region.*')->paginate(10);
+        $regions = DB::table('miegacoa_keluhan.master_regional')->select('miegacoa_keluhan.master_regional.*')->paginate(10);
 
         return view("Admin.region", ['regions' => $regions]);
     }
 
     public function getRegion()
     {
-        // Mengambil semua data dari tabel m_region
+        // Mengambil semua data dari tabel miegacoa_keluhan.master_regional
         $regions = MasterRegion::all();
         return response()->json($regions); // Mengembalikan data dalam format JSON
     }

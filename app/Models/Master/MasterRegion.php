@@ -13,7 +13,7 @@ class MasterRegion extends Model
     use HasFactory;
     // use SoftDeletes;
 
-    protected $table = 'm_region';
+    protected $table = 'miegacoa_keluhan.master_regional';
     protected $primaryKey = 'region_id';
 
     protected $fillable = [

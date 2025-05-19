@@ -28,7 +28,7 @@ class MasterCity extends Model
 
     
 
-    protected $table = 'master_city';
+    protected $table = 'miegacoa_keluhan.master_city';
 
     protected $primaryKey = 'id';
 

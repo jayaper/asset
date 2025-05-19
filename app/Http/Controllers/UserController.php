@@ -306,12 +306,12 @@ class UserController extends Controller
     }
 
     public function userGetArea(){
-        $city = DB::table('master_city')->select('id', 'city')->get();
+        $city = DB::table('miegacoa_keluhan.master_city')->select('id', 'city')->get();
         return response()->json($city);
     }
 
     public function userGetRegion(){
-        $region = DB::table('m_region')->select('region_id', 'region_name')->get();
+        $region = DB::table('miegacoa_keluhan.master_regional')->select('region_id', 'region_name')->get();
         return response()->json($region);
     }
 

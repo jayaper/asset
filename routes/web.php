@@ -443,9 +443,6 @@ Route::middleware('auth')->group(function () {
     });
     Route::controller(MDRegional::class)->group(function(){
         Route::get('master-data/regional', 'index')->middleware(['permission:view md regional']);
-        Route::post('/master-data/add-new-regional', 'NewAddDataRegion')->middleware(['permission:view md regional']);
-        Route::put('/master-data/update-new-regional/{id}', 'NewUpdateDataRegion')->middleware(['permission:view md regional']);
-        Route::delete('/master-data/delete-new-regional/{id}', 'NewDeleteDataRegion')->middleware(['permission:view md regional']);
     });
     Route::controller(MDRepair::class)->group(function(){
         Route::get('master-data/repair', 'index')->middleware(['permission:view md perbaikan']);
@@ -472,10 +469,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/master-data/delete-new-warranty/{id}', 'NewDeleteDataWarranty')->middleware(['permission:view md garansi']);
     });
     Route::controller(MDCity::class)->group(function(){
-        Route::get('master-data/city', 'index')->middleware(['permission:view md kota']);
-        Route::post('/master-data/add-new-city', 'NewAddDataCity')->middleware(['permission:view md kota']);
-        Route::put('/master-data/update-new-city/{id}', 'NewUpdateDataCity')->middleware(['permission:view md kota']);
-        Route::delete('/master-data/delete-new-city/{id}', 'NewDeleteDataCity')->middleware(['permission:view md kota']);
+        Route::get('/master-data/city', 'index')->middleware(['permission:view md kota']);
 
     });
     Route::controller(MDResto::class)->group(function(){

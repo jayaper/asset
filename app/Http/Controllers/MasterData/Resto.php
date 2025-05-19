@@ -10,9 +10,9 @@ class Resto extends Controller
 {
     public function index()
     {
-        $cities = DB::table('master_city')->select('id', 'city')->get();
+        $cities = DB::table('miegacoa_keluhan.master_city')->select('id', 'city')->get();
 
-        $regions = DB::table('m_region')->select('region_id', 'region_name')->get();
+        $regions = DB::table('miegacoa_keluhan.master_regional')->select('region_id', 'region_name')->get();
 
         $countresto = DB::table('miegacoa_keluhan.master_resto')
             ->select('miegacoa_keluhan.master_resto.*')
@@ -25,8 +25,8 @@ class Resto extends Controller
                 'c.region_name AS nama_regional',
                 
             )
-            ->leftjoin('master_city AS b', 'b.id', '=', 'a.kode_city')
-            ->leftjoin('m_region AS c', 'c.region_id', '=', 'a.id_regional')
+            ->leftjoin('miegacoa_keluhan.master_city AS b', 'b.id', '=', 'a.kode_city')
+            ->leftjoin('miegacoa_keluhan.master_regional AS c', 'c.region_id', '=', 'a.id_regional')
             ->paginate(25);
         
         return view('master_data.resto', compact('datas', 'countresto', 'cities', 'regions'));
@@ -44,10 +44,10 @@ class Resto extends Controller
             'name_store_street' => 'required'
         ]);
 
-        $cities = DB::table('master_city')->where('id', $request->kode_city)->first();
+        $cities = DB::table('miegacoa_keluhan.master_city')->where('id', $request->kode_city)->first();
         $nama_city = $cities->city;
 
-        $regions = DB::table('m_region')->where('region_id', $request->id_regional)->first();
+        $regions = DB::table('miegacoa_keluhan.master_regional')->where('region_id', $request->id_regional)->first();
         $nama_region = $regions->region_name;
 
         $resto = DB::table('miegacoa_keluhan.master_resto')
@@ -110,7 +110,7 @@ class Resto extends Controller
     public function getCities()
     {
 
-        $cities = DB::table('master_city')->select('id', 'city')->get();
+        $cities = DB::table('miegacoa_keluhan.master_city')->select('id', 'city')->get();
         return response()->json($cities);
 
     }
@@ -118,7 +118,7 @@ class Resto extends Controller
     public function getRegions()
     {
 
-        $cities = DB::table('m_region')->select('region_id', 'region_name')->get();
+        $cities = DB::table('miegacoa_keluhan.master_regional')->select('region_id', 'region_name')->get();
         return response()->json($cities);
 
     }

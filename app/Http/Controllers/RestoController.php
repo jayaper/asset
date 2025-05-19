@@ -87,7 +87,7 @@ class RestoController extends Controller
 
     {
 
-        // Mengambil semua data dari tabel m_city
+        // Mengambil semua data dari tabel miegacoa_keluhan.miegacoa_keluhan.master_city
 
         $datas = DB::table('miegacoa_keluhan.master_resto')
             ->select('miegacoa_keluhan.master_resto.*')

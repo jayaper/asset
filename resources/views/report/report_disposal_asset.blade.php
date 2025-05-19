@@ -256,36 +256,38 @@
                             <div class="container">
                                 <div class="card">
                                     <div class="card-body">
-                                        <form class="mb-4" action="{{ route('admin.filterdisout') }}" method="POST">
-                                          @csrf
-                                          <div class="row mb-4">
-                                            <div class="col-md-4">
-                                              <label for="start_date">Wilayah</label>
-                                                  <select class="form-select" name="wilayah">
-                                                    <option value="">-- Pilih --</option>
-                                                    @foreach ($wilayahs as $wilayah)
-                                                        <option value="{{ $wilayah->id }}">{{ $wilayah->nama_wilayah }}</option>
-                                                    @endforeach
-                                                  </select>
+                                        <form class="mb-4" action="{{ route('admin.filterdisout') }}"
+                                            method="POST">
+                                            @csrf
+                                            <div class="row mb-4">
+                                                <div class="col-md-4">
+                                                    <label for="start_date">Wilayah</label>
+                                                    <select class="form-select" name="wilayah">
+                                                        <option value="">-- Pilih --</option>
+                                                        @foreach ($wilayahs as $wilayah)
+                                                            <option value="{{ $wilayah->id }}">
+                                                                {{ $wilayah->nama_wilayah }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
                                             </div>
-                                          </div>
-                                          <div class="row">
-                                              <div class="col-md-4">
-                                                  <label for="start_date">Start Date (Opsional)</label>
-                                                  <input type="date" id="start_date" name="start_date"
-                                                      class="form-control" value="{{ old('start_date') }}">
-                                              </div>
-                                              <div class="col-md-4">
-                                                  <label for="end_date">End Date (Opsional)</label>
-                                                  <input type="date" id="end_date" name="end_date"
-                                                      class="form-control" value="{{ old('end_date') }}">
-                                              </div>
-                                              <div class="col-md-4 d-flex align-items-end">
-                                                  <button type="submit" class="btn btn-primary">Filter</button>
-                                                  <a href="/disposal/request-disposal"
-                                                      class="btn btn-secondary ml-2">Reset</a>
-                                              </div>
-                                          </div>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label for="start_date">Start Date (Opsional)</label>
+                                                    <input type="date" id="start_date" name="start_date"
+                                                        class="form-control" value="{{ old('start_date') }}">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label for="end_date">End Date (Opsional)</label>
+                                                    <input type="date" id="end_date" name="end_date"
+                                                        class="form-control" value="{{ old('end_date') }}">
+                                                </div>
+                                                <div class="col-md-4 d-flex align-items-end">
+                                                    <button type="submit" class="btn btn-primary">Filter</button>
+                                                    <a href="/disposal/request-disposal"
+                                                        class="btn btn-secondary ml-2">Reset</a>
+                                                </div>
+                                            </div>
                                         </form>
                                         <a href="{{ url('/reports/export_excel_disposal_out') }}"
                                             class="btn btn-square btn-primary mb-4" role="button">

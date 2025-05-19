@@ -36,11 +36,11 @@ class CityController extends Controller
 
     {
 
-        // $provinsies = DB::table('master_city')->select('id', 'city')->get();
+        // $provinsies = DB::table('miegacoa_keluhan.master_city')->select('id', 'city')->get();
 
         // $provinsies = $provinsies->unique('provinsi');
 
-        $citys = DB::table('master_city')->select('master_city.*')->paginate(10);
+        $citys = DB::table('miegacoa_keluhan.master_city')->select('miegacoa_keluhan.master_city.*')->paginate(10);
 
 
 
@@ -60,11 +60,11 @@ class CityController extends Controller
 
     {
 
-        // $provinsies = DB::table('m_city')->select('city_id', 'provinsi')->get();
+        // $provinsies = DB::table('miegacoa_keluhan.miegacoa_keluhan.master_city')->select('city_id', 'provinsi')->get();
 
         // $provinsies = $provinsies->unique('provinsi');
 
-        $citys = DB::table('master_city')->select('master_city.*')->paginate(10);
+        $citys = DB::table('miegacoa_keluhan.master_city')->select('miegacoa_keluhan.master_city.*')->paginate(10);
 
 
 
@@ -83,7 +83,7 @@ class CityController extends Controller
 
     {
 
-        // Mengambil semua data dari tabel m_city
+        // Mengambil semua data dari tabel miegacoa_keluhan.miegacoa_keluhan.master_city
 
         $citys = MasterCity::all();
 

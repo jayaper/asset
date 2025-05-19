@@ -238,16 +238,8 @@
                   </div>
 					<div class="card-body">
 						<div class="btn-showcase">
-                            <div class="button_between">
-                                <button class="btn btn-square btn-primary" type="button" data-toggle="modal" data-target="#addDataRegion">+ Add Data Region</button>
-                                {{-- <button class="btn btn-square btn-primary" type="button" data-toggle="modal" data-target="#importDataExcel"> <i class="fa fa-file-excel-o" ></i> Import Data Excel </button>
-                                <button class="btn btn-square btn-primary" type="button"> <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                                Download PDF Data</button> --}}
-                            </div>
 						  </div>
 						</div>
-
-
                     <!-- Button trigger modal -->
                     @if (session('success'))
                         <div class="alert alert-success">
@@ -281,8 +273,8 @@
                                         <input type="text" name="region_code" id="region_code" class="form-control" placeholder="Enter Region Code" required>
                                         </div>
                                         <div class="col-sm-12">
-                                        <label for="region_name">Region Name : </label>
-                                        <input type="text" name="region_name" id="region_name" class="form-control" placeholder="Enter Region Name" required>
+                                        <label for="regional">Region Name : </label>
+                                        <input type="text" name="regional" id="regional" class="form-control" placeholder="Enter Region Name" required>
                                         </div>
                                     </div>
                                 </form>
@@ -315,10 +307,10 @@
                                                     <input type="text" name="region_code" id="region_code1" class="form-control" required>
                                                 </div>
                                                   <div class="col-sm-12">
-                                                      <label for="region_name">Region Name : </label>
-                                                      <input type="text" name="region_name" id="region_name1" class="form-control" required>
+                                                      <label for="regional">Region Name : </label>
+                                                      <input type="text" name="regional" id="regional1" class="form-control" required>
                                                   </div>
-                                                  <input type="hidden" name="region_id" id="region_id1">
+                                                  <input type="hidden" name="id" id="id1">
                                               </div>
                                           </div>
                                           <div class="modal-footer">
@@ -341,7 +333,6 @@
                                     </div>
                                     <div class="modal-body">
                                       <p><strong>ID:</strong> <span id="region-id"></span></p>
-                                      <p><strong>Kode:</strong> <span id="region-code"></span></p>
                                       <p><strong>Name:</strong> <span id="region-name"></span></p>
                                       <!-- You can add more brand details here -->
                                     </div>
@@ -387,7 +378,6 @@
                         <table class="table table-striped display" id="coba" style="width: 100%;">
                             <thead>
                                 <tr class="text-center">
-                                    <th>Code Region</th>
                                     <th>Nama Region</th>
                                     <th>Actions</th>
                                 </tr>
@@ -395,30 +385,14 @@
                             <tbody>
                                 @foreach($regions as $region)
                                     <tr class="text-center">
-                                        <td>{{ $region->region_code }}</td>
-                                        <td>{{ $region->region_name }}</td>
+                                        <td>{{ $region->regional }}</td>
                                         <td class="text-center">
-                                            <a href="javascript:void(0);" class="edit-button"
-                                              data-id="{{ $region->region_id }}"
-                                              data-name="{{ $region->region_name }}"
-                                              data-code="{{ $region->region_code }}"
-                                              title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
                                             <a href="javascript:void(0);" class="detail-button"
-                                            data-id="{{ $region->region_id }}"
-                                              data-name="{{ $region->region_name }}"
-                                              data-code="{{ $region->region_code }}"
+                                            data-id="{{ $region->id }}"
+                                              data-name="{{ $region->regional }}"
                                               title="Detail">
                                                 <i class="fas fa-book"></i>
                                             </a>
-                                            <form class="delete-form" action="{{ url('/master-data/delete-new-regional', $region->region_id) }}" method="POST" style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">
-                                                    <i class="fas fa-trash-alt" style="color: red;"></i>
-                                                </button>
-                                            </form>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -533,14 +507,14 @@
                     data.forEach(function(region) {
                         rows += `
                             <tr>
-                                <td>${region.region_id}</td> <!-- Tampilkan ID region -->
+                                <td>${region.id}</td> <!-- Tampilkan ID region -->
                                 <td>${region.region_code}</td> <!-- Tampilkan Nama region -->
-                                <td>${region.region_name}</td> <!-- Tampilkan Nama region -->
+                                <td>${region.regional}</td> <!-- Tampilkan Nama region -->
                                 <td>
-                                <a href="javascript:void(0);" class="edit-button" data-id="${region.region_id}" data-name="${region.region_name}" title="Edit">
+                                <a href="javascript:void(0);" class="edit-button" data-id="${region.id}" data-name="${region.regional}" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form class="delete-form" action="{{ url('admin/regions/delete') }}/${region.region_id}" method="POST" style="display:inline;">
+                                <form class="delete-form" action="{{ url('admin/regions/delete') }}/${region.id}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">
@@ -575,15 +549,15 @@
 
                 // Ambil data form
                 var regionCode = $('#region_code').val();
-                var regionName = $('#region_name').val();
+                var regionName = $('#regional').val();
 
                 // Kirimkan data menggunakan Ajax
                 $.ajax({
-                    url: '/master-data/add-new-regional' + $('#region_id').val(), // Pastikan ini adalah URL yang benar
+                    url: '/master-data/add-new-regional' + $('#id').val(), // Pastikan ini adalah URL yang benar
                     method: 'POST', // Pastikan ini menggunakan metode PUT
                     data: {
                     region_code: regionCode,
-                    region_name: regionName
+                    regional: regionName
                 }, // Kirim data dari form
                 success: function(response) {
                       console.log(response);
@@ -607,13 +581,13 @@
     {{-- Update Data Region --}}
     <script>
         $(document).on('click', '.edit-button', function() {
-            const regionId = $(this).data('id'); // Ambil region_id dari atribut data
-            const regionName = $(this).data('name'); // Ambil region_name dari atribut data
+            const regionId = $(this).data('id'); // Ambil id dari atribut data
+            const regionName = $(this).data('name'); // Ambil regional dari atribut data
             const regionCode = $(this).data('code');
 
             // Isi input dengan data
-            $('#region_id1').val(regionId);
-            $('#region_name1').val(regionName);
+            $('#id1').val(regionId);
+            $('#regional1').val(regionName);
             $('#region_code1').val(regionCode);
 
             // Tampilkan modal
@@ -625,7 +599,7 @@
             e.preventDefault(); // Cegah form reload halaman
 
             $.ajax({
-                url: '/master-data/update-new-regional/' + $('#region_id1').val(),
+                url: '/master-data/update-new-regional/' + $('#id1').val(),
                 method: 'PUT', // Menggunakan PUT untuk memperbarui data
                 data: $(this).serialize(), // Serialisasi data form untuk dikirim
                 success: function(response) {
@@ -647,8 +621,8 @@
           // Event listener for detail button
           $('.detail-button').on('click', function() {
               // Get brand data from the clicked button
-              const regionId = $(this).data('id'); // Ambil region_id dari atribut data
-              const regionName = $(this).data('name'); // Ambil region_name dari atribut data
+              const regionId = $(this).data('id'); // Ambil id dari atribut data
+              const regionName = $(this).data('name'); // Ambil regional dari atribut data
               const regionCode = $(this).data('code');
 
               // Set the data into the modal
