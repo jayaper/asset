@@ -25,7 +25,7 @@ class AmController extends Controller
 
     public function HalamanMovementOut(Request $request) {
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
-        $restos = DB::table('master_resto_v2')->select('id', 'store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('id', 'store_code', 'name_store_street')->get();
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
         $conditions = DB::table('m_condition')->select('condition_id', 'condition_name')->get();
     
@@ -47,8 +47,8 @@ class AmController extends Controller
         $moveoutsQuery = DB::table('t_out')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
         ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-        ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id')
-        ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')
+        ->join('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id')
+        ->join('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')
         ->where('t_out.is_active', 1);
     
         if ($request->filled('is_confirm') && $request->input('is_confirm') == 2) {
@@ -57,13 +57,13 @@ class AmController extends Controller
                 't_out.out_id',
                 't_out.dest_loc',
                 't_out.is_confirm',
-                'master_resto_v2.name_store_street',
+                'miegacoa_keluhan.master_resto.name_store_street',
                 'm_user.role',
                 'm_user.location_now',
                 't_in.from_location'
             )
             ->join('m_user', 't_out.dest_loc', '=', 'm_user.location_now')
-            ->join('master_resto_v2', 't_out.dest_loc', '=', 'm_user.location_now')
+            ->join('miegacoa_keluhan.master_resto', 't_out.dest_loc', '=', 'm_user.location_now')
             ->join('t_in', 't_out.in_id', '=', 't_in.in_id')
             ->where('m_user.location_now', $fromLoc)
             ->where('m_user.role', 'am')
@@ -105,7 +105,7 @@ class AmController extends Controller
     {
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
-        $restos = DB::table('master_resto_v2')->select('store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('store_code', 'name_store_street')->get();
 
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
 
@@ -154,7 +154,7 @@ class AmController extends Controller
                 't_out_detail.*',
                 'm_reason.reason_name',
                 'mc_approval.approval_name',
-                'master_resto_v2.*',
+                'miegacoa_keluhan.master_resto.*',
                 't_out_detail.*',
                 'm_uom.uom_name',
                 'm_brand.brand_name'
@@ -162,10 +162,10 @@ class AmController extends Controller
             ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
             ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
             ->join(
-                'master_resto_v2',
+                'miegacoa_keluhan.master_resto',
                 DB::raw('CONVERT(t_out.from_loc USING utf8mb4) COLLATE utf8mb4_unicode_ci'),
                 '=',
-                DB::raw('CONVERT(master_resto_v2.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
+                DB::raw('CONVERT(miegacoa_keluhan.master_resto.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
             )
             ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
             ->join('m_uom', 't_out_detail.uom', '=', 'm_uom.uom_id')
@@ -204,7 +204,7 @@ class AmController extends Controller
     {
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
-        $restos = DB::table('master_resto_v2')->select('store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('store_code', 'name_store_street')->get();
 
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
 
@@ -253,7 +253,7 @@ class AmController extends Controller
                 't_out_detail.*',
                 'm_reason.reason_name',
                 'mc_approval.approval_name',
-                'master_resto_v2.*',
+                'miegacoa_keluhan.master_resto.*',
                 't_out_detail.*',
                 'm_uom.uom_name',
                 'm_brand.brand_name'
@@ -261,10 +261,10 @@ class AmController extends Controller
             ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
             ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
             ->join(
-                'master_resto_v2',
+                'miegacoa_keluhan.master_resto',
                 DB::raw('CONVERT(t_out.from_loc USING utf8mb4) COLLATE utf8mb4_unicode_ci'),
                 '=',
-                DB::raw('CONVERT(master_resto_v2.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
+                DB::raw('CONVERT(miegacoa_keluhan.master_resto.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
             )
             ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
             ->join('m_uom', 't_out_detail.uom', '=', 'm_uom.uom_id')
@@ -309,11 +309,11 @@ class AmController extends Controller
             't_out_detail.out_id AS detail_out_id',
             't_out_detail.qty',
             'm_reason.reason_name',
-            'master_resto_v2.name_store_street AS from_location'
+            'miegacoa_keluhan.master_resto.name_store_street AS from_location'
         )
         ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->join('master_resto_v2', 't_out.from_loc', '=', 'master_resto_v2.id')
+        ->join('miegacoa_keluhan.master_resto', 't_out.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
         ->where('t_out.out_id', '=', $id) // Ensure specific match
         ->where('t_out.out_id', 'like', 'DA%')
         ->first();
@@ -351,7 +351,7 @@ class AmController extends Controller
 
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
-        $restos = DB::table('master_resto_v2')->select('store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('store_code', 'name_store_street')->get();
 
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
 
@@ -397,7 +397,7 @@ class AmController extends Controller
             't_out.*',
             'm_reason.reason_name',
             'mc_approval.approval_name',
-            'master_resto_v2.*',
+            'miegacoa_keluhan.master_resto.*',
             't_out_detail.*',
             'm_uom.uom_name',
             'm_brand.brand_name'
@@ -406,10 +406,10 @@ class AmController extends Controller
         ->leftJoin('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
         ->leftJoin('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
         ->leftJoin(
-            'master_resto_v2',
+            'miegacoa_keluhan.master_resto',
             DB::raw('CONVERT(t_out.from_loc USING utf8mb4) COLLATE utf8mb4_unicode_ci'),
             '=',
-            DB::raw('CONVERT(master_resto_v2.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
+            DB::raw('CONVERT(miegacoa_keluhan.master_resto.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
         )
         ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
         ->join('m_uom', 't_out_detail.uom', '=', 'm_uom.uom_id')
@@ -467,7 +467,7 @@ class AmController extends Controller
         $moveouts = DB::table('t_out')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
         ->join('mc_approval', 't_out.appr_1', '=', 'mc_approval.approval_id')
-        ->join('master_resto_v2 AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
+        ->join('miegacoa_keluhan.master_resto AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
         ->select('t_out.*', 'm_reason.reason_name', 'mc_approval.approval_name',
         'from_loc.name_store_street AS from_location'
         )
@@ -499,8 +499,8 @@ class AmController extends Controller
         $moveouts = DB::table('t_out')
         ->join('mc_approval', 't_out.appr_1', '=', 'mc_approval.approval_id')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id')
-        ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')
+        ->join('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id')
+        ->join('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')
         ->select(
             't_out.*', 
             'm_reason.reason_name', 
@@ -547,8 +547,8 @@ class AmController extends Controller
         $moveouts = DB::table('t_out')
         ->join('mc_approval', 't_out.appr_1', '=', 'mc_approval.approval_id')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
-            ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
+        ->join('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
+            ->join('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
         ->select('t_out.*', 'm_reason.reason_name', 'mc_approval.approval_name',
                 'fromResto.name_store_street as from_location', 
                 'toResto.name_store_street as dest_location'
@@ -633,8 +633,8 @@ class AmController extends Controller
             )
             ->join('m_reason', DB::raw('t_out.reason_id COLLATE utf8mb4_unicode_ci'), '=', DB::raw('m_reason.reason_id COLLATE utf8mb4_unicode_ci'))
             ->join('mc_approval', DB::raw('t_out.is_confirm COLLATE utf8mb4_unicode_ci'), '=', DB::raw('mc_approval.approval_id COLLATE utf8mb4_unicode_ci'))
-            ->join('master_resto_v2 AS fromResto', DB::raw('t_out.from_loc COLLATE utf8mb4_unicode_ci'), '=', DB::raw('fromResto.id COLLATE utf8mb4_unicode_ci'))
-            ->join('master_resto_v2 AS toResto', DB::raw('t_out.dest_loc COLLATE utf8mb4_unicode_ci'), '=', DB::raw('toResto.id COLLATE utf8mb4_unicode_ci'))
+            ->join('miegacoa_keluhan.master_resto AS fromResto', DB::raw('t_out.from_loc COLLATE utf8mb4_unicode_ci'), '=', DB::raw('fromResto.id COLLATE utf8mb4_unicode_ci'))
+            ->join('miegacoa_keluhan.master_resto AS toResto', DB::raw('t_out.dest_loc COLLATE utf8mb4_unicode_ci'), '=', DB::raw('toResto.id COLLATE utf8mb4_unicode_ci'))
             ->where('t_out.appr_1', '=', '2')
             ->where('t_out.appr_2', '=', '2')
             ->where('t_out.appr_3', '=', '2');

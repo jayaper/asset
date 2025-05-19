@@ -458,8 +458,8 @@
                                         <td>{{ $moveout->approval_name }}</td>
                                         <td class="text-center">
                                           @can('btn at action approval rm')
-                                            @if($user->location_now == $moveout->from_loc)
-                                              @if($moveout->appr_2 != 2 && $moveout->appr_2 != 4)
+                                            @if($moveout->regional == $user->location_now)
+                                              @if($moveout->appr_2 == 1)
                                               <a href="javascript:void(0);" class="edit-button" data-id="{{ $moveout->out_id }}" data-no="{{ $moveout->out_no }}" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                               </a>

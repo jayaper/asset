@@ -16,7 +16,7 @@ class DisposalOutController extends Controller
     {
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
-        $restos = DB::table('master_resto_v2')->select('store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('store_code', 'name_store_street')->get();
 
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
 
@@ -58,13 +58,13 @@ class DisposalOutController extends Controller
 
             $moveouts = DB::table('t_out')
         
-            ->select('t_out.*', 'm_reason.reason_name', 'mc_approval.approval_name', 'master_resto_v2.*', 't_out_detail.*')
+            ->select('t_out.*', 'm_reason.reason_name', 'mc_approval.approval_name', 'miegacoa_keluhan.master_resto.*', 't_out_detail.*')
     
             ->leftjoin('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
     
             ->leftjoin('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
     
-            ->leftjoin('master_resto_v2', 't_out.from_loc', '=' , 'master_resto_v2.id')
+            ->leftjoin('miegacoa_keluhan.master_resto', 't_out.from_loc', '=' , 'miegacoa_keluhan.master_resto.id')
     
             ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
     
@@ -89,7 +89,7 @@ class DisposalOutController extends Controller
     {
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
-        $restos = DB::table('master_resto_v2')->select('store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('store_code', 'name_store_street')->get();
 
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
 
@@ -138,7 +138,7 @@ class DisposalOutController extends Controller
                 't_out_detail.*',
                 'm_reason.reason_name',
                 'mc_approval.approval_name',
-                'master_resto_v2.*',
+                'miegacoa_keluhan.master_resto.*',
                 't_out_detail.*',
                 'm_uom.uom_name',
                 'm_brand.brand_name'
@@ -146,10 +146,10 @@ class DisposalOutController extends Controller
             ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
             ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
             ->join(
-                'master_resto_v2',
+                'miegacoa_keluhan.master_resto',
                 DB::raw('CONVERT(t_out.from_loc USING utf8mb4) COLLATE utf8mb4_unicode_ci'),
                 '=',
-                DB::raw('CONVERT(master_resto_v2.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
+                DB::raw('CONVERT(miegacoa_keluhan.master_resto.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
             )
             ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
             ->join('m_uom', 't_out_detail.uom', '=', 'm_uom.uom_id')
@@ -545,8 +545,8 @@ class DisposalOutController extends Controller
         'toResto.name_store_street as dest_location')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
         ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-        ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
-        ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
+        ->join('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
+        ->join('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
         ->get();
 
         return view('Admin.disposal.add_data_disposal', [
@@ -567,11 +567,11 @@ class DisposalOutController extends Controller
             't_out_detail.out_id AS detail_out_id',
             't_out_detail.qty',
             'm_reason.reason_name',
-            'master_resto_v2.name_store_street AS from_location'
+            'miegacoa_keluhan.master_resto.name_store_street AS from_location'
         )
         ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->join('master_resto_v2', 't_out.from_loc', '=', 'master_resto_v2.id')
+        ->join('miegacoa_keluhan.master_resto', 't_out.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
         ->where('t_out.out_id', '=', $id) // Ensure specific match
         ->where('t_out.out_id', 'like', 'DA%')
         ->first();
@@ -610,7 +610,7 @@ class DisposalOutController extends Controller
 
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
-        $restos = DB::table('master_resto_v2')->select('store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('store_code', 'name_store_street')->get();
 
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
 
@@ -656,7 +656,7 @@ class DisposalOutController extends Controller
             't_out.*',
             'm_reason.reason_name',
             'mc_approval.approval_name',
-            'master_resto_v2.*',
+            'miegacoa_keluhan.master_resto.*',
             't_out_detail.*',
             'm_uom.uom_name',
             'm_brand.brand_name'
@@ -665,10 +665,10 @@ class DisposalOutController extends Controller
         ->leftJoin('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
         ->leftJoin('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
         ->leftJoin(
-            'master_resto_v2',
+            'miegacoa_keluhan.master_resto',
             DB::raw('CONVERT(t_out.from_loc USING utf8mb4) COLLATE utf8mb4_unicode_ci'),
             '=',
-            DB::raw('CONVERT(master_resto_v2.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
+            DB::raw('CONVERT(miegacoa_keluhan.master_resto.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
         )
         ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
         ->join('m_uom', 't_out_detail.uom', '=', 'm_uom.uom_id')
@@ -758,10 +758,10 @@ class DisposalOutController extends Controller
             'm_condition.condition_name'
         )
         ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
-        ->leftJoin('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id')
+        ->leftJoin('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id')
         ->join('table_registrasi_asset', 't_out_detail.asset_id', '=', 'table_registrasi_asset.id')
         ->join('m_assets','table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
-        // ->leftJoin('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')
+        // ->leftJoin('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')
         // ->leftJoin('table_registrasi_asset', 't_out_detail.asset_id', '=', 'table_registrasi_asset.id')
         ->join('m_condition','t_out_detail.condition', '=', 'm_condition.condition_id')
         ->join('m_category','table_registrasi_asset.category_asset', '=', 'm_category.cat_code')
@@ -817,7 +817,7 @@ class DisposalOutController extends Controller
                 ,'m_brand.brand_id'
                 ,'m_uom.uom_name'
                 ,'m_uom.uom_id'
-                ,'master_resto_v2.name_store_street'
+                ,'miegacoa_keluhan.master_resto.name_store_street'
                 ,'m_layout.layout_name'
                 ,'m_supplier.supplier_name'
                 ,'m_condition.condition_name'
@@ -831,7 +831,7 @@ class DisposalOutController extends Controller
         ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
         ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
         ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-        ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+        ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
         ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
         ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
         ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -848,11 +848,11 @@ class DisposalOutController extends Controller
             't_out_detail.out_id AS detail_out_id',
             't_out_detail.qty',
             'm_reason.reason_name',
-            'master_resto_v2.name_store_street'
+            'miegacoa_keluhan.master_resto.name_store_street'
         )
         ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->join('master_resto_v2', 't_out.from_loc', '=', 'master_resto_v2.id')
+        ->join('miegacoa_keluhan.master_resto', 't_out.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
         ->where('t_out.out_id', '=', $id) // Ensure specific match
         ->where('t_out.out_id', 'like', 'DA%')
         ->first();
@@ -883,7 +883,7 @@ class DisposalOutController extends Controller
                 ,'m_brand.brand_id'
                 ,'m_uom.uom_name'
                 ,'m_uom.uom_id'
-                ,'master_resto_v2.name_store_street'
+                ,'miegacoa_keluhan.master_resto.name_store_street'
                 ,'m_layout.layout_name'
                 ,'m_supplier.supplier_name'
                 ,'m_condition.condition_name'
@@ -896,7 +896,7 @@ class DisposalOutController extends Controller
             ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
             ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
             ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-            ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+            ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
             ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
             ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
             ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -928,7 +928,7 @@ class DisposalOutController extends Controller
     //             ,'m_brand.brand_id'
     //             ,'m_uom.uom_name'
     //             ,'m_uom.uom_id'
-    //             ,'master_resto_v2.name_store_street'
+    //             ,'miegacoa_keluhan.master_resto.name_store_street'
     //             ,'m_layout.layout_name'
     //             ,'m_supplier.supplier_name'
     //             ,'m_condition.condition_name'
@@ -941,7 +941,7 @@ class DisposalOutController extends Controller
     //     ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
     //     ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
     //     ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-    //     ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+    //     ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
     //     ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
     //     ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
     //     ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -972,7 +972,7 @@ class DisposalOutController extends Controller
     //             ,'m_brand.brand_id'
     //             ,'m_uom.uom_name'
     //             ,'m_uom.uom_id'
-    //             ,'master_resto_v2.name_store_street'
+    //             ,'miegacoa_keluhan.master_resto.name_store_street'
     //             ,'m_layout.layout_name'
     //             ,'m_supplier.supplier_name'
     //             ,'m_condition.condition_name'
@@ -985,7 +985,7 @@ class DisposalOutController extends Controller
     //     ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
     //     ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
     //     ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-    //     ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+    //     ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
     //     ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
     //     ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
     //     ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')

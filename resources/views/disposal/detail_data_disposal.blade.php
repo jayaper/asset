@@ -393,7 +393,9 @@
                                     <th class="col-sm-3">Kondisi Asset</th>
                                     <td class="col-sm-3">{{ $asset->condition_name }}</td>
                                     <th class="col-sm-3">Image</th>
-                                    <td class="col-sm-3">{{ $asset->image }}</td>
+                                    <td class="col-sm-3">
+                                        <a class="btn btn-success" target="_blank" href="/storage/app/public/{{ $asset->image }}">Open</a>
+                                    </td>
                                 </tr>
                             </table>
                         </div>

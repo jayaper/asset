@@ -13,7 +13,7 @@ class Review extends Controller
     {
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
-        $restos = DB::table('master_resto_v2')->select('store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('store_code', 'name_store_street')->get();
 
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
 
@@ -61,7 +61,7 @@ class Review extends Controller
                 'b.qty',
                 'm_reason.reason_name',
                 'mc_approval.approval_name',
-                'master_resto_v2.*'
+                'miegacoa_keluhan.master_resto.*'
             )
             ->leftjoin(DB::RAW('(
                 SELECT
@@ -73,10 +73,10 @@ class Review extends Controller
             ->leftjoin('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
             ->leftjoin('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
             ->leftjoin(
-                'master_resto_v2',
+                'miegacoa_keluhan.master_resto',
                 DB::raw('CONVERT(t_out.from_loc USING utf8mb4) COLLATE utf8mb4_unicode_ci'),
                 '=',
-                DB::raw('CONVERT(master_resto_v2.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
+                DB::raw('CONVERT(miegacoa_keluhan.master_resto.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
             )
             ->where('t_out.out_id', 'like', 'DA%')
             ->where('t_out.is_confirm', '3')
@@ -112,11 +112,11 @@ class Review extends Controller
             't_out_detail.out_id AS detail_out_id',
             't_out_detail.qty',
             'm_reason.reason_name',
-            'master_resto_v2.name_store_street AS from_location'
+            'miegacoa_keluhan.master_resto.name_store_street AS from_location'
         )
         ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->join('master_resto_v2', 't_out.from_loc', '=', 'master_resto_v2.id')
+        ->join('miegacoa_keluhan.master_resto', 't_out.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
         ->where('t_out.out_id', '=', $id) // Ensure specific match
         ->where('t_out.out_id', 'like', 'DA%')
         ->first();

@@ -74,10 +74,10 @@ class DeliveryController extends Controller
         ->select('t_out.*',  
         'm_reason.reason_name',
         'mc_approval.approval_name',
-        'master_resto_v2.name_store_street AS from_location')
+        'miegacoa_keluhan.master_resto.name_store_street AS from_location')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
         ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-        ->join('master_resto_v2', 't_out.from_loc', '=', 'master_resto_v2.name_store_street')
+        ->join('miegacoa_keluhan.master_resto', 't_out.from_loc', '=', 'miegacoa_keluhan.master_resto.name_store_street')
         ->whereIn('t_out.is_confirm', [6, 7, 3, 'NULL'])
         ->paginate(10);
 
@@ -132,8 +132,8 @@ class DeliveryController extends Controller
             ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
             ->join('m_reason', DB::raw('t_out.reason_id COLLATE utf8mb4_unicode_ci'), '=', DB::raw('m_reason.reason_id COLLATE utf8mb4_unicode_ci'))
             ->join('mc_approval', DB::raw('t_out.is_confirm COLLATE utf8mb4_unicode_ci'), '=', DB::raw('mc_approval.approval_id COLLATE utf8mb4_unicode_ci'))
-            ->join('master_resto_v2 AS fromResto', DB::raw('t_out.from_loc COLLATE utf8mb4_unicode_ci'), '=', DB::raw('fromResto.id COLLATE utf8mb4_unicode_ci'))
-            ->join('master_resto_v2 AS toResto', DB::raw('t_out.dest_loc COLLATE utf8mb4_unicode_ci'), '=', DB::raw('toResto.id COLLATE utf8mb4_unicode_ci'))
+            ->join('miegacoa_keluhan.master_resto AS fromResto', DB::raw('t_out.from_loc COLLATE utf8mb4_unicode_ci'), '=', DB::raw('fromResto.id COLLATE utf8mb4_unicode_ci'))
+            ->join('miegacoa_keluhan.master_resto AS toResto', DB::raw('t_out.dest_loc COLLATE utf8mb4_unicode_ci'), '=', DB::raw('toResto.id COLLATE utf8mb4_unicode_ci'))
             ->where('t_out.appr_1', '=', '2')
             ->where('t_out.appr_2', '=', '2')
             ->where('t_out.appr_3', '=', '2'); 

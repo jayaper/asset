@@ -40,15 +40,23 @@ class ConfirmAsset extends Controller
                 ) AS b'), 'b.out_id', '=', 't_out.out_id')
             ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
             ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-            ->join('master_resto_v2 AS fromResto', 't_out.from_loc', '=', 'fromResto.id')
-            ->join('master_resto_v2 AS toResto', 't_out.dest_loc', '=', 'toResto.id')
+            ->join('miegacoa_keluhan.master_resto AS fromResto', 't_out.from_loc', '=', 'fromResto.id')
+            ->join('miegacoa_keluhan.master_resto AS toResto', 't_out.dest_loc', '=', 'toResto.id')
             ->where('t_out.appr_1', '=', '2')
             ->where('t_out.appr_2', '=', '2')
             ->where('t_out.appr_3', '=', '2');
-            if (!$user->hasRole('Admin')) {
-                $query->where(function($q) use ($lokasi_user) {
+            if (Auth::user()->hasRole('SM')){
+                $query->where(function($q) use ($lokasi_user){
                     $q->where('t_out.from_loc', $lokasi_user)
                       ->orWhere('t_out.dest_loc', $lokasi_user);
+                });
+            }else if(Auth::user()->hasRole('AM')){
+                $query->where(function($q) use ($lokasi_user){
+                    $q->where('fromResto.kode_city', $lokasi_user);
+                });
+            }else if(Auth::user()->hasRole('RM')){
+                $query->where(function($q) use ($lokasi_user){
+                    $q->where('fromResto.id_regional', $lokasi_user);
                 });
             }
         $moveins = $query->paginate(10);

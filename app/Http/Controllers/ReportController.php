@@ -11,6 +11,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ReportMutasiStock;
 
 use App\Exports\ReportDisposalData;
+use App\Exports\ReportStockAssetPerLocation;
+use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller {
 
@@ -35,7 +37,7 @@ class ReportController extends Controller {
                     ,'m_priority.priority_name'
                     ,'m_brand.brand_name'
                     ,'m_uom.uom_name'
-                    ,'master_resto_v2.name_store_street'
+                    ,'miegacoa_keluhan.master_resto.name_store_street'
                     ,'m_layout.layout_name'
                     ,'m_supplier.supplier_name'
                     ,'m_condition.condition_name'
@@ -48,7 +50,7 @@ class ReportController extends Controller {
             ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
             ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
             ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-            ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+            ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
             ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
             ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
             ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -129,8 +131,8 @@ class ReportController extends Controller {
         )
         ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
         ->join('table_registrasi_asset', 't_out_detail.asset_id', '=', 'table_registrasi_asset.id')
-        ->join(DB::raw('master_resto_v2 AS from_location'), 't_out.from_loc', '=', 'from_location.id')
-        ->join(DB::raw('master_resto_v2 AS dest_location'), 't_out.dest_loc', '=', 'dest_location.id')
+        ->join(DB::raw('miegacoa_keluhan.master_resto AS from_location'), 't_out.from_loc', '=', 'from_location.id')
+        ->leftjoin(DB::raw('miegacoa_keluhan.master_resto AS dest_location'), 't_out.dest_loc', '=', 'dest_location.id')
         ->join('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
         ->join('m_uom', 't_out_detail.uom', '=', 'm_uom.uom_id')
@@ -201,40 +203,36 @@ class ReportController extends Controller {
     }
 
     public function GetDataStockAssetPerLocation() {
-        $DataStockAssetPerLocation = DB::table('t_out')
+        $DataStockAssetPerLocation = DB::table('table_registrasi_asset AS a')
         ->select(
-            't_out.*',
-            't_out_detail.*',
-            't_out_detail.qty as qty_out',
-            'table_registrasi_asset.id',
-            'table_registrasi_asset.created_at',
-            'table_registrasi_asset.register_code',
-            'table_registrasi_asset.qty',
-            'm_assets.asset_model',
-            'm_condition.condition_name',
-            'm_type.type_name',
-            'm_category.cat_name',
-            'm_uom.uom_name',
-            'm_layout.layout_name',
-            'master_resto_v2.name_store_street'
-            )
-        ->join('t_out_detail','t_out.out_id', '=', 't_out_detail.out_id')
-        ->join('table_registrasi_asset','t_out_detail.asset_id', '=', 'table_registrasi_asset.id')
-        ->join('m_assets','table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
-        ->join('m_condition','t_out_detail.condition', '=', 'm_condition.condition_id')
-        ->join('m_type','table_registrasi_asset.type_asset', '=', 'm_type.type_code')
-        ->join('m_category','table_registrasi_asset.category_asset', '=', 'm_category.cat_code')
-        ->join('m_uom','t_out_detail.uom', '=', 'm_uom.uom_id')
-        ->join('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
-        ->join('master_resto_v2', 't_out.dest_loc', '=', 'master_resto_v2.id')
+            'a.register_date',
+            'a.register_code',
+            'b.asset_model',
+            'a.serial_number',
+            'a.qty',
+            'c.uom_name',
+            'd.condition_name',
+            'g.type_name',
+            'h.cat_name',
+            'e.name_store_street AS lokasi',
+            'f.layout_name'
+        )
+        ->leftjoin('m_assets AS b', 'b.asset_id', '=', 'a.asset_name')
+        ->leftjoin('m_uom AS c', 'c.uom_id', '=', 'a.satuan')
+        ->leftjoin('m_condition AS d', 'd.condition_id', '=', 'a.condition')
+        ->leftjoin('miegacoa_keluhan.master_resto AS e', 'e.id', '=', 'a.location_now')
+        ->leftjoin('m_layout AS f', 'f.layout_id', '=', 'a.layout')
+        ->leftjoin('m_type AS g', 'g.type_id', '=', 'a.type_asset')
+        ->leftjoin('m_category AS h', 'h.cat_code', '=', 'a.category_asset')
+        ->where('a.qty', '>', 0)
         ->get();
 
 
         return response()->json($DataStockAssetPerLocation);
     }
 
-    public function ExportStockAsset() {
-        return Excel::download(new ReportStockAsset, 'data_stock_asset.xlsx');
+    public function ExportStockAssetPerLocation() {
+        return Excel::download(new ReportStockAssetPerLocation, 'data_stock_asset_per_location.xlsx');
     }
 
 
@@ -243,7 +241,12 @@ class ReportController extends Controller {
     }
 
     public function ReportDisposalAsset() {
-        return view('report.report_disposal_asset');
+        $wilayahs = DB::table('miegacoa_keluhan.master_resto')
+                    ->select('id', 'name_store_street AS nama_wilayah')
+                    ->get();
+        return view('report.report_disposal_asset', [
+            'wilayahs' => $wilayahs
+        ]);
     }
 
     public function ReportDisposalAssetData() : JsonResponse {
@@ -253,21 +256,29 @@ class ReportController extends Controller {
             't_out_detail.*',
             'm_reason.reason_name',
             'mc_approval.approval_name',
-            'master_resto_v2.*',
+            'miegacoa_keluhan.master_resto.*',
             'table_registrasi_asset.*',
             'm_assets.*'
         )
         ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id') // Added this join
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
         ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-        ->join('master_resto_v2', 't_out.from_loc', '=', 'master_resto_v2.id')
+        ->join('miegacoa_keluhan.master_resto', 't_out.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
         ->join('table_registrasi_asset', 't_out_detail.asset_id', '=', 'table_registrasi_asset.id')
         ->join('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
-        ->where('t_out.out_id', 'like', 'DA%') 
-        ->get();
+        ->where('t_out.out_id', 'like', 'DA%')
+        ->where('is_confirm', 3);
+        $user = Auth::User();
+        if(!$user->hasRole('Admin')){
+            $DataDisposal->where(function($q) use ($user){
+                $q->where('t_out.from_loc', $user->location_now);
+            });
+        }
+
+        $data = $DataDisposal->get();
     
     
-    return response()->json($DataDisposal);
+        return response()->json($data);
     
     }
 
@@ -283,7 +294,7 @@ class ReportController extends Controller {
     public function ReportStockOpnameData() : JsonResponse {
         $dataStockOpname = DB::table('t_opname_header')
         ->join('t_opname_detail', 't_opname_header.opname_id', '=', 't_opname_detail.opname_id')
-        ->join('master_resto_v2', 't_opname_header.loc_id', '=', 'master_resto_v2.id')
+        ->join('miegacoa_keluhan.master_resto', 't_opname_header.loc_id', '=', 'miegacoa_keluhan.master_resto.id')
         ->join('m_condition', 'm_condition.condition_id', '=', 't_opname_detail.condition')
         ->join('m_uom', 'm_uom.uom_id', '=', 't_opname_detail.uom')
         ->select(
@@ -293,7 +304,7 @@ class ReportController extends Controller {
             't_opname_detail.*', 
             'm_condition.condition_name', 
             'm_uom.uom_name', 
-            'master_resto_v2.name_store_street AS location_now')
+            'miegacoa_keluhan.master_resto.name_store_street AS location_now')
         ->where('t_opname_header.is_active', '=', '1')
         ->get();
 

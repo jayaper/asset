@@ -36,7 +36,7 @@ class AdminController extends Controller
         ->sum('qty');
 
 
-        $total_resto = DB::table('master_resto_v2')
+        $total_resto = DB::table('miegacoa_keluhan.master_resto')
         ->count();
 
         return view("Admin.dashboard_admin", [
@@ -53,7 +53,7 @@ class AdminController extends Controller
         
         ->leftjoin('m_assets', 't_transaction_qty.asset_id', '=', 'm_assets.asset_id')
 
-        ->leftjoin('master_resto_v2', 't_transaction_qty.from_loc', '=', 'master_resto_v2.id')
+        ->leftjoin('miegacoa_keluhan.master_resto', 't_transaction_qty.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
 
         ->leftjoin('t_out', 't_transaction_qty.out_id', '=', 't_out.out_id')
 
@@ -61,7 +61,7 @@ class AdminController extends Controller
         
         ->leftjoin('m_condition', 't_out_detail.condition', '=', 'm_condition.condition_id')
 
-        ->select('master_resto_v2.id AS id_resto','master_resto_v2.name_store_street', 'm_assets.asset_model', 'm_condition.condition_name', 'm_condition.condition_id', 't_transaction_qty.qty', 't_transaction_qty.out_id', 't_transaction_qty.created_at');
+        ->select('miegacoa_keluhan.master_resto.id AS id_resto','miegacoa_keluhan.master_resto.name_store_street', 'm_assets.asset_model', 'm_condition.condition_name', 'm_condition.condition_id', 't_transaction_qty.qty', 't_transaction_qty.out_id', 't_transaction_qty.created_at');
 
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $startDate = $request->input('start_date') . ' 00:00:00'; 

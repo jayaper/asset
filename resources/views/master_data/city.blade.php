@@ -388,11 +388,10 @@
                     <div class="card-body">
                       <div class="table-responsive product-table" style="max-width: 100%; overflow-x: auto;">
                         <div class="d-flex justify-content-between mb-3 mt-3">
-                            <h5>City Data</h5> <!-- Add a heading for the table if needed -->
-                            <!-- Search Input Field aligned to the right -->
                             <div class="input-group" style="width: 250px;">
                                 <input type="text" id="searchInput" class="form-control" placeholder="Search for assets..." />
                             </div>
+                            <h5>Total data : <span class="text-primary">{{ $citycount }}</span></h5>
                         </div>
                         <table class="table table-striped display" id="coba" style="width: 100%;">
                             <thead>

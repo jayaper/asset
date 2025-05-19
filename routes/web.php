@@ -332,7 +332,7 @@ Route::middleware('auth')->group(function () {
     Route::controller(MDAssetEquipment::class)->group(function(){
         Route::get('master-data/asset-equipment', 'index')->middleware(['permission:view md asset equipment']);
         Route::post('/master-data/add-new-data-asset-equipment', 'NewAddDataAssetEquipment')->middleware(['permission:view md asset equipment']);
-//        Route::get('/master-data/get-new-data-asset-equipment', 'GetAjaxDataAssetEquipment')->middleware(['permission:view md asset equipment']);
+    //        Route::get('/master-data/get-new-data-asset-equipment', 'GetAjaxDataAssetEquipment')->middleware(['permission:view md asset equipment']);
         Route::put('/master-data/update-new-data-asset-equipment/{id}', 'NewUpdateDataAssetsEquipment')->middleware(['permission:view md asset equipment']);
         Route::delete('/master-data/delete-new-data-asset-equipment/{id}', 'NewDeleteDataAssetsEquipment')->middleware(['permission:view md asset equipment']);
     });
@@ -479,10 +479,14 @@ Route::middleware('auth')->group(function () {
 
     });
     Route::controller(MDResto::class)->group(function(){
-        Route::get('master-data/resto', 'index')->middleware(['permission:view md resto']);
+        Route::get('/master-data/resto', 'index')->middleware(['permission:view md resto']);
+        Route::post('/master-data/resto/add/', 'addResto')->middleware(['permission:view md resto']);
+        Route::put('/master-data/resto/update/{id}', 'updateResto')->middleware(['permission:view md resto']);
+        Route::get('/master-data/resto/get-cities', 'getCities')->middleware(['permission:view md resto']);
+        Route::get('/master-data/resto/get-regions', 'getRegions')->middleware(['permission:view md resto']);
     });
     Route::controller(MDApprovalMaintenance::class)->group(function(){
-        Route::get('master-data/approval-maintenance', 'index')->middleware(['permission:view md approval maintenance']);
+        Route::get('/master-data/approval-maintenance', 'index')->middleware(['permission:view md approval maintenance']);
     });
 
     // REPORT ROUTES
@@ -505,7 +509,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/history_maintenance_asset', [ReportController::class, 'ReportHistoryMaintenace']);
 
     Route::get('/reports/stock_asset_per_location', [ReportController::class, 'ReportStockAssetPerLocation']);
-    Route::get('/reports/get_data_stock_assset_per_location', [ReportController::class, 'GetDataStockAssetPerLocation']);
+    Route::get('/reports/get_data_stock_asset_per_location', [ReportController::class, 'GetDataStockAssetPerLocation']);
+    Route::get('/reports/export_stock_asset_per_location', [ReportController::class, 'ExportStockAssetPerLocation']);
 
 
     Route::get('/reports/garansi_asset', [ReportController::class, 'ReportGaransiAsset']);
@@ -524,10 +529,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/user', 'HalamanUser')->middleware('permission:view user');
         Route::post('/user/add-user', 'AddDataUser')->middleware('permission:view user');
         Route::put('/user/update-user/{id}', 'updateDataUser')->middleware('permission:view user');
+        Route::delete('/user/delete/{id}', 'deleteDataUser')->middleware('permission:view user');
+        Route::get('/user/user-get-location', 'userGetLocation')->middleware('permission:view user');
+        Route::get('/user/user-get-area', 'userGetArea')->middleware('permission:view user');
+        Route::get('/user/user-get-region', 'userGetRegion')->middleware('permission:view user');
         Route::get('/permission', 'userPermission')->middleware(['permission:view permission'])->name('permission');
         Route::post('/permission/add-permission', 'addPermission')->middleware(['permission:view permission']);
         Route::put('/permission/{id}/update-permission', 'updatePermission')->middleware(['permission:view permission'])->name('permission.update');
-        Route::get('role', 'userRole');
+        Route::get('/role', 'userRole');
 
         Route::get('/admin/user', [UserController::class, 'HalamanUser']);
         Route::get('/admin/user', [UserController::class, 'HalamanUser'])->name('Admin.user');
@@ -536,7 +545,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/users', [UserController::class, 'Index'])->name('Admin.user');
         Route::get('/admin/users/edit/{id}', [UserController::class, 'showEditForm'])->name('edit.user');
         Route::put('/admin/users/edit/{id}', [UserController::class, 'updateDataUser'])->name('update.user');
-        Route::delete('/admin/users/delete/{id}', [UserController::class, 'deleteDataUser'])->name('delete.user');
 
     });
 

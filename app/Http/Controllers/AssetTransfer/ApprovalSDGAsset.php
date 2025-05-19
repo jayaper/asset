@@ -38,17 +38,25 @@ class ApprovalSDGAsset extends Controller
                 ) AS b'), 'b.out_id', '=', 't_out.out_id')
             ->leftJoin('mc_approval', 'mc_approval.approval_id', '=', 't_out.appr_3')
             ->leftJoin('m_reason', 'm_reason.reason_id', '=', 't_out.reason_id')
-            ->leftJoin('master_resto_v2 as fromResto', 'fromResto.id', '=', 't_out.from_loc')
-            ->leftJoin('master_resto_v2 as toResto', 'toResto.id', '=', 't_out.dest_loc')
+            ->leftJoin('miegacoa_keluhan.master_resto as fromResto', 'fromResto.id', '=', 't_out.from_loc')
+            ->leftJoin('miegacoa_keluhan.master_resto as toResto', 'toResto.id', '=', 't_out.dest_loc')
             ->whereIn('appr_3', ['1', '2', '3', '4'])
             ->whereNull('t_out.deleted_at')
             ->where('t_out.out_id', 'like', 'AM%');
             
-        if (!$user->hasRole('Admin')) {
-            $moveouts->where(function($q) use ($from_loc){
-                $q->where('t_out.from_loc', $from_loc);
-            });
-        }
+            if (Auth::user()->hasRole('SM')){
+                $moveouts->where(function($q){
+                    $q->where('t_out.from_loc', Auth::user()->location_now);
+                });
+            }else if(Auth::user()->hasRole('AM')){
+                $moveouts->where(function($q){
+                    $q->where('fromResto.kode_city', Auth::user()->location_now);
+                });
+            }else if(Auth::user()->hasRole('RM')){
+                $moveouts->where(function($q){
+                    $q->where('fromResto.id_regional', Auth::user()->location_now);
+                });
+            }
 
         $moveouts = $moveouts->orderBy('t_out.created_at', 'desc')->paginate(10);
 

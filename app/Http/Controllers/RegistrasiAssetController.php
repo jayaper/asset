@@ -64,7 +64,7 @@ class RegistrasiAssetController extends Controller
                 'm_priority.priority_name',
                 'm_brand.brand_name',
                 'm_uom.uom_name',
-                'master_resto_v2.name_store_street',
+                'miegacoa_keluhan.master_resto.name_store_street',
                 'm_layout.layout_name',
                 'm_supplier.supplier_name',
                 'm_condition.condition_name',
@@ -78,7 +78,7 @@ class RegistrasiAssetController extends Controller
             ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
             ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
             ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-            ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+            ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
             ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
             ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
             ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -575,8 +575,8 @@ class RegistrasiAssetController extends Controller
                 'm_brand.brand_name',
                 'm_uom.uom_name',
                 'm_uom.uom_id',
-                'master_resto_v2.name_store_street',
-                'master_resto_v2.id as master_resto_id',
+                'miegacoa_keluhan.master_resto.name_store_street',
+                'miegacoa_keluhan.master_resto.id as master_resto_id',
                 'm_layout.layout_name',
                 'm_layout.layout_id',
                 'm_supplier.supplier_name',
@@ -594,7 +594,7 @@ class RegistrasiAssetController extends Controller
             ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
             ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
             ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-            ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+            ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
             ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
             ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
             ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -745,7 +745,7 @@ class RegistrasiAssetController extends Controller
                         ['table' => 'm_brand', 'field' => 'brand_name', 'value' => $merkAsset, 'name' => 'Brand'],
                         ['table' => 'm_uom', 'field' => 'uom_name', 'value' => $satuanAsset, 'name' => 'UOM'],
                         ['table' => 'm_layout', 'field' => 'layout_name', 'value' => $layoutAsset, 'name' => 'Layout'],
-                        ['table' => 'master_resto_v2', 'field' => 'name_store_street', 'value' => $registerLocationAsset, 'name' => 'Register Location'],
+                        ['table' => 'miegacoa_keluhan.master_resto', 'field' => 'name_store_street', 'value' => $registerLocationAsset, 'name' => 'Register Location'],
                     ];
 
                     foreach ($checks as $check) {
@@ -822,7 +822,7 @@ class RegistrasiAssetController extends Controller
 
                     $uomDataId = $uomData->uom_id;
 
-                    $masterRestoData = DB::table('master_resto_v2')
+                    $masterRestoData = DB::table('miegacoa_keluhan.master_resto')
                         ->where('name_store_street', $registerLocationAsset)
                         ->first();
 
@@ -1204,7 +1204,7 @@ class RegistrasiAssetController extends Controller
                 'm_priority.priority_name',
                 'm_brand.brand_name',
                 'm_uom.uom_name',
-                'master_resto_v2.name_store_street',
+                'miegacoa_keluhan.master_resto.name_store_street',
                 'm_layout.layout_name',
                 'm_supplier.supplier_name',
                 'm_condition.condition_name',
@@ -1217,7 +1217,7 @@ class RegistrasiAssetController extends Controller
             ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
             ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
             ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-            ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+            ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
             ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
             ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
             ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -1283,7 +1283,7 @@ class RegistrasiAssetController extends Controller
                 'm_priority.priority_name',
                 'm_brand.brand_name',
                 'm_uom.uom_name',
-                'master_resto_v2.name_store_street',
+                'miegacoa_keluhan.master_resto.name_store_street',
                 'm_layout.layout_name',
                 'm_supplier.supplier_name',
                 'm_condition.condition_name',
@@ -1296,7 +1296,7 @@ class RegistrasiAssetController extends Controller
             ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
             ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
             ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-            ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+            ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
             ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
             ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
             ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -1343,7 +1343,7 @@ class RegistrasiAssetController extends Controller
                     'm_priority.priority_name',
                     'm_brand.brand_name',
                     'm_uom.uom_name',
-                    'master_resto_v2.name_store_street',
+                    'miegacoa_keluhan.master_resto.name_store_street',
                     'm_layout.layout_name',
                     'm_supplier.supplier_name',
                     'm_condition.condition_name',
@@ -1356,7 +1356,7 @@ class RegistrasiAssetController extends Controller
                 ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
                 ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
                 ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-                ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+                ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
                 ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
                 ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
                 ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')

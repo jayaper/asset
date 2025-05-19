@@ -27,7 +27,7 @@ class AssetExport implements FromCollection, WithHeadings
             'table_registrasi_asset.width',
             'table_registrasi_asset.height',
             'table_registrasi_asset.depth',
-            'master_resto_v2.name_store_street as register_location',
+            'miegacoa_keluhan.master_resto.name_store_street as register_location',
             'm_layout.layout_name as layout',
             'table_registrasi_asset.register_date',
             'm_supplier.supplier_name as supplier',
@@ -43,7 +43,7 @@ class AssetExport implements FromCollection, WithHeadings
         ->leftJoin('m_category', 'table_registrasi_asset.category_asset', '=', 'm_category.cat_code')
         ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
         ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-        ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+        ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
         ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
         ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
         ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')

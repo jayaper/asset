@@ -21,8 +21,8 @@ class RestoController extends Controller
 
     public function DataResto()
     {
-        $datas = DB::table('master_resto_v2')
-            ->select('master_resto_v2.*')
+        $datas = DB::table('miegacoa_keluhan.master_resto')
+            ->select('miegacoa_keluhan.master_resto.*')
             ->paginate(10);
         return view('Admin.resto', compact('datas'));
     }
@@ -89,8 +89,8 @@ class RestoController extends Controller
 
         // Mengambil semua data dari tabel m_city
 
-        $datas = DB::table('master_resto_v2')
-            ->select('master_resto_v2.*')
+        $datas = DB::table('miegacoa_keluhan.master_resto')
+            ->select('miegacoa_keluhan.master_resto.*')
             ->get();
 
         return response()->json($datas);

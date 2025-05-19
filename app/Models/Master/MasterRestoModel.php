@@ -20,7 +20,7 @@ class MasterRestoModel extends Model
 
 
 
-    protected $table = 'master_resto_v2';
+    protected $table = 'miegacoa_keluhan.master_resto';
 
 
 

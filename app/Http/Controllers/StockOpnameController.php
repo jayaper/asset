@@ -125,8 +125,8 @@ class StockOpnameController extends Controller
 
     // Handle date filtering logic
     $moveoutsQuery = DB::table('t_opname_header')
-    ->select('t_opname_header.*', 'master_resto_v2.name_store_street AS location_now', 't_opname_header.verify', 't_opname_detail.qty_onhand', 't_opname_detail.qty_physical', 't_opname_detail.qty_difference', 't_opname_detail.register_code', 'm_uom.uom_name', 't_opname_header.deleted_at')
-    ->join('master_resto_v2', 't_opname_header.loc_id', '=', 'master_resto_v2.id')
+    ->select('t_opname_header.*', 'miegacoa_keluhan.master_resto.name_store_street AS location_now', 't_opname_header.verify', 't_opname_detail.qty_onhand', 't_opname_detail.qty_physical', 't_opname_detail.qty_difference', 't_opname_detail.register_code', 'm_uom.uom_name', 't_opname_header.deleted_at')
+    ->join('miegacoa_keluhan.master_resto', 't_opname_header.loc_id', '=', 'miegacoa_keluhan.master_resto.id')
     ->join('t_opname_detail', 't_opname_header.opname_id', '=', 't_opname_detail.opname_id')
     ->join('m_uom', 't_opname_detail.uom', '=', 'm_uom.uom_id')
     ->where('t_opname_header.is_active', '=', '1');
@@ -951,7 +951,7 @@ public function AddDataStockOpname(Request $request)
                 'm_condition.condition_name'
                 )
             ->join('t_opname_detail', 't_opname_header.opname_id', '=', 't_opname_detail.opname_id')
-            ->leftJoin('master_resto_v2 as fromResto', 't_opname_header.loc_id', '=', 'fromResto.id')
+            ->leftJoin('miegacoa_keluhan.master_resto as fromResto', 't_opname_header.loc_id', '=', 'fromResto.id')
             ->join('table_registrasi_asset', 't_opname_detail.asset_id', '=', 'table_registrasi_asset.id')
             ->join('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
             ->join('m_condition', 't_opname_detail.condition', '=', 'm_condition.condition_id')
@@ -978,7 +978,7 @@ public function AddDataStockOpname(Request $request)
     public function HalamanAddDataStockOpname() {
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
-        $restos = DB::table('master_resto_v2')->select('id', 'store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('id', 'store_code', 'name_store_street')->get();
 
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
 
@@ -996,7 +996,7 @@ public function AddDataStockOpname(Request $request)
 
 
 
-        $registerLocation = DB::table('master_resto_v2')
+        $registerLocation = DB::table('miegacoa_keluhan.master_resto')
 
                 ->where('name_store_street', $fromLoc)
 
@@ -1070,7 +1070,7 @@ public function AddDataStockOpname(Request $request)
 
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
-        $restos = DB::table('master_resto_v2')->select('id', 'store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('id', 'store_code', 'name_store_street')->get();
 
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
 
@@ -1088,7 +1088,7 @@ public function AddDataStockOpname(Request $request)
 
 
 
-        $registerLocation = DB::table('master_resto_v2')
+        $registerLocation = DB::table('miegacoa_keluhan.master_resto')
 
                 ->where('name_store_street', $fromLoc)
 
@@ -1189,7 +1189,7 @@ public function AddDataStockOpname(Request $request)
             'm_brand.brand_id',
             'm_uom.uom_name',
             'm_uom.uom_id',
-            'master_resto_v2.name_store_street',
+            'miegacoa_keluhan.master_resto.name_store_street',
             'm_layout.layout_name',
             'm_supplier.supplier_name',
             'm_condition.condition_name',
@@ -1206,7 +1206,7 @@ public function AddDataStockOpname(Request $request)
         ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
         ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
         ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-        ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+        ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
         ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
         ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
         ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -1243,7 +1243,7 @@ public function AddDataStockOpname(Request $request)
                     'm_brand.brand_id',
                     'm_uom.uom_name',
                     'm_uom.uom_id',
-                    'master_resto_v2.name_store_street',
+                    'miegacoa_keluhan.master_resto.name_store_street',
                     'm_layout.layout_name',
                     'm_supplier.supplier_name',
                     'm_condition.condition_name',
@@ -1258,7 +1258,7 @@ public function AddDataStockOpname(Request $request)
                 ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
                 ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
                 ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-                ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+                ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
                 ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
                 ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
                 ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -1282,17 +1282,17 @@ public function AddDataStockOpname(Request $request)
         $assets = DB::table('table_registrasi_asset')->select('id', 'asset_name')->get();
         $conditions = DB::table('m_condition')->select('condition_id', 'condition_name')->get();
         $uoms = DB::table('m_uom')->select('uom_id', 'uom_name')->get();
-        $restos = DB::table('master_resto_v2')->select('id', 'store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('id', 'store_code', 'name_store_street')->get();
         
         
         $username = auth()->user()->username;
         $locId = DB::table('m_people')->where('nip', $username)->value('loc_id');
     
         $moveout = DB::table('t_opname_header')
-        ->select('t_opname_header.*', 'master_resto_v2.name_store_street AS location_now', 'master_resto_v2.id AS resto_id', 't_opname_detail.qty_onhand', 't_opname_detail.qty_physical', 't_opname_detail.register_code', 'm_uom.uom_name', 't_opname_header.deleted_at',
+        ->select('t_opname_header.*', 'miegacoa_keluhan.master_resto.name_store_street AS location_now', 'miegacoa_keluhan.master_resto.id AS resto_id', 't_opname_detail.qty_onhand', 't_opname_detail.qty_physical', 't_opname_detail.register_code', 'm_uom.uom_name', 't_opname_header.deleted_at',
             'm_reason.reason_id','m_reason.reason_name'
         )
-        ->join('master_resto_v2', 't_opname_header.loc_id', '=', 'master_resto_v2.id')
+        ->join('miegacoa_keluhan.master_resto', 't_opname_header.loc_id', '=', 'miegacoa_keluhan.master_resto.id')
         ->join('t_opname_detail', 't_opname_header.opname_id', '=', 't_opname_detail.opname_id')
         ->join('m_reason', 't_opname_header.opname_reason_id', '=', 'm_reason.reason_id')
         ->join('m_uom', 't_opname_detail.uom', '=', 'm_uom.uom_id')
@@ -1343,20 +1343,20 @@ public function AddDataStockOpname(Request $request)
         $assets = DB::table('table_registrasi_asset')->select('id', 'asset_name')->get();
         $conditions = DB::table('m_condition')->select('condition_id', 'condition_name')->get();
         $uoms = DB::table('m_uom')->select('uom_id', 'uom_name')->get();
-        $restos = DB::table('master_resto_v2')->select('id', 'store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('id', 'store_code', 'name_store_street')->get();
         
         
         $username = auth()->user()->username;
         $locId = DB::table('m_people')->where('nip', $username)->value('loc_id');
     
         $moveout = DB::table('t_opname_header')
-        ->select('t_opname_header.*', 'master_resto_v2.name_store_street AS location_now', 'master_resto_v2.id AS resto_id', 't_opname_detail.qty_onhand', 't_opname_detail.qty_physical', 't_opname_detail.register_code', 'm_uom.uom_name', 't_opname_header.deleted_at',
+        ->select('t_opname_header.*', 'miegacoa_keluhan.master_resto.name_store_street AS location_now', 'miegacoa_keluhan.master_resto.id AS resto_id', 't_opname_detail.qty_onhand', 't_opname_detail.qty_physical', 't_opname_detail.register_code', 'm_uom.uom_name', 't_opname_header.deleted_at',
             'm_reason.reason_id',
             'm_reason.reason_name',
             'm_condition.condition_id', // Add this line
             'm_condition.condition_name',
         )
-        ->join('master_resto_v2', 't_opname_header.loc_id', '=', 'master_resto_v2.id')
+        ->join('miegacoa_keluhan.master_resto', 't_opname_header.loc_id', '=', 'miegacoa_keluhan.master_resto.id')
         ->join('t_opname_detail', 't_opname_header.opname_id', '=', 't_opname_detail.opname_id')
         ->join('m_reason', 't_opname_header.opname_reason_id', '=', 'm_reason.reason_id')
         ->join('m_uom', 't_opname_detail.uom', '=', 'm_uom.uom_id')

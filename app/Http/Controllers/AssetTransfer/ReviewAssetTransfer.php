@@ -38,8 +38,8 @@ class ReviewAssetTransfer extends Controller
                     ) AS b'), 'b.out_id', '=', 't_out.out_id')
                 ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
                 ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-                ->join('master_resto_v2 AS fromResto', 't_out.from_loc', '=', 'fromResto.id')
-                ->join('master_resto_v2 AS toResto', 't_out.dest_loc', '=', 'toResto.id')
+                ->join('miegacoa_keluhan.master_resto AS fromResto', 't_out.from_loc', '=', 'fromResto.id')
+                ->join('miegacoa_keluhan.master_resto AS toResto', 't_out.dest_loc', '=', 'toResto.id')
                 ->where('t_out.is_confirm', '=', '3')
                 ->where('t_out.out_id', 'like', 'AM%');
             if (!$user->hasRole('Admin')) {

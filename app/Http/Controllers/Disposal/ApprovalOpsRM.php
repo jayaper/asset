@@ -23,7 +23,9 @@ class ApprovalOpsRM extends Controller
                 'b.qty',
                 'm_reason.reason_name',
                 'mc_approval.approval_name',
-                'fromloc.name_store_street AS from_location'
+                'fromloc.name_store_street AS from_location',
+                'fromloc.kode_city',
+                'fromloc.id_regional'
             )
             ->leftjoin(DB::RAW('(
                 SELECT
@@ -35,7 +37,7 @@ class ApprovalOpsRM extends Controller
             ->leftjoin('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
             ->leftjoin('mc_approval', 't_out.appr_2', '=', 'mc_approval.approval_id')
             ->leftjoin(
-                'master_resto_v2 AS fromloc',
+                'miegacoa_keluhan.master_resto AS fromloc',
                 DB::raw('CONVERT(t_out.from_loc USING utf8mb4) COLLATE utf8mb4_unicode_ci'),
                 '=',
                 DB::raw('CONVERT(fromloc.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
@@ -46,9 +48,17 @@ class ApprovalOpsRM extends Controller
             ->orderBy('t_out.out_id', 'DESC');
             // Jika yang login bukan admin, tambahkan filter berdasarkan `user_loc`
             $user = Auth::User();
-            if (!$user->hasRole('Admin')) {
+            if ($user->hasRole('SM')) {
                 $query->where(function ($q){
                     $q->where('t_out.from_loc', Auth::User()->location_now);
+                });
+            }else if($user->hasRole('AM')) {
+                $query->where(function ($q){
+                    $q->where('fromloc.kode_city', Auth::User()->location_now);
+                });
+            }else if($user->hasRole('RM')) {
+                $query->where(function ($q){
+                    $q->where('fromloc.id_regional', Auth::User()->location_now);
                 });
             }
         $moveouts = $query->paginate(10);
@@ -142,11 +152,11 @@ class ApprovalOpsRM extends Controller
             't_out_detail.out_id AS detail_out_id',
             't_out_detail.qty',
             'm_reason.reason_name',
-            'master_resto_v2.name_store_street AS from_location'
+            'miegacoa_keluhan.master_resto.name_store_street AS from_location'
         )
         ->leftjoin('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
         ->leftjoin('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->leftjoin('master_resto_v2', 't_out.from_loc', '=', 'master_resto_v2.id')
+        ->leftjoin('miegacoa_keluhan.master_resto', 't_out.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
         ->where('t_out.out_id', '=', $id) // Ensure specific match
         ->where('t_out.out_id', 'like', 'DA%')
         ->first();

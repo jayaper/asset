@@ -44,7 +44,7 @@ class StoreManagerController extends Controller
     public function HalamanMovement(Request $request)
     {
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
-        $restos = DB::table('master_resto_v2')->select('id', 'store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('id', 'store_code', 'name_store_street')->get();
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
         $conditions = DB::table('m_condition')->select('condition_id', 'condition_name')->get();
 
@@ -95,8 +95,8 @@ class StoreManagerController extends Controller
             ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
             ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
             ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-            ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id')
-            ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')
+            ->join('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id')
+            ->join('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')
             ->join('m_user', 't_out.dest_loc', '=', 'm_user.location_now')
             ->where('t_out.is_active', 1)
             ->where('t_out.dest_loc', $fromLoc);
@@ -104,8 +104,8 @@ class StoreManagerController extends Controller
         // $moveoutsQuery = DB::table('t_out')
         // ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
         // ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-        // ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id')
-        // ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')
+        // ->join('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id')
+        // ->join('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')
         // ->where('t_out.is_active', 1);
 
         // if ($request->filled('is_confirm') && $request->input('is_confirm') == 2) {
@@ -114,11 +114,11 @@ class StoreManagerController extends Controller
         //         't_out.out_id',
         //         't_out.dest_loc',
         //         't_out.is_confirm',
-        //         'master_resto_v2.name_store_street',
+        //         'miegacoa_keluhan.master_resto.name_store_street',
         //         'm_user.location_now',
         //     )
         //     ->join('m_user', 't_out.dest_loc', '=', 'm_user.location_now')
-        //     ->join('master_resto_v2', 't_out.dest_loc', '=', 'm_user.location_now')
+        //     ->join('miegacoa_keluhan.master_resto', 't_out.dest_loc', '=', 'm_user.location_now')
         //     ->where('m_user.location_now', '=', $fromLoc)
         //     ->where('t_out.is_confirm', 3);
 
@@ -157,7 +157,7 @@ class StoreManagerController extends Controller
 
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
-        $restos = DB::table('master_resto_v2')->select('store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('store_code', 'name_store_street')->get();
 
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
 
@@ -175,7 +175,7 @@ class StoreManagerController extends Controller
 
 
 
-        $registerLocation = DB::table('master_resto_v2')
+        $registerLocation = DB::table('miegacoa_keluhan.master_resto')
 
             ->where('name_store_street', $fromLoc)
 
@@ -233,8 +233,8 @@ class StoreManagerController extends Controller
 
         // Fetch the current location and its ID
         $userLocation = DB::table('m_user')
-            ->select('master_resto_v2.id', 'master_resto_v2.name_store_street')
-            ->join('master_resto_v2', 'master_resto_v2.id', '=', 'm_user.location_now')
+            ->select('miegacoa_keluhan.master_resto.id', 'miegacoa_keluhan.master_resto.name_store_street')
+            ->join('miegacoa_keluhan.master_resto', 'miegacoa_keluhan.master_resto.id', '=', 'm_user.location_now')
             ->where('m_user.username', $username)
             ->first();
 
@@ -416,8 +416,8 @@ class StoreManagerController extends Controller
             )
             ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
             ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-            ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
-            ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
+            ->join('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
+            ->join('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
             ->whereBetween('t_out.out_date', [$startDate, $endDate]);
 
         $moveouts = $moveoutsQuery->paginate(10);
@@ -426,7 +426,7 @@ class StoreManagerController extends Controller
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
         $username = auth()->user()->username;
         $fromLoc = DB::table('m_user')->where('username', $username)->value('location_now');
-        $restos = DB::table('master_resto_v2')->select('store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('store_code', 'name_store_street')->get();
         $conditions = DB::table('m_condition')->select('condition_id', 'condition_name')->get();
         $assets = DB::table('table_registrasi_asset')->select('id', 'asset_name')->where('qty', '>', 0)->get();
 
@@ -497,7 +497,7 @@ class StoreManagerController extends Controller
         //     ->join('m_category', 'table_registrasi_asset.category_asset', '=', 'm_category.cat_code')
         //     ->join('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
         //     ->join('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-        //     ->join('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+        //     ->join('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
         //     ->join('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
         //     ->join('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
         //     ->join('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -562,7 +562,7 @@ class StoreManagerController extends Controller
     //             ,'m_brand.brand_id'
     //             ,'m_uom.uom_name'
     //             ,'m_uom.uom_id'
-    //             ,'master_resto_v2.name_store_street'
+    //             ,'miegacoa_keluhan.master_resto.name_store_street'
     //             ,'m_layout.layout_name'
     //             ,'m_supplier.supplier_name'
     //             ,'m_condition.condition_name'
@@ -576,7 +576,7 @@ class StoreManagerController extends Controller
     //     ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
     //     ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
     //     ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-    //     ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+    //     ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
     //     ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
     //     ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
     //     ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -691,7 +691,7 @@ class StoreManagerController extends Controller
         //         ,'m_brand.brand_id'
         //         ,'m_uom.uom_name'
         //         ,'m_uom.uom_id'
-        //         ,'master_resto_v2.name_store_street'
+        //         ,'miegacoa_keluhan.master_resto.name_store_street'
         //         ,'m_layout.layout_name'
         //         ,'m_supplier.supplier_name'
         //         ,'m_condition.condition_name'
@@ -704,7 +704,7 @@ class StoreManagerController extends Controller
         // ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
         // ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
         // ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-        // ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+        // ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
         // ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
         // ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
         // ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -740,8 +740,8 @@ class StoreManagerController extends Controller
             )
             ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
             ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-            ->join('master_resto_v2 AS fromResto', 't_out.from_loc', '=', 'fromResto.id')
-            ->join('master_resto_v2 AS toResto', 't_out.dest_loc', '=', 'toResto.id')
+            ->join('miegacoa_keluhan.master_resto AS fromResto', 't_out.from_loc', '=', 'fromResto.id')
+            ->join('miegacoa_keluhan.master_resto AS toResto', 't_out.dest_loc', '=', 'toResto.id')
             ->join('m_user', 't_out.dest_loc', '=', 'm_user.location_now')
             ->where('t_out.appr_1', '=', '2')
             ->where('t_out.appr_2', '=', '2')
@@ -859,7 +859,7 @@ class StoreManagerController extends Controller
         //         ,'m_brand.brand_id'
         //         ,'m_uom.uom_name'
         //         ,'m_uom.uom_id'
-        //         ,'master_resto_v2.name_store_street'
+        //         ,'miegacoa_keluhan.master_resto.name_store_street'
         //         ,'m_layout.layout_name'
         //         ,'m_supplier.supplier_name'
         //         ,'m_condition.condition_name'
@@ -878,7 +878,7 @@ class StoreManagerController extends Controller
         //         ->join('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
         //         ->join('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
         //         ->join('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-        //         ->join('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+        //         ->join('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
         //         ->join('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
         //         ->join('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
         //         ->join('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -905,7 +905,7 @@ class StoreManagerController extends Controller
     {
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
-        $restos = DB::table('master_resto_v2')->select('store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('store_code', 'name_store_street')->get();
 
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
 
@@ -954,7 +954,7 @@ class StoreManagerController extends Controller
                 't_out_detail.*',
                 'm_reason.reason_name',
                 'mc_approval.approval_name',
-                'master_resto_v2.*',
+                'miegacoa_keluhan.master_resto.*',
                 't_out_detail.*',
                 'm_uom.uom_name',
                 'm_brand.brand_name'
@@ -962,10 +962,10 @@ class StoreManagerController extends Controller
             ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
             ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
             ->join(
-                'master_resto_v2',
+                'miegacoa_keluhan.master_resto',
                 DB::raw('CONVERT(t_out.from_loc USING utf8mb4) COLLATE utf8mb4_unicode_ci'),
                 '=',
-                DB::raw('CONVERT(master_resto_v2.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
+                DB::raw('CONVERT(miegacoa_keluhan.master_resto.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
             )
             ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
             ->join('m_uom', 't_out_detail.uom', '=', 'm_uom.uom_id')
@@ -1006,7 +1006,7 @@ class StoreManagerController extends Controller
     {
 
         $location_user = auth()->user()->location_now;
-        $loc = DB::table('master_resto_v2')->where('id', $location_user)->first();
+        $loc = DB::table('miegacoa_keluhan.master_resto')->where('id', $location_user)->first();
 
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
@@ -1022,8 +1022,8 @@ class StoreManagerController extends Controller
             )
             ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
             ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-            ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
-            ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
+            ->join('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
+            ->join('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
             ->get();
 
         return view('SM.disposal.add_data_disposal', [
@@ -1157,11 +1157,11 @@ class StoreManagerController extends Controller
                 't_out_detail.out_id AS detail_out_id',
                 't_out_detail.qty',
                 'm_reason.reason_name',
-                'master_resto_v2.name_store_street AS from_location'
+                'miegacoa_keluhan.master_resto.name_store_street AS from_location'
             )
             ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
             ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-            ->join('master_resto_v2', 't_out.from_loc', '=', 'master_resto_v2.id')
+            ->join('miegacoa_keluhan.master_resto', 't_out.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
             ->where('t_out.out_id', '=', $id) // Ensure specific match
             ->where('t_out.out_id', 'like', 'DA%')
             ->first();
@@ -1199,7 +1199,7 @@ class StoreManagerController extends Controller
 
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
-        $restos = DB::table('master_resto_v2')->select('store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('store_code', 'name_store_street')->get();
 
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
 
@@ -1245,7 +1245,7 @@ class StoreManagerController extends Controller
                 't_out.*',
                 'm_reason.reason_name',
                 'mc_approval.approval_name',
-                'master_resto_v2.*',
+                'miegacoa_keluhan.master_resto.*',
                 't_out_detail.*',
                 'm_uom.uom_name',
                 'm_brand.brand_name'
@@ -1254,10 +1254,10 @@ class StoreManagerController extends Controller
             ->leftJoin('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
             ->leftJoin('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
             ->leftJoin(
-                'master_resto_v2',
+                'miegacoa_keluhan.master_resto',
                 DB::raw('CONVERT(t_out.from_loc USING utf8mb4) COLLATE utf8mb4_unicode_ci'),
                 '=',
-                DB::raw('CONVERT(master_resto_v2.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
+                DB::raw('CONVERT(miegacoa_keluhan.master_resto.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
             )
             ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
             ->join('m_uom', 't_out_detail.uom', '=', 'm_uom.uom_id')
@@ -1407,7 +1407,7 @@ class StoreManagerController extends Controller
                 'm_brand.brand_id',
                 'm_uom.uom_name',
                 'm_uom.uom_id',
-                'master_resto_v2.name_store_street',
+                'miegacoa_keluhan.master_resto.name_store_street',
                 'm_layout.layout_name',
                 'm_supplier.supplier_name',
                 'm_condition.condition_name',
@@ -1426,7 +1426,7 @@ class StoreManagerController extends Controller
             ->join('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
             ->join('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
             ->join('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-            ->join('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+            ->join('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
             ->join('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
             ->join('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
             ->join('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -1469,7 +1469,7 @@ class StoreManagerController extends Controller
                 'm_brand.brand_id',
                 'm_uom.uom_name',
                 'm_uom.uom_id',
-                'master_resto_v2.name_store_street',
+                'miegacoa_keluhan.master_resto.name_store_street',
                 'm_layout.layout_name',
                 'm_supplier.supplier_name',
                 'm_condition.condition_name',
@@ -1484,7 +1484,7 @@ class StoreManagerController extends Controller
             ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
             ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
             ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-            ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+            ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
             ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
             ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
             ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')

@@ -13,9 +13,13 @@ class Regional extends Controller
 {
     public function index()
     {
-        $regions = DB::table('m_region')->select('m_region.*')->paginate(10);
+        $regions = DB::table('m_region')->select('m_region.*')->paginate(15);
+        $regioncount = DB::table('m_region')->select('m_region.*')->count();
 
-        return view("master_data.region", ['regions' => $regions]);
+        return view("master_data.region", [
+            'regions' => $regions,
+            'regioncount' => $regioncount
+        ]);
     }
 
     public function NewAddDataRegion(Request $request) {

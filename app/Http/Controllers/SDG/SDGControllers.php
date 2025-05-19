@@ -30,7 +30,7 @@ class SDGControllers extends Controller {
         ->sum('qty');
 
 
-        $total_resto = DB::table('master_resto_v2')
+        $total_resto = DB::table('miegacoa_keluhan.master_resto')
         ->count();
         
         return view("SDG.sdg_dashboard", [
@@ -47,13 +47,13 @@ class SDGControllers extends Controller {
         
         ->join('m_assets', 't_transaction_qty.asset_id', '=', 'm_assets.asset_id')
 
-        ->join('master_resto_v2', 't_transaction_qty.from_loc', '=', 'master_resto_v2.id')
+        ->join('miegacoa_keluhan.master_resto', 't_transaction_qty.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
 
         ->join('t_out', 't_transaction_qty.out_id', '=', 't_out.out_id')
         
         ->join('m_condition', 't_transaction_qty.condition', '=', 'm_condition.condition_id')
 
-        ->select('master_resto_v2.id AS id_resto','master_resto_v2.name_store_street', 'm_assets.asset_model', 'm_condition.condition_name', 'm_condition.condition_id', 't_transaction_qty.qty', 't_transaction_qty.out_id', 't_transaction_qty.created_at');
+        ->select('miegacoa_keluhan.master_resto.id AS id_resto','miegacoa_keluhan.master_resto.name_store_street', 'm_assets.asset_model', 'm_condition.condition_name', 'm_condition.condition_id', 't_transaction_qty.qty', 't_transaction_qty.out_id', 't_transaction_qty.created_at');
 
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $startDate = $request->input('start_date') . ' 00:00:00'; 
@@ -77,7 +77,7 @@ class SDGControllers extends Controller {
         $moveouts = DB::table('t_out')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
         ->join('mc_approval', 't_out.appr_3', '=', 'mc_approval.approval_id')
-        ->join('master_resto_v2 AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
+        ->join('miegacoa_keluhan.master_resto AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
         ->select('t_out.*', 'm_reason.reason_name', 'mc_approval.approval_name',
         'from_loc.name_store_street AS from_location'
         )
@@ -104,11 +104,11 @@ class SDGControllers extends Controller {
             't_out_detail.out_id AS detail_out_id',
             't_out_detail.qty',
             'm_reason.reason_name',
-            'master_resto_v2.name_store_street AS from_location'
+            'miegacoa_keluhan.master_resto.name_store_street AS from_location'
         )
         ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->join('master_resto_v2', 't_out.from_loc', '=', 'master_resto_v2.id')
+        ->join('miegacoa_keluhan.master_resto', 't_out.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
         ->where('t_out.out_id', '=', $id) // Ensure specific match
         ->where('t_out.out_id', 'like', 'DA%')
         ->first();

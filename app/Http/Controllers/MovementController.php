@@ -40,8 +40,8 @@ class MovementController extends Controller
         $moveouts = DB::table('t_out')
         ->join('mc_approval', 't_out.appr_1', '=', 'mc_approval.approval_id')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
-            ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
+        ->join('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
+            ->join('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
         ->select('t_out.*', 'm_reason.reason_name', 'mc_approval.approval_name',
                 'fromResto.name_store_street as from_location', 
                 'toResto.name_store_street as dest_location'
@@ -90,8 +90,8 @@ class MovementController extends Controller
         $moveouts = DB::table('t_out')
         ->join('mc_approval', 't_out.appr_1', '=', 'mc_approval.approval_id')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
-        ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
+        ->join('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
+        ->join('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
         ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id') 
         ->select('t_out.*', 't_out_detail.*', 'm_reason.reason_name', 'mc_approval.approval_name', 
                 'fromResto.name_store_street as from_location', 
@@ -119,8 +119,8 @@ class MovementController extends Controller
         $moveouts = DB::table('t_out')
         ->join('mc_approval', 't_out.appr_2', '=', 'mc_approval.approval_id')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
-        ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
+        ->join('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
+        ->join('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
         ->select('t_out.*', 'm_reason.reason_name', 'mc_approval.approval_name', 
                 'fromResto.name_store_street as from_location', 
                 'toResto.name_store_street as dest_location',
@@ -146,8 +146,8 @@ class MovementController extends Controller
         $moveouts = DB::table('t_out')
         ->join('mc_approval', 't_out.appr_2', '=', 'mc_approval.approval_id')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
-        ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
+        ->join('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
+        ->join('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
         ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id') 
         ->select('t_out.*', 't_out_detail.*', 'm_reason.reason_name', 'mc_approval.approval_name', 
                 'fromResto.name_store_street as from_location', 
@@ -174,8 +174,8 @@ class MovementController extends Controller
         $moveouts = DB::table('t_out')
         ->join('mc_approval', 't_out.appr_3', '=', 'mc_approval.approval_id')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
-        ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
+        ->join('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
+        ->join('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
         ->select('t_out.*', 'm_reason.reason_name', 'mc_approval.approval_name',
                 'fromResto.name_store_street as from_location', 
                 'toResto.name_store_street as dest_location'
@@ -201,8 +201,8 @@ class MovementController extends Controller
         $moveouts = DB::table('t_out')
         ->join('mc_approval', 't_out.appr_3', '=', 'mc_approval.approval_id')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
-        ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
+        ->join('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
+        ->join('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
         ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id') 
         ->select('t_out.*', 't_out_detail.*', 'm_reason.reason_name', 'mc_approval.approval_name', 
                 'fromResto.name_store_street as from_location', 

@@ -213,13 +213,13 @@
             <div class="page-title">
               <div class="row">
                 <div class="col-sm-6">
-                  <h3>City Name List</h3>
+                  <h3>Resto List</h3>
                 </div>
                 <div class="col-sm-6">
                   <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a></li>
                     <li class="breadcrumb-item">ASMI</li>
-                    <li class="breadcrumb-item active">City Name List</li>
+                    <li class="breadcrumb-item active">Resto List</li>
                   </ol>
                 </div>
               </div>
@@ -233,19 +233,16 @@
               <div class="col-sm-12">
                 <div class="card">
                   <div class="card-header pb-0">
-                    <h5>City Name List</h5>
+                    <h5>Resto List</h5>
                     <span>adalah daftar atau kumpulan aset yang dimiliki oleh seseorang, organisasi, atau perusahaan. Daftar ini biasanya mencakup rincian tentang setiap aset, seperti jenis aset, nilai, lokasi, dan informasi relevan lainnya.</span>
                   </div>
-					<div class="card-body"> 
-						<div class="btn-showcase">
-                            <div class="button_between">
-                                <!-- <button class="btn btn-square btn-primary" type="button" data-toggle="modal" data-target="#addDataCity">+ Add Data City</button> -->
-                                {{-- <button class="btn btn-square btn-primary" type="button" data-toggle="modal" data-target="#importDataExcel"> <i class="fa fa-file-excel-o" ></i> Import Data Excel </button>
-                                <button class="btn btn-square btn-primary" type="button"> <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                                Download PDF Data</button> --}}
-                            </div>
-						  </div>
-						</div>
+                  {{-- <div class="card-body">
+                    <div class="btn-showcase">
+                      <div class="button_between">
+                          <button class="btn btn-square btn-primary" type="button" data-toggle="modal" data-target="#addDataResto">+ Add Data Resto</button>
+                      </div>
+                    </div>
+                  </div> --}}
 
 
                     <!-- Button trigger modal -->
@@ -263,32 +260,57 @@
 
                     <!-- Modal add -->
                     <!-- Modal Add Data Asset -->
-                    <div class="modal fade" id="addDataCity" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+                    <div class="modal fade" id="addDataResto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" >
                         <div class="modal-dialog modal-md">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">Add Data City</h5>
+                                    <h5 class="modal-title" id="exampleModalLabel">Add Data Resto</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form id="addCityForm" enctype="multipart/form-data">
+                                    <form id="addRestoForm" enctype="multipart/form-data">
                                         @csrf
                                         <div class="row">
-                                            {{-- <div class="col-sm-12">
-                                                <label for="city_id">Provinsi : </label>
-                                                <select name="city_id" id="city_id" class="form-control" required>
-                                                    <option value="">Pilih Provinsi</option>
-                                                    @foreach($provinsies as $provinsi)
-                                                        <option value="{{ $provinsi->provinsi }}">{{ $provinsi->provinsi }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div> --}}
-                                            <div class="col-sm-12">
-                                                <label for="city">City : </label>
-                                                <input type="text" name="city" id="city" class="form-control" placeholder="Enter City" required>
-                                            </div>
+                                          <div class="col-sm-12 pb-3">
+                                            <label for="city">Kode Resto : </label>
+                                            <input id="add_kode_resto" type="text" name="kode_resto" class="form-control" required>
+                                          </div>
+                                          <div class="col-sm-12 pb-3">
+                                              <label for="city">Resto : </label>
+                                              <input id="add_resto" type="text" name="resto" class="form-control" required>
+                                          </div>
+                                          <div class="col-sm-12 pb-3">
+                                              <label for="city">Kom Resto : </label>
+                                              <input id="add_kom_resto" type="text" name="kom_resto" class="form-control" required>
+                                          </div>
+                                          <div class="col-sm-12 pb-3">
+                                              <label for="city">Regional : </label>
+                                              <select id="add_id_regional" class="form-control" name="id_regional" required>
+                                                <option value="" disabled>~~ SELECT REGIONAL ~~</option>
+                                                @foreach ($regions as $region)
+                                                  <option value="{{ $region->region_id }}">{{ $region->region_name }}</option>
+                                                @endforeach
+                                              </select>
+                                          </div>
+                                          <div class="col-sm-12 pb-3">
+                                              <label for="city">City : </label>
+                                              <select id="add_kode_city" class="form-control" name="kode_city" required>
+                                                <option value="" disabled>~~ SELECT CITY ~~</option>
+                                                @foreach ($cities as $city)
+                                                  <option value="{{ $city->id }}">{{ $city->city }}</option>
+                                                @endforeach
+                                              </select>
+                                          </div>
+                                          <div class="col-sm-12 pb-3">
+                                              <label for="city">Store Code : </label>
+                                              <input id="add_store_code" type="text" name="store_code" class="form-control">
+                                          </div>
+                                          <div class="col-sm-12 pb-3">
+                                              <label for="city">Name Store Street : </label>
+                                              <input id="add_name_store_street" type="text" name="name_store_street" class="form-control" required>
+                                          </div>
                                         </div>
                                     </form>
                                 </div>
@@ -306,7 +328,7 @@
                               <div class="modal-dialog modal-md">
                                   <div class="modal-content">
                                       <div class="modal-header">
-                                          <h5 class="modal-title" id="exampleModalLabel">Update City</h5>
+                                          <h5 class="modal-title" id="exampleModalLabel">Update Resto</h5>
                                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                               <span aria-hidden="true">&times;</span>
                                           </button>
@@ -316,20 +338,35 @@
                                           @method('PUT') <!-- Method override untuk PUT -->
                                           <div class="modal-body">
                                               <div class="row">
-                                                {{-- <div class="col-sm-12">
-                                                <label for="city_id">Provinsi : </label>
-                                                    <select name="city_id" id="city_id" class="form-control" required>
-                                                      <option value="">Pilih Provinsi</option>
-                                                      @foreach($provinsies as $provinsi)
-                                                          <option value="{{ $provinsi->city_id }}">{{ $provinsi->provinsi }}</option>
-                                                      @endforeach
-                                                  </select>
-                                                </div> --}}
-                                                  <div class="col-sm-12">
-                                                      <label for="city">City : </label>
-                                                      <input type="text" name="city" id="edit-city" class="form-control" required>
+                                                  <div class="col-sm-12 pb-3">
+                                                      <label for="city">Kode Resto : </label>
+                                                      <input type="text" name="kode_resto" id="kode_resto" class="form-control" required>
                                                   </div>
-                                                  <input type="hidden" name="city_id" id="city_id">
+                                                  <div class="col-sm-12 pb-3">
+                                                      <label for="city">Resto : </label>
+                                                      <input type="text" name="resto" id="resto" class="form-control" required>
+                                                  </div>
+                                                  <div class="col-sm-12 pb-3">
+                                                      <label for="city">Regional : </label>
+                                                      <select class="form-control" name="id_regional" id="id_regional" required>
+                                                        <option value="">~~ SELECT REGIONAL ~~</option>
+                                                      </select>
+                                                  </div>
+                                                  <div class="col-sm-12 pb-3">
+                                                      <label for="city">City : </label>
+                                                      <select class="form-control" name="kode_city" id="kode_city" required>
+                                                        <option value="">~~ SELECT CITY ~~</option>
+                                                      </select>
+                                                  </div>
+                                                  <div class="col-sm-12 pb-3">
+                                                      <label for="city">Store Code : </label>
+                                                      <input type="text" name="store_code" id="store_code" class="form-control">
+                                                  </div>
+                                                  <div class="col-sm-12 pb-3">
+                                                      <label for="city">Name Store Street : </label>
+                                                      <input type="text" name="name_store_street" id="name_store_street" class="form-control" required>
+                                                  </div>
+                                                  <input type="hidden" name="id" id="id_resto">
                                               </div>
                                           </div>
                                           <div class="modal-footer">
@@ -345,14 +382,19 @@
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="cityModalLabel">Detail Kota</h5>
+                                        <h5 class="modal-title" id="cityModalLabel">Detail Resto</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
                                     <div class="modal-body">
                                         <p><strong>ID:</strong> <span id="data-id"></span></p>
-                                        <p><strong>Resto:</strong> <span id="data-kom-resto"></span></p>
+                                        <p><strong>Kode Resto:</strong> <span id="data-kode-resto"></span></p>
+                                        <p><strong>Resto:</strong> <span id="data-resto"></span></p>
+                                        <p><strong>Regional Kode:</strong> <span id="data-regional"></span></p>
+                                        <p><strong>City Kode:</strong> <span id="data-city"></span></p>
+                                        <p><strong>Store Code:</strong> <span id="data-store-code"></span></p>
+                                        <p><strong>Name Store Street:</strong> <span id="data-name-store-street"></span></p>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -388,30 +430,55 @@
                     <div class="card-body">
                       <div class="table-responsive product-table" style="max-width: 100%; overflow-x: auto;">
                         <div class="d-flex justify-content-between mb-3 mt-3">
-                            <h5>City Data</h5> <!-- Add a heading for the table if needed -->
-                            <!-- Search Input Field aligned to the right -->
-                            <div class="input-group" style="width: 250px;">
-                                <input type="text" id="searchInput" class="form-control" placeholder="Search for assets..." />
-                            </div>
+                          <!-- Search Input Field aligned to the right -->
+                          <div class="input-group" style="width: 250px;">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search for assets..." />
+                          </div>
+                          <h5>Total Resto Data : <span class="text-primary">{{ $countresto }}</span></h5> <!-- Add a heading for the table if needed -->
                         </div>
                         <table class="table table-striped display" id="coba" style="width: 100%;">
                             <thead>
                                 <tr class="text-center">
                                     <th>No</th>
                                     <th>Kode Resto</th>
+                                    <th>City</th>
+                                    <th>Region</th>
                                     <th>Nama Resto</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($datas as $data)
                                     <tr class="text-center">
                                         <td>{{ $data->id }}</td>
-                                        <td>{{ $data->store_code }}</td>
-                                        <td>{{ $data->kom_resto }}</td>
+                                        <td>{{ $data->kode_resto }}</td>
+                                        <td>{{ $data->nama_city }}</td>
+                                        <td>{{ $data->nama_regional }}</td>
+                                        <td>{{ $data->name_store_street }}</td>
                                         <td class="text-center">
-                                            <a href="javascript:void(0);" class="detail-button" data-id="{{ $data->id }}" data_kom_resto="{{ $data->kom_resto }}" title="Detail">
+                                          {{-- <a href="javascript:void(0);" class="edit-button"
+                                              data-id="{{ $data->id }}"
+                                              data-kode_resto="{{ $data->kode_resto }}"
+                                              data-resto="{{ $data->resto }}"
+                                              data-kode_city="{{ $data->kode_city }}"
+                                              data-kom_resto="{{ $data->kom_resto }}"
+                                              data-id_regional="{{ $data->id_regional }}"
+                                              data-store_code="{{ $data->store_code }}"
+                                              data-name_store_street="{{ $data->name_store_street }}"
+                                              title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                          </a> --}}
+                                          <a href="javascript:void(0);" class="detail-button" 
+                                              data-id="{{ $data->id }}"
+                                              data-kode_resto="{{ $data->kode_resto }}"
+                                              data-resto="{{ $data->resto }}"
+                                              data-kode_city="{{ $data->kode_city }}"
+                                              data-kom_resto="{{ $data->kom_resto }}"
+                                              data-id_regional="{{ $data->id_regional }}"
+                                              data-store_code="{{ $data->store_code }}"
+                                              data-name_store_street="{{ $data->name_store_street }}"title="Detail">
                                                 <i class="fas fa-book"></i>
-                                            </a>
+                                          </a>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -515,42 +582,6 @@
 
     {{-- Get Data city --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Mengambil data city menggunakan Ajax
-            $.ajax({
-                url: "{{ route('get.city') }}", // Route untuk get_city
-                method: "GET",
-                success: function(data) {
-                    let rows = '';
-                    data.forEach(function(city) {
-                        rows += `
-                            <tr>
-                                <td>${city.id}</td> <!-- Tampilkan ID city -->
-                                <td>${city.kom_resto}</td> <!-- Tampilkan Nama city -->
-                                <td>
-                                <a href="javascript:void(0);" class="edit-button" data-id="${city.id}" data-name="${city.city}" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form class="delete-form" action="{{ url('admin/citys/delete') }}/${city.id}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">
-                                        <i class="fas fa-trash-alt" style="color: red;"></i>
-                                    </button>
-                                </form>
-                            </td>
-                            </tr>
-                        `;
-                    });
-                    $('#cityTableBody').html(rows); // Memasukkan baris ke dalam tbody
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('Error fetching data:', textStatus, errorThrown);
-                }
-            });
-        });
-    </script>
 
     {{-- Add Data city --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -565,24 +596,34 @@
     
             $('#saveCityButton').click(function (e) {
                 e.preventDefault();
-    
-                // Get the selected province and city values
-                var provinsiName = $('#provinsi').val(); // Use the correct ID for the select element
-                var cityName = $('#city').val();
+
+                const add_kode_resto = $('#add_kode_resto').val();
+                const add_resto = $('#add_resto').val();
+                const add_kom_resto = $('#add_kom_resto').val();
+                const add_id_regional = $('#add_id_regional').val();
+                const add_kode_city = $('#add_kode_city').val();
+                const add_store_code = $('#add_store_code').val();
+                const add_name_store_street = $('#add_name_store_street').val();
     
                 // Send data using Ajax
                 $.ajax({
-                    url: '/add-city', // Ensure this URL is correct
+                    url: '/master-data/resto/add', 
                     method: 'POST',
                     data: {
-                        provinsi: provinsiName,
-                        city: cityName
+                        kode_resto: add_kode_resto,
+                        resto: add_resto,
+                        kom_resto: add_kom_resto,
+                        id_regional: add_id_regional,
+                        kode_city: add_kode_city,
+                        store_code: add_store_code,
+                        name_store_street: add_name_store_street
                     },
                     success: function(response) {
                         console.log(response);
                         // Check if response contains error or success
                         if (response.status === 'success') {
-                            $('#addDataCity').modal('hide');
+                            alert(response.message);
+                            $('#addRestoForm').modal('hide');
                             window.location.href = response.redirect_url;
                         } else {
                             alert(response.message);
@@ -600,33 +641,69 @@
     {{-- Update Data city --}}
     <script>
         $(document).on('click', '.edit-button', function() {
-            const cityId = $(this).data('id'); // Ambil city_id dari atribut data
-            const provinsiName = $(this).data('prov'); // Ambil city dari atribut data
-            const cityName = $(this).data('name'); // Ambil city dari atribut data
+            const id_resto = $(this).data('id');
+            const kode_resto = $(this).data('kode_resto');
+            const resto = $(this).data('resto');
+            const kode_city = $(this).data('kode_city');
+            const kom_resto = $(this).data('kom_resto');
+            const id_regional = $(this).data('id_regional');
+            const store_code = $(this).data('store_code');
+            const name_store_street = $(this).data('name_store_street');
 
             // Isi input dengan data
-            $('#city_id').val(cityId);
-            $('#edit-city').val(cityName);
+            $('#id_resto').val(id_resto);
+            $('#kode_resto').val(kode_resto);
+            $('#resto').val(resto);
+            $('#kom_resto').val(kom_resto);
+            $('#store_code').val(store_code);
+            $('#name_store_street').val(name_store_street);
+
+            $.ajax({
+                url: '/master-data/resto/get-cities',
+                type: 'GET',
+                success: function (cities) {
+                    let options = '<option value="">~~ SELECT CITY ~~</option>';
+                    cities.forEach(function (city) {
+                        const selected = city.id == kode_city ? 'selected' : '';
+                        options += `<option value="${city.id}" ${selected}>${city.city}</option>`;
+                    });
+
+                    $('#kode_city').html(options).trigger('change'); // update dropdown
+                }
+            });
+
+            $.ajax({
+              url: '/master-data/resto/get-regions',
+              type: 'GET',
+              success: function (regions) {
+                let option = '<option value="">~~ SELECT REGIONAL ~~</option>';
+                regions.forEach(function (region) {
+                    const selected = region.region_id == id_regional ? 'selected' : '';
+                    options += `<option value ="${region.region_id}" ${selected}>${region.region_name}</option>`;
+                });
+
+                $("#id_regional").html(options).trigger('change');
+              }
+            });
 
             // Tampilkan modal
             $('#updateModal').modal('show');
         });
 
-        // Mengirim permintaan edit melalui Ajax
         $('#updateForm').on('submit', function(e) {
             e.preventDefault(); // Cegah form reload halaman
-
             $.ajax({
-                url: '/admin/citys/edit/' + $('#city_id').val(),
+                url: '/master-data/resto/update/' + $('#id_resto').val(),
                 method: 'PUT', // Menggunakan PUT untuk memperbarui data
                 data: $(this).serialize(), // Serialisasi data form untuk dikirim
                 success: function(response) {
                     if(response.status === 'success') {
+                        alert('Update Resto Succesfully!');
                         window.location.href = response.redirect_url; // Redirect ke halaman yang sudah diatur
                     }
                 },
                 error: function(jqXHR) {
-                    const message = jqXHR.responseJSON?.message || 'Failed to update city.';
+                    const message = jqXHR.responseJSON?.message || 'Failed to update Resto!.';
                     alert(message); // Tampilkan pesan error jika gagal
                 }
             });
@@ -637,13 +714,25 @@
       $(document).ready(function() {
     // Use event delegation to attach click event to dynamically loaded elements
     $(document).on('click', '.detail-button', function() {
-        // Get city data from the clicked button
-        var cityId = $(this).data('id');
-        var data_kom_resto = $(this).data('name');
-        
-        // Set the data into the modal
-        $('#data-id').text(cityId);
-        $('#data-kom-resto').text(data_kom_resto);
+
+        const id_resto = $(this).data('id');
+        const kode_resto = $(this).data('kode_resto');
+        const resto = $(this).data('resto');
+        const kode_city = $(this).data('kode_city');
+        const kom_resto = $(this).data('kom_resto');
+        const id_regional = $(this).data('id_regional');
+        const store_code = $(this).data('store_code');
+        const name_store_street = $(this).data('name_store_street');
+
+        // Isi input dengan data
+        $('#data-id').text(id_resto);
+        $('#data-kode-resto').text(kode_resto);
+        $('#data-resto').text(resto);
+        $('#data-kon-resto').text(kom_resto);
+        $('#data-regional').text(id_regional);
+        $('#data-city').text(kode_city);
+        $('#data-store-code').text(store_code);
+        $('#data-name-store-street').text(name_store_street);
         
         // Show the modal
         $('#cityDetailModal').modal('show');

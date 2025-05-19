@@ -19,7 +19,7 @@ class DisposalController extends Controller
         $moveouts = DB::table('t_out')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
         ->join('mc_approval', 't_out.appr_1', '=', 'mc_approval.approval_id')
-        ->join('master_resto_v2 AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
+        ->join('miegacoa_keluhan.master_resto AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
         ->select('t_out.*', 'm_reason.reason_name', 'mc_approval.approval_name',
         'from_loc.name_store_street AS from_location'
         )
@@ -46,7 +46,7 @@ class DisposalController extends Controller
         $moveouts = DB::table('t_out')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
         ->join('mc_approval', 't_out.appr_1', '=', 'mc_approval.approval_id')
-        ->join('master_resto_v2 AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
+        ->join('miegacoa_keluhan.master_resto AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
         ->select('t_out.*', 'm_reason.reason_name', 'mc_approval.approval_name',
         'from_loc.name_store_street AS from_location'
         )
@@ -77,7 +77,7 @@ class DisposalController extends Controller
         $moveouts = DB::table('t_out')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
         ->join('mc_approval', 't_out.appr_2', '=', 'mc_approval.approval_id')
-        ->join('master_resto_v2 AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
+        ->join('miegacoa_keluhan.master_resto AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
         ->select('t_out.*', 'm_reason.reason_name', 'mc_approval.approval_name',
         'from_loc.name_store_street AS from_location'
         )
@@ -104,7 +104,7 @@ class DisposalController extends Controller
         $moveouts = DB::table('t_out')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
         ->join('mc_approval', 't_out.appr_2', '=', 'mc_approval.approval_id')
-        ->join('master_resto_v2 AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
+        ->join('miegacoa_keluhan.master_resto AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
         ->select('t_out.*', 'm_reason.reason_name', 'mc_approval.approval_name',
         'from_loc.name_store_street AS from_location'
         )
@@ -131,7 +131,7 @@ class DisposalController extends Controller
         $moveouts = DB::table('t_out')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
         ->join('mc_approval', 't_out.appr_3', '=', 'mc_approval.approval_id')
-        ->join('master_resto_v2 AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
+        ->join('miegacoa_keluhan.master_resto AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
         ->select('t_out.*', 'm_reason.reason_name', 'mc_approval.approval_name',
         'from_loc.name_store_street AS from_location'
         )
@@ -158,7 +158,7 @@ class DisposalController extends Controller
         $moveouts = DB::table('t_out')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
         ->join('mc_approval', 't_out.appr_3', '=', 'mc_approval.approval_id')
-        ->join('master_resto_v2 AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
+        ->join('miegacoa_keluhan.master_resto AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
         ->select('t_out.*', 'm_reason.reason_name', 'mc_approval.approval_name',
         'from_loc.name_store_street AS from_location'
         )
@@ -180,7 +180,7 @@ class DisposalController extends Controller
     {
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
-        $restos = DB::table('master_resto_v2')->select('store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('store_code', 'name_store_street')->get();
 
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
 
@@ -229,7 +229,7 @@ class DisposalController extends Controller
                 't_out_detail.*',
                 'm_reason.reason_name',
                 'mc_approval.approval_name',
-                'master_resto_v2.*',
+                'miegacoa_keluhan.master_resto.*',
                 't_out_detail.*',
                 'm_uom.uom_name',
                 'm_brand.brand_name'
@@ -237,10 +237,10 @@ class DisposalController extends Controller
             ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
             ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
             ->join(
-                'master_resto_v2',
+                'miegacoa_keluhan.master_resto',
                 DB::raw('CONVERT(t_out.from_loc USING utf8mb4) COLLATE utf8mb4_unicode_ci'),
                 '=',
-                DB::raw('CONVERT(master_resto_v2.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
+                DB::raw('CONVERT(miegacoa_keluhan.master_resto.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
             )
             ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
             ->join('m_uom', 't_out_detail.uom', '=', 'm_uom.uom_id')

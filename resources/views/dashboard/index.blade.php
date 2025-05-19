@@ -60,132 +60,6 @@
         * {
             box-sizing: border-box;
         }
-
-        .flex-container {
-            display: flex;
-            flex-wrap: wrap;
-            font-size: 30px;
-            text-align: left;
-            gap: 5rem;
-            padding-left: 8rem;
-        }
-
-        .flex-item-left {
-            background-color: #f1f1f1;
-            padding: 50px;
-            flex: 50%;
-        }
-
-        .flex-item-right {
-            background-color: dodgerblue;
-            padding: 10px;
-            flex: 50%;
-        }
-
-        .card-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .card {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            flex: 1;
-            text-align: center;
-        }
-
-        .card h2 {
-            margin: 0;
-            font-size: 18px;
-            color: #333;
-        }
-
-        .card .count {
-            margin: 10px 0;
-            font-size: 36px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .card .count.red {
-            color: #e63946;
-        }
-
-        .card .description {
-            font-size: 14px;
-            color: #00796b;
-            margin: 0;
-        }
-
-        .card:nth-child(2) .description {
-            color: #e63946;
-        }
-
-        .card:nth-child(3) .description {
-            color: #00796b;
-        }
-
-        .card:nth-child(4) .description {
-            color: #00796b;
-        }
-
-        .total_asset h2 {
-            font-size: 24px;
-            /* Heading size */
-            color: #333;
-            /* Text color */
-            margin-bottom: 10px;
-            /* Space below heading */
-
-        }
-
-        .bad_asset h2 {
-            font-size: 24px;
-            /* Heading size */
-            color: #333;
-            /* Text color */
-            margin-bottom: 10px;
-            /* Space below heading */
-        }
-
-        .good_asset h2 {
-            font-size: 24px;
-            /* Heading size */
-            color: #333;
-            /* Text color */
-            margin-bottom: 10px;
-            /* Space below heading */
-        }
-
-        .total_asset h3 {
-            font-size: 32px;
-            font-weight: bolder;
-        }
-
-        .bad_asset h3 {
-            font-size: 32px;
-            font-weight: bolder;
-        }
-
-        .good_asset h3 {
-            font-size: 32px;
-            font-weight: bolder;
-        }
-
-
-
-        /* Responsive layout - makes a one column-layout instead of a two-column layout */
-        @media (max-width: 800px) {
-
-            .flex-item-right,
-            .flex-item-left {
-                flex: 100%;
-            }
-        }
     </style>
 </head>
 
@@ -359,43 +233,107 @@
             <!-- Page Sidebar Ends-->
             <div class="page-body">
                 <!-- Container-fluid starts-->
-                <h2 class="py-4 ps-4">Dashboard</h2>
                 <div class="container-fluid">
-                    <div class="row justify-content-center">
-                        <div class="card flex-row py-4">
-                            <div class="col-sm-3">
-                                <h2>Total Asset</h2>
-                                {{-- {{Auth::user()->role;}} --}}
-                                {{-- <ul>
-                                    @foreach(auth()->user()->getAllPermissions() as $permission)
-                                        <li>{{ $permission->name }}</li>
-                                    @endforeach
-                                </ul> --}}
-                                @role('admin')
-                                    {{-- ini adalah admin --}}
-                                @endrole
-                                <p class="count">{{ $totalAsset }}</p>
-                                <p class="description">Total Keseluruhan Asset</p>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="card p-4 text-center">
+                                        @if (!$user->hasRole('Admin') &&
+                                         !$user->hasRole('SDG'))
+
+                                            <label for=""><h4>Asset In</h4></label>
+                                            <p class="count red fs-2 text-info">{{ $assetIn }}</p>
+                                            <p class="description"><a href="/asset-transfer/confirm-asset">Show Total Asset In -></a></p>
+                                                
+                                        @else
+
+                                            <label for=""><h4>Total Resto</h4></label>
+                                            <p class="count red fs-2 text-info">{{ $totalResto }}</p>
+                                            <p class="description">Total Resto Data</p>
+                                            
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="card p-4 text-center">
+                                        <label for=""><h4>Total Asset</h4></label>
+                                        <p class="count red fs-2 text-primary">{{ $totalAsset }}</p>
+                                        <p class="description"><a href="/registration/assets-registration">Show Total Asset Data -></a></p>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="card p-4 text-center">
+                                        <label for=""><h4>Total Asset Registered</h4></label>
+                                        <p class="count red fs-2 text-success">{{ $totalRegistered }}</p>
+                                        <p class="description"><a href="/registration/assets-registration">Show Total Asset Registered Data -></a></p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-sm-3">
-                                <h2>Bad Asset</h2>
-                                <p class="count red">{{ $badAsset }}</p>
-                                <p class="description">Total Asset Rusak</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="card">
+                                <div class="text-center border-primary border-2 border-bottom">
+                                    <label class="mt-3 text-primary"><h4>Asset Movement</h4></label>
+                                </div>
+                                <div class="row p-4">
+                                    <div class="col-sm-4">
+                                        <div class="text-center">
+                                            <label for=""><h4>Movement</h4></label>
+                                            <p class="count red fs-2 text-primary">{{ $assetMove }}</p>
+                                            <p class="description">Total Movement Asset</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="text-center">
+                                            <label for=""><h4>Good Asset</h4></label>
+                                            <p class="count red fs-2 text-success">{{ $goodAsset }}</p>
+                                            <p class="description">Good Condition Asset</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="text-center">
+                                            <label for=""><h4>Bad Asset</h4></label>
+                                            <p class="count red fs-2 text-danger">{{ $badAsset }}</p>
+                                            <p class="description">Bad Condition Asset</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-sm-3">
-                                <h2>Good Asset</h2>
-                                <p class="count">{{ $goodAsset }}</p>
-                                <p class="description">Total Asset Digunakan</p>
-                            </div>
-                            <div class="col-sm-3">
-                                <h2>Total Resto</h2>
-                                <p class="count">{{ $totalResto }}</p>
-                                <p class="description">Total Registrasi Asset</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="card">
+                                <div class="text-center border-danger border-2 border-bottom">
+                                    <label class="mt-3 text-danger"><h4>Asset Disposal</h4></label>
+                                </div>
+                                <div class="row p-4">
+                                    <div class="col-sm-4">
+                                        <div class="text-center">
+                                            <label for=""><h4>Disposal</h4></label>
+                                            <p class="count red fs-2 text-primary">{{ $assetDisposal }}</p>
+                                            <p class="description">Total Movement Asset</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="text-center">
+                                            <label for=""><h4>Good Asset</h4></label>
+                                            <p class="count red fs-2 text-success">{{ $goodAssetDis }}</p>
+                                            <p class="description">Good Condition Asset</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="text-center">
+                                            <label for=""><h4>Bad Asset</h4></label>
+                                            <p class="count red fs-2 text-danger">{{ $badAssetDis }}</p>
+                                            <p class="description">Bad Condition Asset</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card">
+                <div class="card p-5">
                     <div class="pb-5">
                         <div class="row">
                             <div class="col-md-4">
@@ -410,7 +348,7 @@
                             </div>
                             <div class="col-md-4 d-flex align-items-end">
                                 <button class="btn btn-primary me-2" onclick="filterNow()">Filter</button>
-                                <a href="/admin/dashboard" class="btn btn-secondary ml-2">Reset</a>
+                                <a href="/dashboard" class="btn btn-secondary ml-2">Reset</a>
                             </div>
                         </div>
                     </div>
@@ -537,59 +475,39 @@
 
         // Fungsi untuk memproses data restoran dan membuat chart
         function processRestoData(response) {
-            // Reset data setiap kali pemrosesan baru dilakukan
+            const restoMap = {}; // key = nama resto, value = { in: x, out: y }
+
+            function addQtyToMap(name, type, qty) {
+                if (!restoMap[name]) {
+                    restoMap[name] = { in: 0, out: 0 };
+                }
+                restoMap[name][type] += Number(qty) || 0;
+            }
+
+
+            response.dataIn.forEach(function(item) {
+                addQtyToMap(item.tujuan_lokasi, 'in', item.qty);
+            });
+
+            response.dataOut.forEach(function(item) {
+                addQtyToMap(item.asal_lokasi, 'out', item.qty);
+            });
+
+            // Reset array global
             labels = [];
             data1 = [];
             data2 = [];
-            data3 = [];
 
-            var restoMap = {};
-
-            response.forEach(function(resto) {
-                if (resto.asset_model !== null) {
-                    if (!restoMap[resto.id_resto]) {
-                        restoMap[resto.id_resto] = {
-                            id_resto: resto.id_resto,
-                            asset_model: resto.asset_model,
-                            condition_name: resto.condition_name,
-                            condition_id: resto.condition_id,
-                            qty: resto.qty,
-                            qty_disposal: resto.qty_disposal
-                        };
-                    } else {
-                        restoMap[resto.id_resto].qty += resto.qty;
-                    }
-                    if (resto.condition_id === 3 || resto.condition_id === 1) {
-                        restoMap[resto.id_resto].qty_good = (restoMap[resto.id_resto].qty_good || 0) + resto.qty;
-                    }
-                    if (resto.out_id.includes("DA")) {
-                        restoMap[resto.id_resto].qty_disposal = (restoMap[resto.id_resto].qty_disposal || 0) + resto
-                            .qty;
-                    }
-
-                    // Memisahkan name_store_street berdasarkan '-'
-                    const explode_street = resto.name_store_street.split('-');
-
-                    // Ambil elemen 1 dan 2 dari hasil split
-                    if (explode_street.length > 1) {
-                        restoMap[resto.id_resto].name_store_street = explode_street[1].trim() + " - " +
-                            explode_street[2].trim();
-                    }
-
-                }
+            // Ubah hasil map jadi array grafik
+            Object.keys(restoMap).forEach(function(restoName) {
+                labels.push(restoName); // ini dipakai di sumbu X
+                data1.push(restoMap[restoName].in);
+                data2.push(restoMap[restoName].out);
             });
 
-            // Mengubah restoMap menjadi array yang bisa digunakan untuk chart
-            Object.values(restoMap).forEach(function(resto) {
-                labels.push(resto.name_store_street);
-                data1.push(resto.qty);
-                data2.push(resto.qty_good || 0);
-                data3.push(resto.qty_disposal);
-            });
-
-            // Perbarui chart untuk halaman pertama
             updateChart();
         }
+
 
         // Fungsi untuk memperbarui chart berdasarkan halaman yang aktif
         function updateChart() {
@@ -605,9 +523,8 @@
             const startIdx = (currentPage - 1) * itemsPerPage;
             const endIdx = startIdx + itemsPerPage;
             const pageLabels = labels.slice(startIdx, endIdx);
-            const pageTotalAsset = data1.slice(startIdx, endIdx);
-            const pageGoodAsset = data2.slice(startIdx, endIdx);
-            const pageDisposalAsset = data3.slice(startIdx, endIdx);
+            const datain = data1.slice(startIdx, endIdx);
+            const dataout = data2.slice(startIdx, endIdx);
 
             // Membuat chart baru dan menyimpannya ke dalam window.myChart
             window.myChart = new Chart(ctx, {
@@ -615,24 +532,17 @@
                 data: {
                     labels: pageLabels, // Label sumbu X
                     datasets: [{
-                            label: 'Total Asset',
-                            data: pageTotalAsset, // Data asli
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)', // Warna latar belakang
-                            borderColor: 'rgba(75, 192, 192, 1)', // Warna border
+                            label: 'Asset In',
+                            data: datain, // Data asli
+                            backgroundColor: 'rgba(13, 202, 240, 0.2)', // Warna latar belakang
+                            borderColor: 'rgba(13, 202, 240, 1)', // Warna border
                             borderWidth: 1
                         },
                         {
-                            label: 'Good Asset',
-                            data: pageGoodAsset, // Data good
-                            backgroundColor: 'rgba(153, 102, 255, 0.2)', // Warna latar belakang
-                            borderColor: 'rgba(153, 102, 255, 1)', // Warna border
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Disposal Asset',
-                            data: pageDisposalAsset, // Data disposal
-                            backgroundColor: 'rgba(255, 159, 64, 0.2)', // Warna latar belakang
-                            borderColor: 'rgba(255, 159, 64, 1)', // Warna border
+                            label: 'Asset Out',
+                            data: dataout, // Data good
+                            backgroundColor: 'rgba(25, 135, 84, 0.2)', // Warna latar belakang
+                            borderColor: 'rgba(25, 135, 84, 1)', // Warna border
                             borderWidth: 1
                         }
                     ]

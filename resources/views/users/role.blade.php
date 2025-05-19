@@ -239,7 +239,7 @@
         <!-- Page Body Start-->
         <div class="page-body-wrapper">
             <!-- Page Sidebar Start-->
-            @include('Admin.layouts.right_sidebar_admin')
+            @include('layouts.sidebar')
             <!-- Page Sidebar Ends-->
             <div class="page-body">
                 <!-- Container-fluid starts-->
@@ -338,7 +338,7 @@
                                                             <div class="col-xs-12 col-sm-12 col-md-12 py-4 px-4">
                                                                 <div class="row">
                                                                     <br/>
-                                                                    @foreach($rolesUser as $role)
+                                                                    {{-- @foreach($rolesUser as $role)
                                                                         <div class="col-4 p-2">
                                                                             <div class="d-flex align-content-center">
                                                                                 <label class="switch">
@@ -349,7 +349,7 @@
                                                                                 <span class="ps-1">{{ $role->name }}</span>
                                                                             </div>
                                                                         </div>
-                                                                    @endforeach
+                                                                    @endforeach --}}
                                                                     <br/>
                                                                 </div>
                                                             </div>
@@ -514,32 +514,31 @@
                                                     <th class="col-1">#</th>
                                                     <th>Role Name</th>
                                                     <th>Guard Name</th>
-                                                    <th>Role</th>
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php $no = 1; ?>
-                                                @foreach ($permissionRoles as $permissions)
+                                                @foreach ($roles as $role)
                                                     <tr>
                                                         <td>{{ $no++ }}</td>
-                                                        <td>{{ $permissions['permission']->name }}</td>
-                                                        <td>{{ $permissions['permission']->guard_name }}</td>
-                                                        <td>
-                                                            @foreach ($permissions['roles'] as $item)
+                                                        <td>{{ $role->name }}</td>
+                                                        <td>{{ $role->guard_name }}</td>
+                                                        {{-- <td>
+                                                            @foreach ($role['roles'] as $item)
                                                                 <span style="border-radius: 7px; padding: 2px 4px;" class="bg-primary">{{ $item }}</span>
                                                             @endforeach
-                                                        </td>
+                                                        </td> --}}
                                                         <td>
                                                             <a href="javascript:void(0);" class="edit-button"
-                                                                data-id="{{ $permissions['permission']->id }}"
-                                                                data-name="{{ $permissions['permission']->name }}" data-type=""
+                                                                data-id="{{ $role->id }}"
+                                                                data-name="{{ $role->name }}" data-type=""
                                                                 data-permission="" title="Edit">
                                                                 <i class="fas fa-edit"></i>
                                                             </a>
                                                             <a href="javascript:void(0);" class="detail-button"
-                                                                data-id="{{ $permissions['permission']->id }}"
-                                                                data-name="{{ $permissions['permission']->name }}" data-type=""
+                                                                data-id="{{ $role->id }}"
+                                                                data-name="{{ $role->name }}" data-type=""
                                                                 data-permission="" title="Detail">
                                                                 <i class="fas fa-book"></i>
                                                             </a>

@@ -36,16 +36,16 @@ class UserController extends Controller
     {
         
         $users = DB::table('m_user')
-            ->select('m_user.*', 'master_resto_v2.name_store_street', 'master_resto_v2.id as resto_id')
-            ->leftJoin('master_resto_v2', 'master_resto_v2.id', '=', 'm_user.location_now') // Left join to include null values
+            ->select('m_user.*', 'miegacoa_keluhan.master_resto.name_store_street', 'miegacoa_keluhan.master_resto.id as resto_id')
+            ->leftJoin('miegacoa_keluhan.master_resto', 'miegacoa_keluhan.master_resto.id', '=', 'm_user.location_now') // Left join to include null values
             ->paginate(10);
     
         $users1 = DB::table('m_user')
-            ->select('m_user.*', 'master_resto_v2.name_store_street', 'master_resto_v2.id as resto_id')
-            ->leftJoin('master_resto_v2', 'm_user.location_now', '=', 'master_resto_v2.id') // Left join
+            ->select('m_user.*', 'miegacoa_keluhan.master_resto.name_store_street', 'miegacoa_keluhan.master_resto.id as resto_id')
+            ->leftJoin('miegacoa_keluhan.master_resto', 'm_user.location_now', '=', 'miegacoa_keluhan.master_resto.id') // Left join
             ->first();
     
-        $restos = DB::table('master_resto_v2')->select('id', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('id', 'name_store_street')->get();
     
         $permission = DB::table('permissions')->select('permissions.*')->get();
     
@@ -62,23 +62,23 @@ class UserController extends Controller
         $users = DB::table('m_user')
         ->select(
             'm_user.*',
-            'master_resto_v2.name_store_street',
-            'master_resto_v2.id as resto_id',
+            'miegacoa_keluhan.master_resto.name_store_street',
+            'miegacoa_keluhan.master_resto.id as resto_id',
             'roles.name as role_name',
             'roles.id as role_id'
         )
-        ->leftJoin('master_resto_v2', 'master_resto_v2.id', '=', 'm_user.location_now')
+        ->leftJoin('miegacoa_keluhan.master_resto', 'miegacoa_keluhan.master_resto.id', '=', 'm_user.location_now')
         ->leftJoin('model_has_roles', 'm_user.id', '=', 'model_has_roles.model_id')
         ->leftJoin('roles', 'roles.id', '=', 'model_has_roles.role_id')
         ->where('model_has_roles.model_type', '=', \App\Models\Master\MasterUser::class)
         ->paginate(20);
     
         $users1 = DB::table('m_user')
-            ->select('m_user.*', 'master_resto_v2.name_store_street', 'master_resto_v2.id as resto_id')
-            ->leftJoin('master_resto_v2', 'm_user.location_now', '=', 'master_resto_v2.id') // Left join
+            ->select('m_user.*', 'miegacoa_keluhan.master_resto.name_store_street', 'miegacoa_keluhan.master_resto.id as resto_id')
+            ->leftJoin('miegacoa_keluhan.master_resto', 'm_user.location_now', '=', 'miegacoa_keluhan.master_resto.id') // Left join
             ->first();
     
-        $restos = DB::table('master_resto_v2')->select('id', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('id', 'name_store_street')->get();
     
         $permission = DB::table('permissions')->select('permissions.*')->get();
         $rolesUser = Role::all();
@@ -118,7 +118,7 @@ class UserController extends Controller
             'password' => 'required|string',
             'email' => 'required|string|email|max:255|unique:m_user,email',
             'role' => 'required|exists:roles,id',
-            'location_now' => 'nullable|exists:master_resto_v2,id'
+            'location_now' => 'nullable'
         ]);
         
         // Buat instance dari model MasterUser
@@ -207,7 +207,7 @@ class UserController extends Controller
 
             'email' => 'required|string|max:255',
 
-            'role' => 'required|string|max:255'
+            'roleedit' => 'required|string|max:255'
 
 
         ]);
@@ -241,13 +241,12 @@ class UserController extends Controller
         $user->location_now = $request->location_now;
 
         // Ambil berdasarkan ID, bukan nama
-        $role = Role::findById($request->role);
+        $role = Role::findById($request->roleedit);
 
-        // Lalu assign role-nya ke user
-        $user->assignRole($role);
+        $user->syncRoles([$role]);
         
 
-        if ($user->save()) { // Menggunakan save() yang lebih aman daripada update()
+        if ($user->update()) { // Menggunakan save() yang lebih aman daripada update()
 
             return response()->json([
 
@@ -275,19 +274,21 @@ class UserController extends Controller
 
         $user = MasterUser::find($id);
 
-
-
         if ($user) {
 
-            $user->delete();
+            // Hapus semua role yang dimiliki user
+            $user->roles()->detach();
 
+            // Hapus user dari database
+            $user->delete();
+            
             return response()->json([
 
                 'status' => 'success', 
 
-                'message' => 'user deleted successfully.',
+                'message' => 'User Deleted Successfully!',
 
-                'redirect_url' => route('Admin.user')
+                'redirect_url' => '/user'
 
             ]);
 
@@ -299,6 +300,20 @@ class UserController extends Controller
 
     }
 
+    public function userGetLocation(){
+        $location = DB::table('miegacoa_keluhan.master_resto')->select('id', 'name_store_street')->get();
+        return response()->json($location);
+    }
+
+    public function userGetArea(){
+        $city = DB::table('master_city')->select('id', 'city')->get();
+        return response()->json($city);
+    }
+
+    public function userGetRegion(){
+        $region = DB::table('m_region')->select('region_id', 'region_name')->get();
+        return response()->json($region);
+    }
 
 
 
@@ -413,23 +428,10 @@ class UserController extends Controller
     public function userRole() {
         
         // Ambil semua permissions
-        $permissions = Permission::paginate(10);
-        $rolesUser = Role::all();
-
-        // Inisialisasi array untuk menyimpan data permission dan roles
-        $permissionRoles = [];
-
-        // Loop melalui setiap permission dan ambil roles yang memiliki permission tersebut
-        foreach ($permissions as $permission) {
-            $roles = $permission->roles->pluck('name')->toArray();
-            $permissionRoles[] = [
-                'permission' => $permission,
-                'roles' => $roles
-            ];
-        }
+        $roles = Role::all();
 
         // Kirim data ke view
-        return view('users.role', compact('permissionRoles', 'rolesUser'));
+        return view('users.role', compact('roles'));
     }
 
 }

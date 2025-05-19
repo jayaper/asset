@@ -312,13 +312,13 @@
                                               <div class="row">
                                                 <div class="col-sm-12">
                                                     <label for="region_code">Region Code : </label>
-                                                    <input type="text" name="region_code" id="region_code" class="form-control" required>
+                                                    <input type="text" name="region_code" id="region_code1" class="form-control" required>
                                                 </div>
                                                   <div class="col-sm-12">
                                                       <label for="region_name">Region Name : </label>
-                                                      <input type="text" name="region_name" id="region_name" class="form-control" required>
+                                                      <input type="text" name="region_name" id="region_name1" class="form-control" required>
                                                   </div>
-                                                  <input type="hidden" name="region_id" id="region_id">
+                                                  <input type="hidden" name="region_id" id="region_id1">
                                               </div>
                                           </div>
                                           <div class="modal-footer">
@@ -379,11 +379,10 @@
                     <div class="card-body">
                       <div class="table-responsive product-table" style="max-width: 100%; overflow-x: auto;">
                         <div class="d-flex justify-content-between mb-3 mt-3">
-                            <h5>Region Data</h5> <!-- Add a heading for the table if needed -->
-                            <!-- Search Input Field aligned to the right -->
                             <div class="input-group" style="width: 250px;">
                                 <input type="text" id="searchInput" class="form-control" placeholder="Search for assets..." />
                             </div>
+                            <h5>Total Region Data <span class="text-primary">{{ $regioncount }}</span></h5>
                         </div>
                         <table class="table table-striped display" id="coba" style="width: 100%;">
                             <thead>
@@ -400,10 +399,10 @@
                                         <td>{{ $region->region_name }}</td>
                                         <td class="text-center">
                                             <a href="javascript:void(0);" class="edit-button"
-                                            data-id="{{ $region->region_id }}"
-                                            data-name="{{ $region->region_name }}"
-                                            data-code="{{ $region->region_code }}"
-                                            title="Edit">
+                                              data-id="{{ $region->region_id }}"
+                                              data-name="{{ $region->region_name }}"
+                                              data-code="{{ $region->region_code }}"
+                                              title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <a href="javascript:void(0);" class="detail-button"
@@ -613,9 +612,9 @@
             const regionCode = $(this).data('code');
 
             // Isi input dengan data
-            $('#region_id').val(regionId);
-            $('#region_code').val(regionCode);
-            $('#region_name').val(regionName);
+            $('#region_id1').val(regionId);
+            $('#region_name1').val(regionName);
+            $('#region_code1').val(regionCode);
 
             // Tampilkan modal
             $('#updateModal').modal('show');
@@ -626,7 +625,7 @@
             e.preventDefault(); // Cegah form reload halaman
 
             $.ajax({
-                url: '/master-data/update-new-regional/' + $('#region_id').val(),
+                url: '/master-data/update-new-regional/' + $('#region_id1').val(),
                 method: 'PUT', // Menggunakan PUT untuk memperbarui data
                 data: $(this).serialize(), // Serialisasi data form untuk dikirim
                 success: function(response) {

@@ -35,7 +35,7 @@ class ApprovalOpsSDG extends Controller
             ->leftjoin('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
             ->leftjoin('mc_approval', 't_out.appr_3', '=', 'mc_approval.approval_id')
             ->leftjoin(
-                'master_resto_v2 AS fromloc',
+                'miegacoa_keluhan.master_resto AS fromloc',
                 DB::raw('CONVERT(t_out.from_loc USING utf8mb4) COLLATE utf8mb4_unicode_ci'),
                 '=',
                 DB::raw('CONVERT(fromloc.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
@@ -46,9 +46,17 @@ class ApprovalOpsSDG extends Controller
             ->orderBy('t_out.out_id', 'DESC');
             // Jika yang login bukan admin, tambahkan filter berdasarkan `user_loc`
             $user = Auth::User();
-            if (!$user->hasRole('Admin')) {
+            if ($user->hasRole('SM')) {
                 $query->where(function ($q){
                     $q->where('t_out.from_loc', Auth::User()->location_now);
+                });
+            }else if($user->hasRole('AM')) {
+                $query->where(function ($q){
+                    $q->where('fromloc.kode_city', Auth::User()->location_now);
+                });
+            }else if($user->hasRole('RM')) {
+                $query->where(function ($q){
+                    $q->where('fromloc.id_regional', Auth::User()->location_now);
                 });
             }
         $moveouts = $query->paginate(10);
@@ -172,11 +180,11 @@ class ApprovalOpsSDG extends Controller
             't_out_detail.out_id AS detail_out_id',
             't_out_detail.qty',
             'm_reason.reason_name',
-            'master_resto_v2.name_store_street AS from_location'
+            'miegacoa_keluhan.master_resto.name_store_street AS from_location'
         )
         ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->join('master_resto_v2', 't_out.from_loc', '=', 'master_resto_v2.id')
+        ->join('miegacoa_keluhan.master_resto', 't_out.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
         ->where('t_out.out_id', '=', $id) // Ensure specific match
         ->where('t_out.out_id', 'like', 'DA%')
         ->first();
@@ -203,7 +211,7 @@ class ApprovalOpsSDG extends Controller
     {
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
-        $restos = DB::table('master_resto_v2')->select('store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('store_code', 'name_store_street')->get();
 
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
 
@@ -252,7 +260,7 @@ class ApprovalOpsSDG extends Controller
                 't_out_detail.*',
                 'm_reason.reason_name',
                 'mc_approval.approval_name',
-                'master_resto_v2.*',
+                'miegacoa_keluhan.master_resto.*',
                 't_out_detail.*',
                 'm_uom.uom_name',
                 'm_brand.brand_name'
@@ -260,10 +268,10 @@ class ApprovalOpsSDG extends Controller
             ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
             ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
             ->join(
-                'master_resto_v2',
+                'miegacoa_keluhan.master_resto',
                 DB::raw('CONVERT(t_out.from_loc USING utf8mb4) COLLATE utf8mb4_unicode_ci'),
                 '=',
-                DB::raw('CONVERT(master_resto_v2.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
+                DB::raw('CONVERT(miegacoa_keluhan.master_resto.id USING utf8mb4) COLLATE utf8mb4_unicode_ci')
             )
             ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
             ->join('m_uom', 't_out_detail.uom', '=', 'm_uom.uom_id')
