@@ -37,7 +37,7 @@ class MovementOutController  extends Controller
 
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
-        $restos = DB::table('master_resto_v2')->select('store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('store_code', 'name_store_street')->get();
 
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
 
@@ -115,7 +115,7 @@ class MovementOutController  extends Controller
     public function HalamanMoveOut(Request $request)
     {
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
-        $restos = DB::table('master_resto_v2')->select('id', 'store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('id', 'store_code', 'name_store_street')->get();
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
         $conditions = DB::table('m_condition')->select('condition_id', 'condition_name')->get();
     
@@ -138,8 +138,8 @@ class MovementOutController  extends Controller
         ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
         ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
         ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-        ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id')
-        ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')
+        ->join('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id')
+        ->join('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')
         ->where('t_out.is_active', 1);
     
         if ($request->filled('is_confirm') && $request->input('is_confirm') == 2) {
@@ -149,14 +149,14 @@ class MovementOutController  extends Controller
                 't_out_detail.qty',
                 't_out.dest_loc',
                 't_out.is_confirm',
-                'master_resto_v2.name_store_street',
+                'miegacoa_keluhan.master_resto.name_store_street',
                 'm_user.role',
                 'm_user.location_now',
                 't_in.from_location'
             )
             ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
             ->join('m_user', 't_out.dest_loc', '=', 'm_user.location_now')
-            ->join('master_resto_v2', 't_out.dest_loc', '=', 'm_user.location_now')
+            ->join('miegacoa_keluhan.master_resto', 't_out.dest_loc', '=', 'm_user.location_now')
             ->join('t_in', 't_out.in_id', '=', 't_in.in_id')
             ->where('m_user.location_now', $fromLoc)
             ->where('m_user.role', 'am')
@@ -200,7 +200,7 @@ class MovementOutController  extends Controller
 
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
-        $restos = DB::table('master_resto_v2')->select('store_code', 'name_store_street')->get();
+        $restos = DB::table('miegacoa_keluhan.master_resto')->select('store_code', 'name_store_street')->get();
 
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
 
@@ -218,7 +218,7 @@ class MovementOutController  extends Controller
 
 
 
-        $registerLocation = DB::table('master_resto_v2')
+        $registerLocation = DB::table('miegacoa_keluhan.master_resto')
 
                 ->where('name_store_street', $fromLoc)
 
@@ -329,8 +329,8 @@ class MovementOutController  extends Controller
             'm_condition.condition_name'
         )
         ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id',)
-        ->leftJoin('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id')
-        ->leftJoin('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')
+        ->leftJoin('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id')
+        ->leftJoin('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')
         ->join('table_registrasi_asset', 't_out_detail.asset_id', '=', 'table_registrasi_asset.id')
         ->join('m_assets','table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
         ->join('m_category','table_registrasi_asset.category_asset', '=', 'm_category.cat_code')
@@ -363,8 +363,8 @@ class MovementOutController  extends Controller
                 //     'm_category.cat_name'
                 // )
                 // ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
-                // ->leftJoin('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id')
-                // ->leftJoin('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')
+                // ->leftJoin('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id')
+                // ->leftJoin('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')
                 // ->leftJoin('table_registrasi_asset', 't_out_detail.asset_id', '=', 'table_registrasi_asset.id')
                 // ->leftJoin('m_condition', 't_out_detail.condition', '=', 'm_condition.condition_id')
                 // ->leftJoin('m_category', 'table_registrasi_asset.category_asset', '=', 'm_category.cat_id')
@@ -563,7 +563,7 @@ class MovementOutController  extends Controller
                 ,'m_priority.priority_name'
                 ,'m_brand.brand_name'
                 ,'m_uom.uom_name'
-                ,'master_resto_v2.name_store_street'
+                ,'miegacoa_keluhan.master_resto.name_store_street'
                 ,'m_layout.layout_name'
                 ,'m_supplier.supplier_name'
                 ,'m_condition.condition_name'
@@ -576,7 +576,7 @@ class MovementOutController  extends Controller
         ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
         ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
         ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-        ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+        ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
         ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
         ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
         ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -1004,11 +1004,14 @@ foreach ($request->input('asset_id') as $index => $assetId) {
 
 
    $newQty = $currentQty - $moveoutQty;
+   $status_asset = 2;
 
 
    DB::table('table_registrasi_asset')
        ->where('register_code', $registerCode)
-       ->update(['qty' => $newQty]);
+       ->update([
+            'qty' => $newQty
+        ]);
 
 
    $existingDetail = DB::table('t_out_detail')->where('asset_tag', $registerCode)->first();
@@ -1497,7 +1500,7 @@ foreach ($request->input('asset_id') as $index => $assetId) {
     {
         $search = $request->input('search'); // Retrieve the search term
     
-        $locations = DB::table('master_resto_v2')
+        $locations = DB::table('miegacoa_keluhan.master_resto')
             ->select('id','store_code', 'name_store_street')
             ->when($search, function ($query, $search) {
                 return $query->where('name_store_street', 'LIKE', "%{$search}%");
@@ -1513,7 +1516,7 @@ foreach ($request->input('asset_id') as $index => $assetId) {
 {
     $search = $request->input('search'); // Retrieve the search term
 
-    $locations = DB::table('master_resto_v2')
+    $locations = DB::table('miegacoa_keluhan.master_resto')
         ->select('id','store_code', 'name_store_street')
         ->when($search, function ($query, $search) {
             return $query->where('name_store_street', 'LIKE', "%{$search}%");
@@ -1542,7 +1545,7 @@ public function getAjaxDataAssets($lokasi_user) {
             ,'m_brand.brand_id'
             ,'m_uom.uom_name'
             ,'m_uom.uom_id'
-            ,'master_resto_v2.name_store_street'
+            ,'miegacoa_keluhan.master_resto.name_store_street'
             ,'m_layout.layout_name'
             ,'m_supplier.supplier_name'
             ,'m_condition.condition_name'
@@ -1555,12 +1558,13 @@ public function getAjaxDataAssets($lokasi_user) {
         ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
         ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
         ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-        ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+        ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
         ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
         ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
         ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
         ->leftJoin('m_warranty', 'table_registrasi_asset.warranty', '=', 'm_warranty.warranty_id')
         ->leftJoin('m_periodic_mtc', 'table_registrasi_asset.periodic_maintenance', '=', 'm_periodic_mtc.periodic_mtc_id')
+        ->whereNull('table_registrasi_asset.deleted_at')
         ->where('table_registrasi_asset.qty', '>', 0)
         ->where('table_registrasi_asset.location_now', '=', $lokasi_user)
         ->get();
@@ -1587,7 +1591,7 @@ public function getAjaxDataAssets($lokasi_user) {
                 ,'m_brand.brand_id'
                 ,'m_uom.uom_name'
                 ,'m_uom.uom_id'
-                ,'master_resto_v2.name_store_street'
+                ,'miegacoa_keluhan.master_resto.name_store_street'
                 ,'m_layout.layout_name'
                 ,'m_supplier.supplier_name'
                 ,'m_condition.condition_name'
@@ -1600,13 +1604,13 @@ public function getAjaxDataAssets($lokasi_user) {
         ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
         ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
         ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-        ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+        ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
         ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
         ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
         ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
         ->leftJoin('m_warranty', 'table_registrasi_asset.warranty', '=', 'm_warranty.warranty_id')
         ->leftJoin('m_periodic_mtc', 'table_registrasi_asset.periodic_maintenance', '=', 'm_periodic_mtc.periodic_mtc_id')
-        ->where('table_registrasi_asset.qty', '>', 0) 
+        ->where('table_registrasi_asset.qty', '>', 0)
         ->where('table_registrasi_asset.id', $id)
         ->first();
     
@@ -1623,8 +1627,8 @@ public function getLocationUser() {
 
     // Fetch the current location and its ID
     $userLocation = DB::table('m_user')
-        ->select('master_resto_v2.id', 'master_resto_v2.name_store_street')
-        ->join('master_resto_v2', 'master_resto_v2.id', '=', 'm_user.location_now')
+        ->select('miegacoa_keluhan.master_resto.id', 'miegacoa_keluhan.master_resto.name_store_street')
+        ->join('miegacoa_keluhan.master_resto', 'miegacoa_keluhan.master_resto.id', '=', 'm_user.location_now')
         ->where('m_user.username', $username)
         ->first();
     // Return the location ID and name as JSON
@@ -1682,7 +1686,7 @@ public function searchRegisterAsset(Request $request)
                 ,'m_brand.brand_id'
                 ,'m_uom.uom_name'
                 ,'m_uom.uom_id'
-                ,'master_resto_v2.name_store_street'
+                ,'miegacoa_keluhan.master_resto.name_store_street'
                 ,'m_layout.layout_name'
                 ,'m_supplier.supplier_name'
                 ,'m_condition.condition_name'
@@ -1696,17 +1700,15 @@ public function searchRegisterAsset(Request $request)
         ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
         ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
         ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-        ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
-        ->leftJoin('master_resto_v2 as lokasi_sekarang', 'table_registrasi_asset.location_now', '=', 'lokasi_sekarang.id')
+        ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
+        ->leftJoin('miegacoa_keluhan.master_resto as lokasi_sekarang', 'table_registrasi_asset.location_now', '=', 'lokasi_sekarang.id')
         ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
         ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
         ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
         ->leftJoin('m_warranty', 'table_registrasi_asset.warranty', '=', 'm_warranty.warranty_id')
         ->leftJoin('m_periodic_mtc', 'table_registrasi_asset.periodic_maintenance', '=', 'm_periodic_mtc.periodic_mtc_id')
         ->leftJoin('t_out_detail', 'table_registrasi_asset.id', '=', 't_out_detail.asset_id')
-        ->when($loc_user != NULL, function ($query) use ($loc_user) {
-            return $query->where('table_registrasi_asset.register_location', $loc_user);
-        })
+        ->whereNull('table_registrasi_asset.deleted_at')
         ->where('table_registrasi_asset.qty', '>', 0)
         ->where('table_registrasi_asset.location_now', '=', $lokasi_user)
         ->get();
@@ -1774,8 +1776,8 @@ public function searchRegisterAsset(Request $request)
             )
             ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
             ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-            ->join('master_resto_v2 AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
-            ->join('master_resto_v2 AS dest_loc', 't_out.dest_loc', '=', 'dest_loc.id')
+            ->join('miegacoa_keluhan.master_resto AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
+            ->join('miegacoa_keluhan.master_resto AS dest_loc', 't_out.dest_loc', '=', 'dest_loc.id')
             ->join('table_registrasi_asset', 't_out_detail.asset_id', '=', 'table_registrasi_asset.id')
             ->join('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
             ->where('t_out.out_id', $id)
@@ -1812,7 +1814,7 @@ public function searchRegisterAsset(Request $request)
                 ,'m_brand.brand_id'
                 ,'m_uom.uom_name'
                 ,'m_uom.uom_id'
-                ,'master_resto_v2.name_store_street'
+                ,'miegacoa_keluhan.master_resto.name_store_street'
                 ,'m_layout.layout_name'
                 ,'m_supplier.supplier_name'
                 ,'m_condition.condition_id'
@@ -1827,7 +1829,7 @@ public function searchRegisterAsset(Request $request)
         ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
         ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
         ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-        ->leftJoin('master_resto_v2', 'table_registrasi_asset.register_location', '=', 'master_resto_v2.id')
+        ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
         ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
         ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
         ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -1847,8 +1849,8 @@ public function searchRegisterAsset(Request $request)
             )
             ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
             ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-            ->join('master_resto_v2 AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
-            ->join('master_resto_v2 AS dest_loc', 't_out.dest_loc', '=', 'dest_loc.id')
+            ->join('miegacoa_keluhan.master_resto AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
+            ->join('miegacoa_keluhan.master_resto AS dest_loc', 't_out.dest_loc', '=', 'dest_loc.id')
             ->where('t_out.out_id', $id)
             ->first();
 
@@ -1883,8 +1885,8 @@ public function filter(Request $request)
     )
     ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
     ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-    ->join('master_resto_v2 as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
-    ->join('master_resto_v2 as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
+    ->join('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id') // Alias for from_loc
+    ->join('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')   // Alias for dest_loc
     ->whereBetween('t_out.out_date', [$startDate, $endDate]);
 
     $moveouts = $moveoutsQuery->paginate(10);
@@ -1893,7 +1895,7 @@ public function filter(Request $request)
     $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
     $username = auth()->user()->username;
     $fromLoc = DB::table('m_user')->where('username', $username)->value('location_now');
-    $restos = DB::table('master_resto_v2')->select('store_code', 'name_store_street')->get();
+    $restos = DB::table('miegacoa_keluhan.master_resto')->select('store_code', 'name_store_street')->get();
     $conditions = DB::table('m_condition')->select('condition_id', 'condition_name')->get();
     $assets = DB::table('table_registrasi_asset')->select('id', 'asset_name')->where('qty', '>', 0)->get();
 

@@ -177,14 +177,14 @@
                     <div class="page-title">
                         <div class="row">
                             <div class="col-sm-6">
-                                <h3>Report Asset Per Location</h3>
+                                <h3>Report Mutasi Stock Detail</h3>
                             </div>
                             <div class="col-sm-6">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a>
+                                    <li class="breadcrumb-item"><a href="index.php"><i data-feather="home"></i></a>
                                     </li>
                                     <li class="breadcrumb-item">ASMI</li>
-                                    <li class="breadcrumb-item active">Report Asset Per Location</li>
+                                    <li class="breadcrumb-item active">Report Mutasi Stock Detail</li>
                                 </ol>
                             </div>
                         </div>
@@ -200,81 +200,80 @@
                             <div class="container">
                                 <div class="card">
                                     <div class="card-body">
-                                        <form class="mt-3 mb-5" action="/reports/export_stock_asset_per_location" method="GET">
-                                            @csrf
-                                            <input type="hidden" name="date"
-                                                class="form-control" value="{{ request('date') }}">
-                                            <input type="hidden" name="location"
-                                                class="form-control" value="{{ request('location') }}">
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="fa fa-file-excel-o" aria-hidden="true"></i> Download Excel Data
-                                            </button>
-                                        </form>
-                                        <form class="row my-4" action="/reports/stock_asset_per_location" method="GET">
+                                        <a href="{{ url('/reports/export_excel_mutasi_stock', $registerCode) }}"
+                                            class="btn btn-square btn-primary mb-4" role="button">
+                                            <i class="fa fa-file-excel-o" aria-hidden="true"></i> Download Excel Data
+                                        </a>
+                                        <form class="my-4" action="/reports/mutasi_stock_asset/{{ $registerCode }}/detail" method="GET">
                                         @csrf
-                                            <div class="col-md-4">
-                                                <div class="row">
-                                                    <div class="col-md-8 mb-3">
-                                                        <label>Date</label>
-                                                        <input type="date" name="date"
-                                                            class="form-control" value="{{ request('date') }}">
-                                                    </div>
-                                                    <div class="col-md-8 mb-4">
-                                                        <label>Location</label>
-                                                        @if ($user->hasRole('SM'))
-                                                            @foreach ($selectLoc as $item)
-                                                                <input type="hidden" name="location" value="{{ $item->id }}" readonly>
-                                                                <input type="text" class="form-control" value="{{ $item->name_store_street }}" readonly>
-                                                            @endforeach
-                                                        @else
-                                                            <select class="form-select" name="location">
-                                                                @foreach ($selectLoc as $item)
-                                                                    <option value="{{ $item->id }}" {{ request('location') == $item->id ? 'selected' : '' }}>{{ $item->name_store_street }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        @endif
-                                                    </div>
-                                                    <div class="col-md-4 d-flex">
-                                                        <button type="submit" class="btn btn-primary">Filter</button>
-                                                        <a href="/reports/stock_asset_per_location"
-                                                            class="btn btn-secondary ml-2">Reset</a>
-                                                    </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label for="start_date">Start Date</label>
+                                                    <input type="date" id="start_date" name="start_date"
+                                                        class="form-control" value="{{ request('start_date') }}">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label for="end_date">End Date</label>
+                                                    <input type="date" id="end_date" name="end_date"
+                                                        class="form-control" value="{{ request('end_date') }}">
+                                                </div>
+                                                <div class="col-md-6 d-flex align-items-end">
+                                                    <button type="submit" class="btn btn-primary">Filter</button>
+                                                    <a href="/disposal/request-disposal"
+                                                        class="btn btn-secondary ml-2">Reset</a>
                                                 </div>
                                             </div>
                                         </form>
                                         <div class="table-responsive product-table">
-                                            <table class="table table-striped" style="min-width: 100%; border-collapse: separate; border-radius: 8px; overflow: hidden;">
+                                            <table class="table table-striped">
                                                 <thead>
                                                     <tr>
-                                                        <th>Register Date</th>
-                                                        <th>Register Code</th>
+                                                        <th>Asset Tag</th>
+                                                        <th>Transaction Number</th>
+                                                        <th>Approval 1</th>
+                                                        <th>Approval 1 Date</th>
+                                                        <th>Approval 2</th>
+                                                        <th>Approval 2 Date</th>
+                                                        <th>Approval 3</th>
+                                                        <th>Approval 3 Date</th>
                                                         <th>Asset Name</th>
-                                                        <th>Serial No.</th>
-                                                        <th>Qty</th>
+                                                        <th>QTY</th>
                                                         <th>Satuan</th>
-                                                        <th>Status</th>
+                                                        <th>From Location</th>
+                                                        <th>Destination Location</th>
                                                         <th>Condition</th>
-                                                        <th>Type Asset</th>
-                                                        <th>Category</th>
-                                                        <th>Location Now</th>
-                                                        <th>Layout</th>
+                                                        <th>Serial No.</th>
+                                                        {{-- <th>Status</th> --}}
+                                                        <th>Reason</th>
+                                                        <th>Transfer Date</th>
+                                                        <th>Confirmation</th>
+                                                        <th>Confirm Date</th>
+                                                        <th>Created Date</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @foreach ($tRegist as $item)
+                                                    @foreach ($tDetail as $item)
                                                         <tr>
-                                                            <td>{{ $item->register_date }}</td>
-                                                            <td>{{ $item->register_code }}</td>
+                                                            <td>{{ $item->asset_tag }}</td>
+                                                            <td>{{ $item->out_id }}</td>
+                                                            <td>{{ $item->appr_1_user }}</td>
+                                                            <td>{{ $item->appr_1_date }}</td>
+                                                            <td>{{ $item->appr_2_user }}</td>
+                                                            <td>{{ $item->appr_2_date }}</td>
+                                                            <td>{{ $item->appr_3_user }}</td>
+                                                            <td>{{ $item->appr_3_date }}</td>
                                                             <td>{{ $item->asset_model }}</td>
-                                                            <td>{{ $item->serial_number }}</td>
                                                             <td>{{ $item->qty }}</td>
                                                             <td>{{ $item->uom_name }}</td>
-                                                            <td>{{ $item->status_asset }}</td>
+                                                            <td>{{ $item->lokasi_asal }}</td>
+                                                            <td>{{ $item->lokasi_akhir }}</td>
                                                             <td>{{ $item->condition_name }}</td>
-                                                            <td>{{ $item->type_name }}</td>
-                                                            <td>{{ $item->cat_name }}</td>
-                                                            <td>{{ $item->lokasi_sekarang }}</td>
-                                                            <td>{{ $item->layout_name }}</td>
+                                                            <td>{{ $item->serial_number }}</td>
+                                                            <td>{{ $item->reason_name }}</td>
+                                                            <td>{{ $item->create_date }}</td>
+                                                            <td>{{ $item->approval_name }}</td>
+                                                            <td>{{ $item->confirm_date }}</td>
+                                                            <td>{{ $item->out_date }}</td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>

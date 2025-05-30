@@ -177,14 +177,14 @@
                     <div class="page-title">
                         <div class="row">
                             <div class="col-sm-6">
-                                <h3>Report Asset Per Location</h3>
+                                <h3>Report Kartu Stock Detail</h3>
                             </div>
                             <div class="col-sm-6">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a>
+                                    <li class="breadcrumb-item"><a href="index.php"><i data-feather="home"></i></a>
                                     </li>
                                     <li class="breadcrumb-item">ASMI</li>
-                                    <li class="breadcrumb-item active">Report Asset Per Location</li>
+                                    <li class="breadcrumb-item active">Report Kartu Stock Detail</li>
                                 </ol>
                             </div>
                         </div>
@@ -200,85 +200,95 @@
                             <div class="container">
                                 <div class="card">
                                     <div class="card-body">
-                                        <form class="mt-3 mb-5" action="/reports/export_stock_asset_per_location" method="GET">
+                                        <form class="mt-3 mb-5" action="/reports/export/excel_kartu_stock{{ $registerCode }}" method="GET">
                                             @csrf
-                                            <input type="hidden" name="date"
-                                                class="form-control" value="{{ request('date') }}">
-                                            <input type="hidden" name="location"
-                                                class="form-control" value="{{ request('location') }}">
+                                            <input type="hidden" id="start_date" name="start_date"
+                                                class="form-control" value="{{ request('start_date') }}">
+                                            <input type="hidden" id="end_date" name="end_date"
+                                                class="form-control" value="{{ request('end_date') }}">
                                             <button type="submit" class="btn btn-primary">
                                                 <i class="fa fa-file-excel-o" aria-hidden="true"></i> Download Excel Data
                                             </button>
                                         </form>
-                                        <form class="row my-4" action="/reports/stock_asset_per_location" method="GET">
-                                        @csrf
-                                            <div class="col-md-4">
-                                                <div class="row">
-                                                    <div class="col-md-8 mb-3">
-                                                        <label>Date</label>
-                                                        <input type="date" name="date"
-                                                            class="form-control" value="{{ request('date') }}">
+                                        <div class="row my-4">
+                                            @php
+                                                $no = 1;
+                                            @endphp
+                                            <div class="col-sm-6 mb-3">
+                                                <table>
+                                                    <tr>
+                                                        <th class="text-end"><h3>Asset</h3></th>
+                                                        <th class="px-4"><h3>:</h3></th>
+                                                        <td class="fw-light"><h3>{{ $registerCode }}</h3></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="text-end"><h3>Location</h3></th>
+                                                        <th class="px-4"><h3>:</h3></th>
+                                                        <td><h3 class="fw-light">{{ $tRegist->lokasi_sekarang }}</h3></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="text-end"><h3>Register Location</h3></th>
+                                                        <th class="px-4"><h3>:</h3></th>
+                                                        <td><h3 class="fw-light">{{ $tRegist->register_lokasi }}</h3></td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            <form class="my-4" action="/reports/kartu_stock_asset/{{ $registerCode }}/detail" method="GET">
+                                            @csrf
+                                                <div class="row" style="align-items: flex-end!important;">
+                                                    <div class="col-md-3">
+                                                        <label for="start_date">Start Date</label>
+                                                        <input type="date" id="start_date" name="start_date"
+                                                            class="form-control" value="{{ request('start_date') }}">
                                                     </div>
-                                                    <div class="col-md-8 mb-4">
-                                                        <label>Location</label>
-                                                        @if ($user->hasRole('SM'))
-                                                            @foreach ($selectLoc as $item)
-                                                                <input type="hidden" name="location" value="{{ $item->id }}" readonly>
-                                                                <input type="text" class="form-control" value="{{ $item->name_store_street }}" readonly>
-                                                            @endforeach
-                                                        @else
-                                                            <select class="form-select" name="location">
-                                                                @foreach ($selectLoc as $item)
-                                                                    <option value="{{ $item->id }}" {{ request('location') == $item->id ? 'selected' : '' }}>{{ $item->name_store_street }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        @endif
+                                                    <div class="col-md-3">
+                                                        <label for="end_date">End Date</label>
+                                                        <input type="date" id="end_date" name="end_date"
+                                                            class="form-control" value="{{ request('end_date') }}">
                                                     </div>
-                                                    <div class="col-md-4 d-flex">
+                                                    <div class="col-md-6 d-flex align-items-end">
                                                         <button type="submit" class="btn btn-primary">Filter</button>
-                                                        <a href="/reports/stock_asset_per_location"
+                                                        <a href="/reports/kartu_stock_asset/{{ $registerCode }}/detail"
                                                             class="btn btn-secondary ml-2">Reset</a>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </form>
-                                        <div class="table-responsive product-table">
-                                            <table class="table table-striped" style="min-width: 100%; border-collapse: separate; border-radius: 8px; overflow: hidden;">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Register Date</th>
-                                                        <th>Register Code</th>
-                                                        <th>Asset Name</th>
-                                                        <th>Serial No.</th>
-                                                        <th>Qty</th>
-                                                        <th>Satuan</th>
-                                                        <th>Status</th>
-                                                        <th>Condition</th>
-                                                        <th>Type Asset</th>
-                                                        <th>Category</th>
-                                                        <th>Location Now</th>
-                                                        <th>Layout</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($tRegist as $item)
+                                            </form>
+                                            <div class="col-sm-12">
+                                                <table
+                                                    class="table table-bordered table-striped align-middle text-center">
+                                                    <thead class="table-primary">
                                                         <tr>
-                                                            <td>{{ $item->register_date }}</td>
-                                                            <td>{{ $item->register_code }}</td>
-                                                            <td>{{ $item->asset_model }}</td>
-                                                            <td>{{ $item->serial_number }}</td>
-                                                            <td>{{ $item->qty }}</td>
-                                                            <td>{{ $item->uom_name }}</td>
-                                                            <td>{{ $item->status_asset }}</td>
-                                                            <td>{{ $item->condition_name }}</td>
-                                                            <td>{{ $item->type_name }}</td>
-                                                            <td>{{ $item->cat_name }}</td>
-                                                            <td>{{ $item->lokasi_sekarang }}</td>
-                                                            <td>{{ $item->layout_name }}</td>
+                                                            <th style="width: 50px">#</th>
+                                                            <th style="min-width: 200px">Tanggal</th>
+                                                            <th style="min-width: 150px">Reason</th>
+                                                            <th style="min-width: 250px">Deskripsi</th>
+                                                            <th style="min-width: 200px">Lokasi</th>
+                                                            <th style="min-width: 60px">Saldo</th>
                                                         </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($trackings as $index => $item)
+                                                            <tr>
+                                                                <td>{{ $index + 1 }}</td>
+                                                                <td>{{ $item->start_date_formatted }}<br><strong
+                                                                        class="fs-3">→</strong><br>{{ $item->end_date_formatted }}
+                                                                </td>
+                                                                <td>{{ $item->reason_name }}</td>
+                                                                <td>{{ $item->description }}</td>
+                                                                <td>
+                                                                    <span
+                                                                        class="text-muted">{{ $item->asal }}</span>
+                                                                    <br><strong
+                                                                        class="fs-3">{{ $item->reason == 1 ? '→' : '' }}</strong><br>
+                                                                    <span
+                                                                        class="text-muted">{{ $item->menuju }}</span>
+                                                                </td>
+                                                                <td>{{ $item->saldo }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

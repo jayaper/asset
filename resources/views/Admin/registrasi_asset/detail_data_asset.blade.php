@@ -166,27 +166,31 @@
             <li class="maximize"><a class="text-dark" href="#!" onclick="javascript:toggleFullScreen()"><i
                   data-feather="maximize"></i></a></li>
             <li class="profile-nav onhover-dropdown p-0 me-0">
-              <div class="d-flex profile-media"><img class="b-r-50"
-                  src="{{asset('assets/images/dashboard/profile.jpg')}}">
-                <?php $session = session(); ?>
-                <div class="flex-grow-1"><span>{{ Auth::user()->username }}</span>
-                  <p class="mb-0 font-roboto">{{ Auth::user()->role}}<i class="middle fa fa-angle-down"></i></p>
-                </div>
+                  <div class="d-flex profile-media"><img class="b-r-50"
+                          src="{{ asset('assets/images/dashboard/profile.jpg') }}">
+                      <?php $session = session(); ?>
+                      <div class="flex-grow-1"><span>{{ Auth::user()->username }}</span>
+                          <p class="mb-0 font-roboto">{{ Auth::user()->role }}<i
+                                  class="middle fa fa-angle-down"></i></p>
+                      </div>
 
-              </div>
-              <ul class="profile-dropdown onhover-show-div">
-                <li><a href="user-profile.html"><i data-feather="user"></i><span>Account </span></a></li>
-                <!-- <li><a href="email_inbox.html"><i data-feather="mail"></i><span>Inbox</span></a></li>
-                  <li><a href="kanban.html"><i data-feather="file-text"></i><span>Taskboard</span></a></li> -->
-                <>
-                  <form id="logout-form" action="{{ url('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                    <li>
-                      <button id="logoutBtn"><i data-feather="log-out"> </i><span>Log Out</span></button>
-                    </li>
-                  </form>
-              </ul>
-            </li>
+                  </div>
+                  <ul class="profile-dropdown onhover-show-div">
+                      <li><a href="user-profile.html"><i data-feather="user"></i><span>Account </span></a>
+                      </li>
+                      <li>
+                          <a href="{{ route('logout') }}"
+                              onclick="event.preventDefault();
+                              document.getElementById('logout-form').submit();">
+                              <i data-feather="log-out"></i><span>Log Out</span>
+                          </a>
+                      </li>
+                      <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                          class="d-none">
+                          @csrf
+                      </form>
+                  </ul>
+              </li>
           </ul>
         </div>
         <script class="result-template" type="text/x-handlebars-template">
@@ -205,18 +209,22 @@
     <!-- Page Body Start-->
     <div class="page-body-wrapper">
       <!-- Page Sidebar Start-->
-      @include('Admin.layouts.right_sidebar_admin')
+      @include('layouts.sidebar')
       <!-- Page Sidebar Ends-->
       <div class="page-body">
         <!-- Container-fluid starts-->
 
        <div class="container-fluid" >
-          <div class="page-title">
-            <div class="row"  >
+          <div class="page-title mt-4">
+            <div class="row" >
+              <div class="col-sm-6">
+                  <h3>Detail Data Register Asset</h3>
+              </div>
               <div class="col-sm-6">
                 <ol class="breadcrumb">
                   <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a></li>
                   <li class="breadcrumb-item">ASMI</li>
+                  <li class="breadcrumb-item">Assets Registration </li>
                   <li class="breadcrumb-item active">Detail Data Register Asset </li>
                 </ol>
               </div>
@@ -230,115 +238,126 @@
             <!-- Individual column searching (text inputs) Starts-->
             <div class="col-sm-12">
               <div class="card">
-                <!-- Card Header -->
-                <div class="card-header">
-                  <h5>Detail Data Register Asset</h5>
-                </div>
 
                 <!-- Card Body -->
                 <div class="card-body">
                   <div class="row mb-4">
                     <div class="col-sm-12">
                       <table class="table table-bordered">
-                        <tr>
-                          <th>QR Code</th>
-                          <td>
-                            <img src="{{ asset('/public/qrcodes/' . $asset->register_code . '.png') }}"
-                              alt="QR Code for {{ $asset->register_code }}" class="img-fluid">
-                          </td>
-                        </tr>
-                        <tr>
-                          <th>Register Code</th>
-                          <td>{{ $asset->register_code }}</td>
-                        </tr>
-                        <tr>
-                          <th>Asset Name</th>
-                          <td>{{ $asset->asset_model }}</td>
-                        </tr>
-                        <tr>
-                          <th>Serial Number</th>
-                          <td>{{ $asset->serial_number }}</td>
-                        </tr>
-                        <tr>
-                          <th>Type Asset</th>
-                          <td>{{ $asset->type_name }}</td>
-                        </tr>
-                        <tr>
-                          <th>Category Asset</th>
-                          <td>{{ $asset->cat_name }}</td>
-                        </tr>
-                        <tr>
-                          <th>Priority</th>
-                          <td>{{ $asset->priority_name }}</td>
-                        </tr>
-                        <tr>
-                          <th>Brand</th>
-                          <td>{{ $asset->brand_name }}</td>
-                        </tr>
-                        <tr>
-                          <th>Quantity</th>
-                          <td>{{ $asset->qty }}</td>
-                        </tr>
-                        <tr>
-                          <th>Unit</th>
-                          <td>{{ $asset->uom_name }}</td>
-                        </tr>
-                        <tr>
-                          <th>Register Location</th>
-                          <td>{{ $asset->name_store_street }}</td>
-                        </tr>
-                        <tr>
-                          <th>Layout</th>
-                          <td>{{ $asset->layout_name }}</td>
-                        </tr>
-                        <tr>
-                          <th>Register Date</th>
-                          <td>{{ $asset->register_date }}</td>
-                        </tr>
-                        <tr>
-                          <th>Supplier</th>
-                          <td>{{ $asset->supplier_name }}</td>
-                        </tr>
-                        <tr>
-                          <th>Condition</th>
-                          <td>{{ $asset->condition_name }}</td>
-                        </tr>
-                        <tr>
-                          <th>Purchase Number</th>
-                          <td>{{ $asset->purchase_number }}</td>
-                        </tr>
-                        <tr>
-                          <th>Purchase Date</th>
-                          <td>{{ $asset->purchase_date }}</td>
-                        </tr>
-                        <tr>
-                          <th>Warranty</th>
-                          <td>{{ $asset->warranty_name }}</td>
-                        </tr>
-                        <tr>
-                          <th>Periodic Maintenance</th>
-                          <td>{{ $asset->periodic_mtc_name }}</td>
-                        </tr>
-                        <tr>
-                          <th>Approve Status</th>
-                          <td>{{ $asset->approve_status }}</td>
-                        </tr>
-                        <tr>
-                          <th>Width</th>
-                          <td>{{ $asset->width }}</td>
-                        </tr>
-                        <tr>
-                          <th>Height</th>
-                          <td>{{ $asset->height }}</td>
-                        </tr>
-                        <tr>
-                          <th>Depth</th>
-                          <td>{{ $asset->depth }}</td>
-                        </tr>
-                        <tr>
-                          <th>Location Now</th>
-                          <td>{{ $asset->location_now }}</td>
-                        </tr>
+                        <thead class="table-light">
+                            <tr><th colspan="2">Detail Data Register Asset</th></tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th>QR Code</th>
+                            <td>
+                              <img src="{{ asset('/public/qrcodes/' . $asset->register_code . '.png') }}"
+                                alt="QR Code for {{ $asset->register_code }}" class="img-fluid">
+                            </td>
+                          </tr>
+                          <tr>
+                            <th>Register Code</th>
+                            <td>{{ $asset->register_code }}</td>
+                          </tr>
+                          <tr>
+                            <th>Asset Name</th>
+                            <td>{{ $asset->asset_model }}</td>
+                          </tr>
+                          <tr>
+                            <th>Serial Number</th>
+                            <td>{{ $asset->serial_number }}</td>
+                          </tr>
+                          <tr>
+                            <th>Type Asset</th>
+                            <td>{{ $asset->type_name }}</td>
+                          </tr>
+                          <tr>
+                            <th>Category Asset</th>
+                            <td>{{ $asset->cat_name }}</td>
+                          </tr>
+                          <tr>
+                            <th>Priority</th>
+                            <td>{{ $asset->priority_name }}</td>
+                          </tr>
+                          <tr>
+                            <th>Brand</th>
+                            <td>{{ $asset->brand_name }}</td>
+                          </tr>
+                          <tr>
+                            <th>Quantity</th>
+                            <td>{{ $asset->qty }}</td>
+                          </tr>
+                          <tr>
+                            <th>Status Asset</th>
+                            <td>{{ $asset->status_asset_name }}</td>
+                          </tr>
+                          <tr>
+                            <th>Unit</th>
+                            <td>{{ $asset->uom_name }}</td>
+                          </tr>
+                          <tr>
+                            <th>Register Location</th>
+                            <td>{{ $asset->name_store_street }}</td>
+                          </tr>
+                          <tr>
+                            <th>Location Now</th>
+                            <td>{{ $asset->lokasi_sekarang }}</td>
+                          </tr>
+                          <tr>
+                            <th>Layout</th>
+                            <td>{{ $asset->layout_name }}</td>
+                          </tr>
+                          <tr>
+                            <th>Register Date</th>
+                            <td>{{ $asset->register_date }}</td>
+                          </tr>
+                          <tr>
+                            <th>Supplier</th>
+                            <td>{{ $asset->supplier_name }}</td>
+                          </tr>
+                          <tr>
+                            <th>Condition</th>
+                            <td>{{ $asset->condition_name }}</td>
+                          </tr>
+                          <tr>
+                            <th>Purchase Number</th>
+                            <td>{{ $asset->purchase_number }}</td>
+                          </tr>
+                          <tr>
+                            <th>Purchase Date</th>
+                            <td>{{ $asset->purchase_date }}</td>
+                          </tr>
+                          <tr>
+                            <th>Warranty</th>
+                            <td>{{ $asset->warranty_name }}</td>
+                          </tr>
+                          <tr>
+                            <th>Periodic Maintenance</th>
+                            <td>{{ $asset->periodic_mtc_name }}</td>
+                          </tr>
+                          <tr>
+                            <th>Width</th>
+                            <td>{{ $asset->width }}</td>
+                          </tr>
+                          <tr>
+                            <th>Height</th>
+                            <td>{{ $asset->height }}</td>
+                          </tr>
+                          <tr>
+                            <th>Depth</th>
+                            <td>{{ $asset->depth }}</td>
+                          </tr>
+                          <tr>
+                            <th>Status</th>
+                            <td>
+                              @if (is_null($asset->deleted_at))
+                                  <b class="text-success">Active</b>
+                              @else
+                                  <b class="text-danger">Deactive</b>
+                              @endif
+                            </td>
+                          </tr>
+                        </tbody>
                       </table>
                     </div>
                   </div>

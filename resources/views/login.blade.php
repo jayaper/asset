@@ -7,35 +7,50 @@
     <link rel="stylesheet" href="{{asset('assets/css/login.css')}}">
     <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
     <title>ASMI - Asset System Management Integration</title>
+    <style>
+        .container {
+            padding: 60px 35px;
+            gap: 10px;
+            width: 100%;
+            position: relative;
+            right: 0px;
+            bottom: 30px;
+        }
+    </style>
 </head>
 <body>
-    <div class="parent-container">
-        <div class="card">
-            <div class="card-header">
-                <img src="{{asset('assets/images/header-card.png')}}" class="header-card-image">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7">
+                <div class="min-vh-100 d-flex align-items-center">
+                    <div class="bg-white shadow">
+                        <div class="card-header">
+                            <img src="{{asset('assets/images/header-card.png')}}" class="header-card-image">
+                        </div>
+                        <p><h5><b>Sign In</b></h5></p>
+                        <form class="mt-5" action="{{route('login')}}" method="post">
+                            @csrf
+                            <div class="container">
+                                <label for="username"><h6>NIK (Nomor Induk Karyawan) : </h6></label>
+                                <br>
+                                <input type="text" name="username" id="username" class="form-control form-control-lg" placeholder="Masukkan NIK Anda...." required>
+                                <br>
+                                <label class="form-label"><h6>Password : </h6></label>
+                                <div class="input-group mb-3">
+                                    <input class="form-control form-control-lg password" id="password" type="password" name="password" placeholder="Masukkan Password Anda..." required />
+                                    <span class="input-group-text togglePassword" id="">
+                                        <i data-feather="eye" style="cursor: pointer"></i>
+                                    </span>
+                                </div> 
+                                <!-- <a href="#" class="lupa-password">Lupa Password?</a> -->
+                                <div class="d-grid gap-2 mt-5">
+                                    <button class="btn btn-lg btn-primary" type="submit">Login</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <p><h5><b>Sign In</b></h5></p>
-            <div class="card-body">
-                <form action="{{route('login')}}" method="post">
-                    @csrf
-                    <div class="container">
-                        <label for="username"><h6>NIK (Nomor Induk Karyawan) : </h6></label>
-                        <br>
-                        <input type="text" name="username" id="username" class="form-control col-xs-2" placeholder="Masukkan NIK Anda...." required>
-                        <br>
-                        <label class="form-label"><h6>Password : </h6></label>
-                        <div class="input-group mb-3">
-                            <input class="form-control password" id="password" class="block mt-1 w-full" type="password" name="password" placeholder="Masukkan Password Anda..." required />
-                            <span class="input-group-text togglePassword" id="">
-                                <i data-feather="eye" style="cursor: pointer"></i>
-                            </span>
-                        </div> 
-                        <!-- <a href="#" class="lupa-password">Lupa Password?</a> -->
-                    </div>
-                    <div class="button-container">
-                        <button type="submit" class="btn btn-primary btn-md">Submit</button>
-                    </div>
-                </form>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>

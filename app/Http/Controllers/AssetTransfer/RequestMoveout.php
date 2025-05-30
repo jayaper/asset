@@ -116,12 +116,11 @@ class RequestMoveout extends Controller
         $conditions = DB::table('m_condition')->select('condition_id', 'condition_name')->get();
 
 
-        $username = auth()->user()->username;
+        $username = Auth::user()->username;
 
 
         $user = DB::table('m_user')->where('username', $username)->first();
         $fromLoc = $user->location_now;
-        $role = $user->role;
 
 
         $assets = DB::table('table_registrasi_asset')
@@ -130,64 +129,33 @@ class RequestMoveout extends Controller
             ->get();
 
 
-        $moveoutsQuery = DB::table('t_out');
-
-            // Cek jika request is_confirm == 2
-            if ($request->filled('is_confirm') && $request->input('is_confirm') == 2) {
-                $moveoutsQuery->select(
-                        't_out.out_id',
-                        't_out_detail.qty',
-                        't_out.dest_loc',
-                        't_out.is_confirm',
-                        'miegacoa_keluhan.master_resto.name_store_street',
-                        'm_user.role',
-                        'm_user.location_now',
-                        't_in.from_location'
-                    )
-                    ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
-                    ->join('m_user', 't_out.dest_loc', '=', 'm_user.location_now')
-                    ->join('miegacoa_keluhan.master_resto', 't_out.dest_loc', '=', 'miegacoa_keluhan.master_resto.id')
-                    ->join('t_in', 't_out.in_id', '=', 't_in.in_id')
-                    ->where([
-                        ['m_user.location_now', '=', $fromLoc],
-                        ['m_user.role', '=', 'am'],
-                        ['t_out.is_confirm', '=', 3],
-                        ['t_out.is_active', '=', 1],
-                    ])
-                    ->orderBy('t_out_detail.out_id')->distinct();
-            } else {
-                $moveoutsQuery = DB::table('t_out as a')
-                    ->select(
-                        'a.*',
-                        'b.qty',
-                        'c.reason_name',
-                        'd.approval_name',
-                        'e.name_store_street as from_location',
-                        'f.name_store_street as dest_location',
-                        'b.total_qr as total_qr'
-                    )
-                    ->leftJoin(DB::raw('(
-                        SELECT 
-                            b.out_id, 
-                            SUM(b.qty) AS qty,
-                            count(c.qr_code_path) as total_qr
-                        FROM t_out_detail AS b
-                        LEFT JOIN table_registrasi_asset AS c ON c.register_code = b.asset_tag
-                        GROUP BY b.out_id
-                    ) as b'), 'b.out_id', '=', 'a.out_id')
-                    ->leftJoin('m_reason as c', 'c.reason_id', '=', 'a.reason_id')
-                    ->leftJoin('mc_approval as d', 'd.approval_id', '=', 'a.is_confirm')
-                    ->leftJoin('miegacoa_keluhan.master_resto as e', 'e.id', '=', 'a.from_loc')
-                    ->leftJoin('miegacoa_keluhan.master_resto as f', 'f.id', '=', 'a.dest_loc')
-                    ->where('a.is_active', 1)
-                    ->where('a.out_id', 'like', 'AM%')
-                    ->orderBy('a.out_id', 'DESC');
-                    // ->get();
-            }
-            
-            // Filter tanggal jika ada
+        $moveoutsQuery = DB::table('t_out as a')
+            ->select(
+                'a.*',
+                'b.qty',
+                'c.reason_name',
+                'd.approval_name',
+                'e.name_store_street as from_location',
+                'f.name_store_street as dest_location',
+                'b.total_qr as total_qr'
+            )
+            ->leftJoin(DB::raw('(
+                SELECT 
+                    b.out_id, 
+                    SUM(b.qty) AS qty,
+                    count(c.qr_code_path) as total_qr
+                FROM t_out_detail AS b
+                LEFT JOIN table_registrasi_asset AS c ON c.register_code = b.asset_tag
+                GROUP BY b.out_id
+            ) as b'), 'b.out_id', '=', 'a.out_id')
+            ->leftJoin('m_reason as c', 'c.reason_id', '=', 'a.reason_id')
+            ->leftJoin('mc_approval as d', 'd.approval_id', '=', 'a.is_confirm')
+            ->leftJoin('miegacoa_keluhan.master_resto as e', 'e.id', '=', 'a.from_loc')
+            ->leftJoin('miegacoa_keluhan.master_resto as f', 'f.id', '=', 'a.dest_loc')
+            ->where('a.out_id', 'like', 'AM%')
+            ->orderBy('a.out_id', 'DESC');
             if ($request->filled('start_date') && $request->filled('end_date')) {
-                $moveoutsQuery->whereBetween('t_out.out_date', [
+                $moveoutsQuery->whereBetween('a.out_date', [
                     $request->input('start_date') . ' 00:00:00',
                     $request->input('end_date') . ' 23:59:59'
                 ]);
@@ -362,17 +330,22 @@ class RequestMoveout extends Controller
             ->select(
                 't_out.*',
                 't_out_detail.*',
-                'fromResto.store_code as origin_site',
-                'toResto.store_code as destination_site',
+                'codeFormResto.cabang_new as origin_site',
+                'codeDestResto.cabang_new as destination_site',
                 'table_registrasi_asset.asset_name',
                 'm_assets.asset_model',
                 'm_brand.brand_name',
                 'm_category.cat_name',
                 'm_reason.reason_name',
-                'm_condition.condition_name'
+                'm_condition.condition_name',
+                'mc_approval.approval_name'
             )
             ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id',)
+            ->leftJoin('mc_approval', 'mc_approval.approval_id', '=', 't_out.is_confirm')
             ->leftJoin('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id')
+            ->leftJoin('miegacoa_keluhan.master_resto as destResto', 't_out.dest_loc', '=', 'destResto.id')
+            ->leftJoin('miegacoa_keluhan.master_barcode_resto as codeFormResto', 'codeFormResto.id', '=', 'fromResto.store_code')
+            ->leftJoin('miegacoa_keluhan.master_barcode_resto as codeDestResto', 'codeDestResto.id', '=', 'destResto.store_code')
             ->leftJoin('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')
             ->join('table_registrasi_asset', 't_out_detail.asset_id', '=', 'table_registrasi_asset.id')
             ->join('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
@@ -1044,7 +1017,10 @@ class RequestMoveout extends Controller
 
             DB::table('table_registrasi_asset')
                 ->where('register_code', $registerCode)
-                ->update(['qty' => $newQty]);
+                ->update([
+                    'qty' => $newQty,
+                    'status_asset' => 2
+                ]);
 
 
             // Insert a new detail record into `t_out_detail`
@@ -1358,12 +1334,13 @@ class RequestMoveout extends Controller
         // Validate input
         $request->validate([
             'out_date' => 'required|date',
-            'from_loc_id' => 'required|integer',
+            'from_loc' => 'required|integer',
             'out_desc' => 'required|string',
             'reason_id' => 'required|integer',
-            'asset_id.*' => 'required|integer',
+            'det_id.*' => 'required|integer',
             'qty.*' => 'required|integer',
             'condition_id.*' => 'required',
+            'image.*' => 'nullable'
             // Add other validation rules as necessary
         ]);
 
@@ -1376,10 +1353,10 @@ class RequestMoveout extends Controller
 
         // Update the main MoveOut record
         $updated = DB::table('t_out')->where('out_id', $out_id)->update([
-            'out_date' => $request->input('out_date'),
-            'from_loc' => $request->input('from_loc_id'),
-            'out_desc' => $request->input('out_desc'),
-            'reason_id' => $request->input('reason_id'),
+            'out_date' => $request->out_date,
+            'from_loc' => $request->from_loc,
+            'out_desc' => $request->out_desc,
+            'reason_id' => $request->reason_id,
             'updated_at' => Carbon::now(),
         ]);
 
@@ -1387,61 +1364,27 @@ class RequestMoveout extends Controller
             return response()->json(['status' => 'error', 'message' => 'No changes were made to the MoveOut record.'], 500);
         }
 
-        // Update or Insert the detail records
-        foreach ($request->input('asset_id') as $index => $assetId) {
+        foreach ($request->det_id as $index => $id) {
             $imagePath = null;
 
             if ($request->hasFile("image.$index") && $request->file("image.$index")->isValid()) {
                 $imagePath = $request->file("image.$index")->store('moveout_item/images', 'public');
-            }
-
-            $moveoutQty = $request->input('qty')[$index];
-
-            // Check if the detail record exists for this out_id and asset_tag
-            $existingDetail = DB::table('t_out_detail')
-                ->where('out_id', $out_id)
-                ->first();
-
-            if ($existingDetail) {
-                // Update the existing detail record
-                DB::table('t_out_detail')
-                    ->where('out_det_id', $existingDetail->out_det_id) // Use the correct primary key
-                    ->update([
-                        'out_det_id' => $existingDetail->out_det_id, // Ensure consistency
-                        'asset_id' => $assetId,
-                        'serial_number' => $request->input('serial_number')[$index],
-                        'brand' => $request->input('merk')[$index],
-                        'qty' => $moveoutQty,
-                        'uom' => $request->input('satuan')[$index],
-                        'condition' => $request->input('condition_id')[$index],
-                        'image' => $imagePath ?: $existingDetail->image,
-                        'updated_at' => Carbon::now(),
-                    ]);
-
-                DB::table('table_registrasi_asset')
-                    ->where('id', $assetId)
-                    ->decrement('qty', $moveoutQty);
             } else {
-                DB::table('t_out_detail')
-                    ->where('out_det_id', $existingDetail->out_det_id)
-                    ->insert([
-                        'out_id' => $out_id,
-                        'asset_id' => $asset_id,
-                        'serial_number' => $request->input('serial_number')[$index],
-                        'asset_tag' => $request->input('merk')[$index],
-                        'brand' => $request->input('merk')[$index],
-                        'qty' => $moveoutQty,
-                        'uom' => $request->input('satuan')[$index],
-                        'condition' => $request->input('condition_id')[$index],
-                        'image' => $imagePath,
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now()
-                    ]);
-                DB::table('table_registrasi_asset')
-                    ->where('id', $assetId)
-                    ->decrement('qty', $moveoutQty);
+                $oldRecord = DB::table('t_out_detail')->where('id', $id)->first();
+                $imagePath = $oldRecord->image ?? null;
             }
+
+            DB::table('t_out_detail')
+                ->where('id', $id)
+                ->update([
+                    'condition'  => $request->input('condition_id')[$index],
+                    'image'      => $imagePath,
+                    'updated_at' => now(),
+                ]);
         }
+
+
+
 
         return redirect()->to('/asset-transfer/request-moveout')->with('success', 'MoveOut record updated successfully.');
     }
@@ -1466,10 +1409,15 @@ class RequestMoveout extends Controller
         $moveout = MasterMoveOut::find($id);
 
         if ($moveout) {
-            // Soft delete the moveout record
-            $moveout->is_active = 0;
-            $moveout->deleted_at = Carbon::now();
-            $moveout->delete();
+            if(is_null($moveout->deleted_at)){
+                $moveout->is_active = 0;
+                $moveout->deleted_at = Carbon::now();
+                $moveout->save();
+            }else{
+                $moveout->is_active = 1;
+                $moveout->deleted_at = null;
+                $moveout->save();
+            }
 
             // Soft delete related details
             // $moveout->details()->update(['deleted_at' => Carbon::now()]);
@@ -1766,98 +1714,27 @@ class RequestMoveout extends Controller
 
     public function dataDetailMovement($id)
     {
-        $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
-
-        $moveOutAssets = DB::table('t_out')
-            ->select(
-                't_out.*',
-                't_out_detail.*',
-                'm_reason.*',
-                'from_loc.name_store_street AS from_location', // Fetch specific fields if needed
-                'dest_loc.name_store_street AS destination_location',
-                'm_assets.asset_model',
-                'table_registrasi_asset.id',
-                'table_registrasi_asset.register_code',
-                'table_registrasi_asset.serial_number',
-                'table_registrasi_asset.register_date',
-                'table_registrasi_asset.purchase_date',
-                'table_registrasi_asset.approve_status',
-                'table_registrasi_asset.serial_number',
-                'table_registrasi_asset.width',
-                'table_registrasi_asset.height',
-                'table_registrasi_asset.depth',
-                'table_registrasi_asset.qty'
-
-
-            )
-            ->leftjoin('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
-            ->leftjoin('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-            ->leftjoin('miegacoa_keluhan.master_resto AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
-            ->leftjoin('miegacoa_keluhan.master_resto AS dest_loc', 't_out.dest_loc', '=', 'dest_loc.id')
-            ->leftjoin('table_registrasi_asset', 't_out_detail.asset_id', '=', 'table_registrasi_asset.id')
-            ->leftjoin('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
-            ->where('t_out.out_id', $id)
-            ->first();
-
-
-
-        return view('asset_transfer.detail_data_movement', compact('moveOutAssets', 'reasons'));
-    }
-
-
-
-    public function editDataDetailMovement($id)
-    {
-
         $user = Auth::User();
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
         $conditions = DB::table('m_condition')->select('condition_id', 'condition_name')->get();
 
-        $assets = DB::table('table_registrasi_asset')
+        $assets = DB::table('t_out_detail AS a')
             ->select(
-                'table_registrasi_asset.id',
-                'table_registrasi_asset.register_code',
-                'table_registrasi_asset.serial_number',
-                'table_registrasi_asset.register_date',
-                'table_registrasi_asset.purchase_date',
-                'table_registrasi_asset.approve_status',
-                'table_registrasi_asset.serial_number',
-                'table_registrasi_asset.width',
-                'table_registrasi_asset.height',
-                'table_registrasi_asset.depth',
-                'table_registrasi_asset.qty',
-                'm_assets.asset_model',
-                'm_type.type_name',
-                'm_category.cat_name',
-                'm_priority.priority_name',
-                'm_brand.brand_name',
-                'm_brand.brand_id',
-                'm_uom.uom_name',
-                'm_uom.uom_id',
-                'miegacoa_keluhan.master_resto.name_store_street',
-                'm_layout.layout_name',
-                'm_supplier.supplier_name',
-                'm_condition.condition_id',
-                'm_condition.condition_name',
-                'm_warranty.warranty_name',
-                'm_periodic_mtc.periodic_mtc_name',
-                't_out_detail.image as asset_image',
-                'table_registrasi_asset.deleted_at'
+                'a.id',
+                'a.asset_tag',
+                'c.asset_model',
+                'd.brand_name',
+                'a.qty',
+                'e.uom_name',
+                'b.serial_number',
+                'a.condition',
+                'a.image'
             )
-            ->leftJoin('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
-            ->leftJoin('m_type', 'table_registrasi_asset.type_asset', '=', 'm_type.type_code')
-            ->leftJoin('m_category', 'table_registrasi_asset.category_asset', '=', 'm_category.cat_code')
-            ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
-            ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
-            ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-            ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
-            ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
-            ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
-            ->leftJoin('m_warranty', 'table_registrasi_asset.warranty', '=', 'm_warranty.warranty_id')
-            ->leftJoin('m_periodic_mtc', 'table_registrasi_asset.periodic_maintenance', '=', 'm_periodic_mtc.periodic_mtc_id')
-            ->leftJoin('t_out_detail', 'table_registrasi_asset.id', '=', 't_out_detail.asset_id')
-            ->leftJoin('m_condition', 't_out_detail.condition', '=', 'm_condition.condition_id')
-            ->where('table_registrasi_asset.qty', '>', 0)
+            ->leftJoin('table_registrasi_asset AS b', 'b.register_code', 'a.asset_tag')
+            ->leftJoin('m_assets AS c', 'c.asset_id', '=', 'b.asset_name')
+            ->leftJoin('m_brand AS d', 'd.brand_id', '=', 'b.merk')
+            ->leftJoin('m_uom AS e', 'e.uom_id', '=', 'b.satuan')
+            ->where('a.out_id', $id)
             ->get();
 
         $moveOutAssets = DB::table('t_out')
@@ -1875,13 +1752,58 @@ class RequestMoveout extends Controller
             ->where('t_out.out_id', $id)
             ->first();
 
-        $selectConditionId = $assets->isNotEmpty() ? $assets[0]->condition_id : null;
+
+        // dd($assets);
+        return view('asset_transfer.detail_data_movement', compact('moveOutAssets', 'reasons', 'conditions', 'assets', 'user'));
+    }
+
+
+
+    public function editDataDetailMovement($id)
+    {
+
+        $user = Auth::User();
+        $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
+        $conditions = DB::table('m_condition')->select('condition_id', 'condition_name')->get();
+
+        $assets = DB::table('t_out_detail AS a')
+            ->select(
+                'a.id',
+                'a.asset_tag',
+                'c.asset_model',
+                'd.brand_name',
+                'a.qty',
+                'e.uom_name',
+                'b.serial_number',
+                'a.condition',
+                'a.image'
+            )
+            ->leftJoin('table_registrasi_asset AS b', 'b.register_code', 'a.asset_tag')
+            ->leftJoin('m_assets AS c', 'c.asset_id', '=', 'b.asset_name')
+            ->leftJoin('m_brand AS d', 'd.brand_id', '=', 'b.merk')
+            ->leftJoin('m_uom AS e', 'e.uom_id', '=', 'b.satuan')
+            ->where('a.out_id', $id)
+            ->get();
+
+        $moveOutAssets = DB::table('t_out')
+            ->select(
+                't_out.*',
+                't_out_detail.*',
+                'm_reason.*',
+                'from_loc.name_store_street AS from_location', // Fetch specific fields if needed
+                'dest_loc.name_store_street AS destination_location'
+            )
+            ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
+            ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
+            ->join('miegacoa_keluhan.master_resto AS from_loc', 't_out.from_loc', '=', 'from_loc.id')
+            ->join('miegacoa_keluhan.master_resto AS dest_loc', 't_out.dest_loc', '=', 'dest_loc.id')
+            ->where('t_out.out_id', $id)
+            ->first();
 
 
         // dd($assets);
-        return view('asset_transfer.edit_data_movement', compact('moveOutAssets', 'reasons', 'conditions', 'assets', 'selectConditionId', 'user'));
+        return view('asset_transfer.edit_data_movement', compact('moveOutAssets', 'reasons', 'conditions', 'assets', 'user'));
     }
-
 
     public function filter(Request $request)
     {

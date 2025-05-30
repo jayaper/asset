@@ -58,13 +58,6 @@
 
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
-    <style>
-        #coba {
-            table-layout: fixed !important;
-            word-wrap: break-word;
-        }
-    </style>
-
 </head>
 
 <body>
@@ -124,24 +117,19 @@
                             <ul class="profile-dropdown onhover-show-div">
                                 <li><a href="user-profile.html"><i data-feather="user"></i><span>Account </span></a>
                                 </li>
-                                <!-- <li><a href="email_inbox.html"><i data-feather="mail"></i><span>Inbox</span></a></li>
-                  <li><a href="kanban.html"><i data-feather="file-text"></i><span>Taskboard</span></a></li> -->
-                                <li><a href="{{ route('logout') }}"
+                                <li>
+                                    <a href="{{ route('logout') }}"
                                         onclick="event.preventDefault();
-                      document.getElementById('logout-form').submit();">
-                                        <i data-feather="log-out"></i><span>Log Out</span></a></li>
+                                        document.getElementById('logout-form').submit();">
+                                        <i data-feather="log-out"></i><span>Log Out</span>
+                                    </a>
+                                </li>
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST"
                                     class="d-none">
                                     @csrf
                                 </form>
                             </ul>
-                            <form id="logout-form" action="{{ url('logout') }}" method="POST"
-                                style="display: none;">
-                                @csrf
-                        <li>
-                            <button id="logoutBtn"><i data-feather="log-out"> </i><span>Log Out</span></button>
                         </li>
-                        </form>
                     </ul>
                     </li>
                     </ul>
@@ -167,7 +155,7 @@
                 <!-- Container-fluid starts-->
 
                 <div class="container-fluid">
-                    <div class="page-title">
+                    <div class="page-title mt-4">
                         <div class="row">
                             <div class="col-sm-6">
                                 <h3>Assets Registration</h3>
@@ -191,7 +179,8 @@
                         <div class="col-sm-12">
                             <div class="card">
                                 <div class="card-header pb-0">
-                                    <h5>Assets Registration</h5><span>adalah daftar atau kumpulan aset yang dimiliki oleh
+                                    <h5>Assets Registration</h5><span>adalah daftar atau kumpulan aset yang dimiliki
+                                        oleh
                                         seseorang, organisasi, atau perusahaan. Daftar ini biasanya mencakup rincian
                                         tentang setiap aset, seperti jenis aset, nilai, lokasi, dan informasi relevan
                                         lainnya.</span>
@@ -199,20 +188,20 @@
                                 <div class="card-body">
                                     <div class="btn-showcase">
                                         <div class="button_between">
-                                            @can('btn add registration')  
+                                            @can('btn add registration')
                                                 <a href="/registration/add-assets-registration"
-                                                class="btn btn-square btn-primary">Add Data Asset</a>
+                                                    class="btn btn-square btn-primary">Add Data Asset</a>
                                             @endcan
                                             @can('btn import registration')
                                                 <button class="btn btn-square btn-primary" type="button"
-                                                data-toggle="modal" data-target="#importDataExcel"> <i
-                                                class="fa fa-file-excel-o"></i> Import Data Excel </button>
+                                                    data-toggle="modal" data-target="#importDataExcel"> <i
+                                                        class="fa fa-file-excel-o"></i> Import Data Excel </button>
                                             @endcan
                                             @can('btn export registration')
                                                 <a href="{{ url('/registration/export-data-assets') }}"
-                                                class="btn btn-square btn-primary" role="button">
-                                                <i class="fa fa-file-excel-o" aria-hidden="true"></i> Download Excel
-                                                Data
+                                                    class="btn btn-square btn-primary" role="button">
+                                                    <i class="fa fa-file-excel-o" aria-hidden="true"></i> Download Excel
+                                                    Data
                                                 </a>
                                             @endcan
 
@@ -221,145 +210,226 @@
                                 </div>
 
 
-                        <div class="modal fade" id="detailDataAsset" tabindex="-1" role="dialog"
-                            aria-labelledby="detailDataAssetLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="detailDataAssetLabel"><b>Detail Barang Asset</b>
-                                        </h5>
-                                        <button type="button" class="close" data-dismiss="modal"
-                                            aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <img id="qrCodeImage" src="" alt="QR Code"
-                                            style="width: 150px; height: 150px;">
-                                        <p id="assetDetails"></p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-primary"
-                                            data-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal fade" id="importDataExcel" tabindex="-1" role="dialog"
-                            aria-labelledby="importDataExcelLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="importDataExcelLabel">Import Data Excel Asset</h5>
-                                        <button type="button" class="close" data-dismiss="modal"
-                                            aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form action="{{ url('/registration/import-data-assets') }}" method="POST"
-                                            enctype="multipart/form-data">
-                                            @csrf
-                                            <div class="form-group">
-                                                <label for="data_excel">Import Data Excel:</label>
-                                                <input type="file" name="file" class="form-control"
-                                                    placeholder="Upload File Excel" required accept=".xlsx,.xls,.csv">
+                                <div class="modal fade" id="detailDataAsset" tabindex="-1" role="dialog"
+                                    aria-labelledby="detailDataAssetLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="detailDataAssetLabel"><b>Detail Barang
+                                                        Asset</b>
+                                                </h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
                                             </div>
+                                            <div class="modal-body">
+                                                <img id="qrCodeImage" src="" alt="QR Code"
+                                                    style="width: 150px; height: 150px;">
+                                                <p id="assetDetails"></p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-primary"
+                                                    data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                        <button type="button" class="btn btn-danger"
-                                            data-dismiss="modal">Close</button>
-                                    </div>
-                                    </form>
-                                    @if (session('success'))
-                                        <div class="alert alert-success">{{ session('success') }}</div>
-                                    @endif
+                                </div>
 
-                                    @if (session('error'))
-                                        <div class="alert alert-danger">{{ session('error') }}</div>
-                                    @endif
+                                <div class="modal fade" id="importDataExcel" tabindex="-1" role="dialog"
+                                    aria-labelledby="importDataExcelLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="importDataExcelLabel">Import Data Excel
+                                                    Asset</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{{ url('/registration/import-data-assets') }}"
+                                                    method="POST" enctype="multipart/form-data">
+                                                    @csrf
+                                                    <div class="form-group">
+                                                        <label for="data_excel">Import Data Excel:</label>
+                                                        <input type="file" name="file" class="form-control"
+                                                            placeholder="Upload File Excel" required
+                                                            accept=".xlsx,.xls,.csv">
+                                                    </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="submit" class="btn btn-primary">Submit</button>
+                                                <button type="button" class="btn btn-danger"
+                                                    data-dismiss="modal">Close</button>
+                                            </div>
+                                            </form>
+                                            @if (session('success'))
+                                                <div class="p-4">
+                                                    <div class="alert alert-success">{{ session('success') }}</div>
+                                                </div>
+                                            @endif
+
+                                            @if (session('error'))
+                                                <div class="p-4">
+                                                    <div class="alert alert-danger">{{ session('error') }}</div>
+                                                </div>
+                                            @endif
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @if (session('success'))
+                                    <div class="alert alert-success">{{ session('success') }}</div>
+                                @endif
+
+                                @if (session('error'))
+                                    <div class="alert alert-danger">{{ session('error') }}</div>
+                                @endif
+
+
+                                <div class="card-body">
+                                    <div class="table-responsive product-table"
+                                        style="border-radius: 8px; overflow-x: auto; scrollbar-width: thin;">
+                                        <table id="coba" class="table table-responsive table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Asset Tag</th>
+                                                    <th>Asset Name</th>
+                                                    <th>Register Location</th>
+                                                    <th>Location Now</th>
+                                                    <th>Qty</th>
+                                                    <th>Status Asset</th>
+                                                    <th>Serial Number</th>
+                                                    <th>Type Asset</th>
+                                                    <th>Category Asset</th>
+                                                    <th>Priority</th>
+                                                    <th>Merk</th>
+                                                    <th>Satuan</th>
+                                                    <th>Layout</th>
+                                                    <th>Register Date</th>
+                                                    <th>Supplier</th>
+                                                    <th>Condition</th>
+                                                    <th>Purchase Date</th>
+                                                    <th>Warranty</th>
+                                                    <th>Periodic Maintenance</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($assets as $asset)
+                                                    <tr>
+                                                        <td>{{ $asset->register_code }}</td>
+                                                        <td>{{ $asset->asset_model }}</td>
+                                                        <td>{{ $asset->name_store_street }}</td>
+                                                        <td>{{ $asset->location_now }}</td>
+                                                        <td>{{ $asset->qty }}</td>
+                                                        <td>
+                                                            @if ($asset->status_asset_id == 1)
+                                                                <b class="text-success">{{ $asset->status_asset_name }}</b>
+                                                            @elseif($asset->status_asset_id == 2)
+                                                                <b class="text-warning">{{ $asset->status_asset_name }}</b>
+                                                            @else
+                                                                <b class="text-danger">{{ $asset->status_asset_name }}</b>
+                                                            @endif
+                                                        </td>
+                                                        <td>{{ $asset->serial_number }}</td>
+                                                        <td>{{ $asset->type_name }}</td>
+                                                        <td>{{ $asset->cat_name }}</td>
+                                                        <td>{{ $asset->priority_name }}</td>
+                                                        <td>{{ $asset->brand_name }}</td>
+                                                        <td>{{ $asset->uom_name }}</td>
+                                                        <td>{{ $asset->layout_name }}</td>
+                                                        <td>{{ $asset->register_date }}</td>
+                                                        <td>{{ $asset->supplier_name }}</td>
+                                                        <td>{{ $asset->condition_name }}</td>
+                                                        <td>{{ $asset->purchase_date }}</td>
+                                                        <td>{{ $asset->warranty_name }}</td>
+                                                        <td>{{ $asset->periodic_mtc_name }}</td>
+                                                        <td>
+                                                            @if (is_null($asset->deleted_at))
+                                                                <b class="text-success">Active</b>
+                                                            @else
+                                                                <b class="text-danger">Deactive</b>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <div class="dropdown">
+                                                                <button
+                                                                    class="btn btn-large btn-primary btn-sm dropdown-toggle"
+                                                                    type="button"
+                                                                    id="dropdownMenuButton{{ $asset->id }}"
+                                                                    data-toggle="dropdown" aria-haspopup="true"
+                                                                    aria-expanded="false">
+                                                                    Actions
+                                                                </button>
+                                                                <div class="dropdown-menu"
+                                                                    aria-labelledby="dropdownMenuButton{{ $asset->id }}">
+                                                                    <a class="dropdown-item"
+                                                                        href="/registration/generate-pdf/{{ $asset->register_code }}">Cetak QR
+                                                                        Code</a>
+                                                                    <a class="dropdown-item"
+                                                                        href="/registration/tracking-asset-registration/{{ $asset->register_code }}">Tracking
+                                                                        History</a>
+                                                                    <a class="dropdown-item"
+                                                                        href="/registration/detail_data_registrasi_asset/{{ $asset->register_code }}"
+                                                                        target="_blank">Detail Barang Asset</a>
+
+                                                                    @can('btn action edit registration')
+                                                                        <a class="dropdown-item"
+                                                                            href="/registration/edit-assets-registration/{{ $asset->register_code }}">Update</a>
+                                                                    @endcan
+
+                                                                    @can('btn action delete registration')
+                                                                        @if (is_null($asset->deleted_at))
+                                                                            <button class="dropdown-item delete-btn"
+                                                                                data-id="{{ $asset->id }}">Delete</button>
+                                                                        @else
+                                                                            <button class="dropdown-item delete-btn"
+                                                                                data-id="{{ $asset->id }}">Activate</button>
+                                                                        @endif
+                                                                    @endcan
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
 
                                 </div>
                             </div>
                         </div>
+                        <!-- Individual column searching (text inputs) Ends-->
+                    </div>
+                </div>
+                <!-- Container-fluid Ends-->
 
-                        @if (session('success'))
-                            <div class="alert alert-success">{{ session('success') }}</div>
-                        @endif
-
-                        @if (session('error'))
-                            <div class="alert alert-danger">{{ session('error') }}</div>
-                        @endif
-
-
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="table-responsive product-table"
-                                    style="border-radius: 8px; overflow-x: auto; scrollbar-width: thin;">
-                                    <table class="display" id="coba"
-                                        style="min-width: 1200px; border-collapse: separate; border-radius: 8px; overflow: hidden;">
-                                        <thead>
-                                            <tr>
-                                                <th style="width: 10px;">Asset Tag</th>
-                                                <th>Asset Name</th>
-                                                <th>Register Location</th>
-                                                <th>Location Now</th>
-                                                <th>Qty</th>
-                                                <th>Serial Number</th>
-                                                <th>Type Asset</th>
-                                                <th>Category Asset</th>
-                                                <th>Priority</th>
-                                                <th>Merk</th>
-                                                <th>Satuan</th>
-                                                <th>Layout</th>
-                                                <th>Register Date</th>
-                                                <th>Supplier</th>
-                                                <th>Condition</th>
-                                                <th>Purchase Date</th>
-                                                <th>Warranty</th>
-                                                <th>Periodic Maintenance</th>
-                                                <th>Data Registrasi Asset Status</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- Table rows will be dynamically populated -->
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                            </div>
+            </div>
+            <!-- footer start-->
+            <footer class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-6 p-0 footer-left">
+                            <!-- <p class="mb-0">Copyright © 2023 Enzo. All rights reserved.</p> -->
+                        </div>
+                        <div class="col-md-6 p-0 footer-right">
+                            <ul class="color-varient">
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                            </ul>
+                            <p class="mb-0 ms-3">Hand-crafted & made with <i class="fa fa-heart font-danger"></i></p>
                         </div>
                     </div>
                 </div>
-                <!-- Individual column searching (text inputs) Ends-->
-            </div>
+            </footer>
         </div>
-        <!-- Container-fluid Ends-->
-
-    </div>
-    <!-- footer start-->
-    <footer class="footer">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-6 p-0 footer-left">
-                    <!-- <p class="mb-0">Copyright © 2023 Enzo. All rights reserved.</p> -->
-                </div>
-                <div class="col-md-6 p-0 footer-right">
-                    <ul class="color-varient">
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                    </ul>
-                    <p class="mb-0 ms-3">Hand-crafted & made with <i class="fa fa-heart font-danger"></i></p>
-                </div>
-            </div>
-        </div>
-    </footer>
-    </div>
     </div>
 
     <!-- Correct order: jQuery first, then Bootstrap JS -->
@@ -415,7 +485,7 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    <script>
+    {{-- <script>
         // Check if DataTable is already initialized and destroy it if necessary
         if ($.fn.DataTable.isDataTable('#coba')) {
             $('#coba').DataTable().destroy();
@@ -430,8 +500,12 @@
                 "type": "GET",
                 "dataSrc": ""
             },
-            "columns": [{
-                    "data": "register_code"
+            "columns": [
+                {
+                    "data": "register_code",
+                    "createdCell": function(td, cellData, rowData, row, col) {
+                        $(td).addClass('d-flex');
+                    }
                 },
                 {
                     "data": "asset_model"
@@ -444,6 +518,9 @@
                 },
                 {
                     "data": "qty"
+                },
+                {
+                    "data": "status_asset_name"
                 },
                 {
                     "data": "serial_number"
@@ -544,7 +621,7 @@
                 }
             ]
         });
-    </script>
+    </script> --}}
 
     <script>
         $.ajaxSetup({
@@ -568,13 +645,14 @@
             }
 
             Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
+                title: 'Apakah kamu yakin?',
+                text: "Tekan Batal untuk membatalkan!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
+                confirmButtonText: 'YA, Lanjutkan!',
+                cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -582,17 +660,18 @@
                         type: 'DELETE',
                         success: function(response) {
                             Swal.fire(
-                                'Deleted!',
-                                'Your asset has been deleted.',
+                                'Berhasil!',
+                                'Status Asset kamu berhasil ter-update.',
                                 'success'
-                            );
-
-                            table.ajax.reload();
+                            ).then(() => {
+                                window.location.href =
+                                    '/registration/assets-registration';
+                            });
                         },
                         error: function(xhr, status, error) {
                             Swal.fire(
-                                'Error!',
-                                'There was an error deleting the asset.',
+                                'Gagal!!',
+                                'Gagal meng-update Asset.',
                                 'error'
                             );
                         }

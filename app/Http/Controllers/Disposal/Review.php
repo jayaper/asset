@@ -83,9 +83,17 @@ class Review extends Controller
             ->orderBy('t_out.out_id', 'DESC');
             // Jika yang login bukan admin, tambahkan filter berdasarkan `user_loc`
             $user = Auth::User();
-            if (!$user->hasRole('Admin')) {
+            if ($user->hasRole('SM')) {
                 $query->where(function ($q){
                     $q->where('t_out.from_loc', Auth::User()->location_now);
+                });
+            }else if ($user->hasRole('AM')) {
+                $query->where(function ($q){
+                    $q->where('miegacoa_keluhan.master_resto.kode_city', Auth::User()->location_now);
+                });
+            }else if ($user->hasRole('RM')) {
+                $query->where(function ($q){
+                    $q->where('miegacoa_keluhan.id_regional.', Auth::User()->location_now);
                 });
             }
         $moveouts = $query->paginate(10);

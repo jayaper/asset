@@ -174,7 +174,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/registration/add-assets-registration', 'InsertAssetsRegist')->middleware(['permission:view registration']);
         Route::get('/registration/edit-assets-registration/{id}', 'EditAssetsRegist')->middleware(['permission:view registration']);
         Route::put('/registration/update-assets-registration/{id}', 'UpdateAssetsRegist')->middleware(['permission:view registration']);
-        Route::put('/registration/delete-assets-registration/{id}', 'DeleteDataRegistrasiAsset')->middleware(['permission:view registration']);
+        Route::delete('/registration/delete-assets-registration/{id}', 'DeleteDataRegistrasiAsset')->middleware(['permission:view registration']);
         Route::get('/registration/get-regist', 'getAssets')->middleware(['permission:view registration']);
         Route::get('/registration/get-assets-json', 'getAssetsJson')->middleware(['permission:view registration']);
         Route::get('/registration/get-type-json', 'getTypeJson')->middleware(['permission:view registration']);
@@ -217,6 +217,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/api/asset-transfer/get-data-assets', 'getAjaxDataAssets')->middleware(['permission:view at request moveout']);
 
         Route::get('/asset-transfer/request-moveout', 'HalamanMoveOut')->middleware(['permission:view at request moveout']);
+        Route::post('/asset-transfer/request-moveout/filter', 'filter')->middleware(['permission:view at request moveout']);
         Route::get('/asset-transfer/request-moveout/edit/{id}', 'editDataDetailMovement')->middleware(['permission:view at request moveout']);
         Route::put('/asset-transfer/request-moveout/update/{id}', 'updateDataMoveOut')->middleware(['permission:view at request moveout']);
         Route::delete('/asset-transfer/request-moveout/delete/{id}', 'deleteDataMoveOut')->middleware(['permission:view at request moveout']);
@@ -258,7 +259,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/disposal/request-disposal/get_detail_data_disposal_out/{id}', 'detailPageDataDisposalOut')->middleware(['permission:view dis request disposal']);
         Route::get('/disposal/request-disposal/get_pdf/{id}', 'previewPDF')->middleware(['permission:view dis request disposal']);
         Route::get('/disposal/request-disposal/edit_data_disposal/{id}', 'editDetailDataDisout')->middleware(['permission:view dis request disposal']);
-        Route::get('/disposal/request-disposal/delete/{id}', 'deleteDataDisOut')->middleware(['permission:view dis request disposal']);
+        Route::put('/disposal/request-disposal/update_data_disposal/{id}', 'updateDataDisOut')->middleware(['permission:view dis request disposal']);
+        Route::delete('/disposal/request-disposal/delete/{id}', 'deleteDataDisOut')->middleware(['permission:view dis request disposal']);
         Route::get('/disposal/request-disposal/filter_data_disposal', 'filter')->middleware(['permission:view dis request disposal']);
 
         // Disposal
@@ -485,23 +487,24 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/registrasi_asset_report', [ReportController::class, 'ReportRegistrasiAsset']);
     Route::get('/reports/registration/generate-pdf/{id}', [RegistrationController::class, 'generatePDF']);
     Route::get('/reports/registration/detail_data_registrasi_asset/{id}', [RegistrationController::class, 'DetailDataRegistrasiAsset']);
+    Route::get('/reports/export_report_asset_regist', [ReportController::class, 'ExportAssetRegist']);
 
     Route::get('/reports/get_data_registrasi_asset_report', [ReportController::class, 'ReportGetDataRegistrasiAsset']);
 
     Route::get('/reports/mutasi_stock_asset', [ReportController::class, 'ReportMutasiStock']);
-    Route::get('/reports/get_data_mutasi_stock', [ReportController::class, 'ReportMutasiStockData']);
-
+    Route::get('/reports/mutasi_stock_asset/{id}/detail', [ReportController::class, 'detReportMutasi']);
+    Route::get('/reports/export_excel_mutasi_stock{id}', [ReportController::class, 'ExportExcelMutasiStock']);
+    
     Route::get('/reports/kartu_stock_asset', [ReportController::class, 'ReportKartuStock']);
-    Route::get('/reports/get_data_kartu_stock_asset', [ReportController::class, 'GetDataKartuStock']);
+    Route::get('/reports/kartu_stock_asset/{id}/detail', [ReportController::class, 'detReportKartuStock']);
+    Route::get('/reports/export/excel_kartu_stock{id}', [ReportController::class, 'ExportExcelKartuStock']);
 
-    Route::get('/reports/export_excel_mutasi_stock', [ReportController::class, 'ExportExcelMutasiStock']);
 
     Route::get('/reports/checklist_asset', [ReportController::class, 'ReportChecklistAsset']);
     Route::get('/reports/maintenance_asset', [ReportController::class, 'ReportMaintenaceAsset']);
     Route::get('/reports/history_maintenance_asset', [ReportController::class, 'ReportHistoryMaintenace']);
 
     Route::get('/reports/stock_asset_per_location', [ReportController::class, 'ReportStockAssetPerLocation']);
-    Route::get('/reports/get_data_stock_asset_per_location', [ReportController::class, 'GetDataStockAssetPerLocation']);
     Route::get('/reports/export_stock_asset_per_location', [ReportController::class, 'ExportStockAssetPerLocation']);
 
 

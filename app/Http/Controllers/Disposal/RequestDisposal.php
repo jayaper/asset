@@ -13,7 +13,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class RequestDisposal extends Controller
 {
-    public function index() 
+    public function index(Request $request) 
     {
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
@@ -32,14 +32,6 @@ class RequestDisposal extends Controller
                 ->where('nip', $username)
 
                 ->value('loc_id'); 
-
-
-
-        $registerLocation = DB::table('master_resto')
-
-                ->where('store_code', $fromLoc)
-
-                ->value('resto');
 
     
 
@@ -84,6 +76,12 @@ class RequestDisposal extends Controller
             )
             ->where('t_out.out_id', 'like', 'DA%')
             ->orderBy('t_out.out_id', 'DESC');
+            if ($request->filled('start_date') && $request->filled('end_date')) {
+                $query->whereBetween('t_out.out_date', [
+                    $request->input('start_date') . ' 00:00:00',
+                    $request->input('end_date') . ' 23:59:59'
+                ]);
+            }
             // Jika yang login bukan admin, tambahkan filter berdasarkan `user_loc`
             $user = Auth::User();
             if ($user->hasRole('SM')) {
@@ -189,7 +187,7 @@ class RequestDisposal extends Controller
                 $imagePath = null;
                 if ($request->hasFile("image.$index") && $request->file("image.$index")->isValid()) {
                     // Store the uploaded file and get its path
-                    $imagePath = $request->file("image.$index")->store('moveout_item/images', 'public');
+                    $imagePath = $request->file("image.$index")->store('disposal/images', 'public');
                 }
     
                 $currentQty = DB::table('table_registrasi_asset')
@@ -207,7 +205,10 @@ class RequestDisposal extends Controller
                 $newQty = max(0, $currentQty - $moveoutQty);
                 DB::table('table_registrasi_asset')
                     ->where('id', $assetId)
-                    ->update(['qty' => $newQty]);
+                    ->update([
+                        'qty' => $newQty,
+                        'status_asset' => 3
+                    ]);
     
                 DB::table('t_out_detail')->insert([
                     'out_det_id' => $moveout->out_no,
@@ -297,16 +298,18 @@ class RequestDisposal extends Controller
         ->select(
             't_out.*',
             't_out_detail.*',
-            'fromResto.store_code as origin_site',
+            'codeResto.cabang_new as origin_site',
             'table_registrasi_asset.asset_name',
             'table_registrasi_asset.register_code',
             'm_assets.asset_model',
             'm_category.cat_name',
             'm_reason.reason_name',
-            'm_condition.condition_name'
+            'm_condition.condition_name',
+            'mc_approval.approval_name'
         )
         ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
         ->leftJoin('miegacoa_keluhan.master_resto as fromResto', 't_out.from_loc', '=', 'fromResto.id')
+        ->leftJoin('miegacoa_keluhan.master_barcode_resto as codeResto', 'fromResto.store_code', '=', 'codeResto.id')
         ->join('table_registrasi_asset', 't_out_detail.asset_id', '=', 'table_registrasi_asset.id')
         ->join('m_assets','table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
         // ->leftJoin('miegacoa_keluhan.master_resto as toResto', 't_out.dest_loc', '=', 'toResto.id')
@@ -315,6 +318,7 @@ class RequestDisposal extends Controller
         ->join('m_category','table_registrasi_asset.category_asset', '=', 'm_category.cat_code')
         // ->leftJoin('m_type', 'table_registrasi_asset.type_asset', '=', 'm_type.type_id')
         ->leftJoin('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
+        ->leftJoin('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
         
         ->where('t_out.out_id', $out_id)
         ->where('t_out.out_id', 'like', 'DA%')
@@ -346,48 +350,24 @@ class RequestDisposal extends Controller
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
         $conditions = DB::table('m_condition')->select('condition_id', 'condition_name')->get();
         
-        $assets = DB::table('table_registrasi_asset')
-        ->select('table_registrasi_asset.id'
-                ,'table_registrasi_asset.register_code'    
-                ,'table_registrasi_asset.serial_number'
-                ,'table_registrasi_asset.register_date'
-                ,'table_registrasi_asset.purchase_date'
-                ,'table_registrasi_asset.approve_status'
-                ,'table_registrasi_asset.serial_number'
-                ,'table_registrasi_asset.width'
-                ,'table_registrasi_asset.height'
-                ,'table_registrasi_asset.depth'
-                ,'table_registrasi_asset.qty'
-                ,'m_assets.asset_model'
-                ,'m_type.type_name'
-                ,'m_category.cat_name'
-                ,'m_priority.priority_name'
-                ,'m_brand.brand_name'
-                ,'m_brand.brand_id'
-                ,'m_uom.uom_name'
-                ,'m_uom.uom_id'
-                ,'miegacoa_keluhan.master_resto.name_store_street'
-                ,'m_layout.layout_name'
-                ,'m_supplier.supplier_name'
-                ,'m_condition.condition_name'
-                ,'m_condition.condition_id'
-                ,'m_warranty.warranty_name'
-                ,'m_periodic_mtc.periodic_mtc_name'
-                ,'table_registrasi_asset.deleted_at')
-        ->leftJoin('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
-        ->leftJoin('m_type', 'table_registrasi_asset.type_asset', '=', 'm_type.type_code')
-        ->leftJoin('m_category', 'table_registrasi_asset.category_asset', '=', 'm_category.cat_code')
-        ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
-        ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
-        ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-        ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
-        ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
-        ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
-        ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
-        ->leftJoin('m_warranty', 'table_registrasi_asset.warranty', '=', 'm_warranty.warranty_id')
-        ->leftJoin('m_periodic_mtc', 'table_registrasi_asset.periodic_maintenance', '=', 'm_periodic_mtc.periodic_mtc_id')
-        ->where('table_registrasi_asset.qty', '>', 0) 
-        ->get();
+        $assets = DB::table('t_out_detail AS a')
+            ->select(
+                'a.id',
+                'a.asset_tag',
+                'c.asset_model',
+                'd.brand_name',
+                'a.qty',
+                'e.uom_name',
+                'b.serial_number',
+                'a.condition',
+                'a.image'
+            )
+            ->leftJoin('table_registrasi_asset AS b', 'b.register_code', 'a.asset_tag')
+            ->leftJoin('m_assets AS c', 'c.asset_id', '=', 'b.asset_name')
+            ->leftJoin('m_brand AS d', 'd.brand_id', '=', 'b.merk')
+            ->leftJoin('m_uom AS e', 'e.uom_id', '=', 'b.satuan')
+            ->where('a.out_id', $id)
+            ->get();
 
         $moveOutAssets = DB::table('t_out')
         ->select(
@@ -413,14 +393,77 @@ class RequestDisposal extends Controller
             return view('disposal.edit_data_disposal', compact('moveOutAssets','reasons','conditions','assets', 'user'));
     }
 
+    public function updateDataDisOut(Request $request, $out_id)
+    {
+        // Validate input
+        $request->validate([
+            'out_desc' => 'required|string',
+            'reason_id' => 'required|integer',
+            
+            'det_id.*' => 'required|integer',
+            'qty.*' => 'required|integer',
+            'condition_id.*' => 'required',
+            'image.*' => 'nullable'
+            // Add other validation rules as necessary
+        ]);
+
+        // Check if the MoveOut entry exists
+        $moveout = DB::table('t_out')->where('out_id', $out_id)->first();
+
+        if (!$moveout) {
+            return response()->json(['status' => 'error', 'message' => 'MoveOut record not found.'], 404);
+        }
+
+        // Update the main MoveOut record
+        $updated = DB::table('t_out')->where('out_id', $out_id)->update([
+            'out_desc' => $request->out_desc,
+            'reason_id' => $request->reason_id,
+            'updated_at' => Carbon::now(),
+        ]);
+
+        if ($updated == 0) {
+            return response()->json(['status' => 'error', 'message' => 'No changes were made to the MoveOut record.'], 500);
+        }
+
+        foreach ($request->det_id as $index => $id) {
+            $imagePath = null;
+
+            if ($request->hasFile("image.$index") && $request->file("image.$index")->isValid()) {
+                $imagePath = $request->file("image.$index")->store('disposal/images', 'public');
+            } else {
+                $oldRecord = DB::table('t_out_detail')->where('id', $id)->first();
+                $imagePath = $oldRecord->image ?? null;
+            }
+
+            DB::table('t_out_detail')
+                ->where('id', $id)
+                ->update([
+                    'condition'  => $request->input('condition_id')[$index],
+                    'image'      => $imagePath,
+                    'updated_at' => now(),
+                ]);
+        }
+
+
+
+
+        return redirect()->to('/disposal/request-disposal')->with('success', 'MoveOut record updated successfully.');
+    }
+
     public function deleteDataDisOut($id)
     {
         $moveout = MasterDisOut::find($id);
 
         if ($moveout) {
-            $moveout->is_active = 0;
-            $moveout->deleted_at = Carbon::now();
-            $moveout->delete();
+            if(is_null($moveout->deleted_at)){
+                $moveout->is_active = 0;
+                $moveout->deleted_at = Carbon::now();
+            }else{
+                $moveout->is_active = 1;
+                $moveout->deleted_at = null;
+            }
+            
+            $moveout->save();
             return response()->json([
                 'status' => 'success', 
                 'message' => 'Disposal deleted successfully.',

@@ -104,7 +104,7 @@
     <tr>
         <td style="background-color: grey; color:white">Origin Site</td>
         <td style="background-color: #B7B7B7">
-            {{ $firstRecord->origin_site }} - {{ $firstRecord->origin_site }}
+            {{ $firstRecord->origin_site }}
         </td>
         <td style="background-color: grey; color:white">Movement Type</td>
         <td style="background-color: #B7B7B7">{{$firstRecord->reason_name}}</td>
@@ -114,9 +114,10 @@
     <tr>
         <td style="background-color: grey; color:white">Destination Site</td>
         <td style="background-color: #B7B7B7">
-            {{ $firstRecord->destination_site }} - {{ $firstRecord->destination_site }}
+            {{ $firstRecord->destination_site }}
         </td>
-        <td colspan="2"></td>
+        <td style="background-color: grey; color:white">Approval</td>
+        <td style="background-color: #B7B7B7">{{ $firstRecord->approval_name }}</td>
         <td style="background-color: grey; color:white">Movement Ref Code</td>
         <td style="background-color: #B7B7B7">{{ $firstRecord->out_id }}</td>
     </tr>

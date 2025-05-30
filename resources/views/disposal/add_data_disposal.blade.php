@@ -336,212 +336,233 @@
             @include('layouts.sidebar')
             <!-- Page Sidebar Ends-->
             <div class="page-body">
-                <div class="card p-4 mt-2">
-                    <!-- Container-fluid starts-->
-                    <br>
-                    <h3 class="mb-5 ps-4"><b>Create Data Disposal</b></h3>
-                    <div class="modal fade" id="searchRegistData" tabindex="-1" role="dialog"
-                        aria-labelledby="searchRegistDataLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-xl" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="searchRegistDataLabel">Search data Register Asset</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <table id="assetTable" class="table table-bordered table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Register Code</th>
-                                                <th>Asset Name</th>
-                                                <th>Type</th>
-                                                <th>Category</th>
-                                                <th>Condition</th>
-                                                <th>Width</th>
-                                                <th>Height</th>
-                                                <th>Depth</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        </div>
-                    </div>
-                    <div class="container-fluid">
-                        <div class="section">
-                            <div class="form-group">
-                                <form action="/disposal/add-request-disposal" method="POST">
-                                    @csrf
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="out_date">Tanggal Disposal Out:</label>
-                                                <input type="date" name="out_date" id="out_date"
-                                                    class="form-control" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="from_loc">Lokasi Asal:</label>
-                                                    <input class="form-control" type="text" value="{{ $location_user_display }}" readonly>
-                                                    <input type="hidden" name="from_loc_id" value="{{ $user->location_now }}">
-                                                <!-- <input type="text" id="from_loc" class="form-control" readonly>
-                                    <input type="hidden" name="from_loc_id" id="from_loc_id"> -->
-                                            </div>
-                                        </div>
-                                        <!-- <div class="col-sm-12">
-                        <label for="dest_loc">Lokasi Tujuan:</label>
-                        <select name="dest_loc" id="dest_loc" class="form-control" required></select>
-                        </div> -->
-
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="out_desc">Deskripsi Disposal Out:</label>
-                                                <input type="text" name="out_desc" id="out_desc"
-                                                    class="form-control" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="reason_id">Alasan Disposal Out:</label>
-                                                <select name="reason_id" id="reason_id" class="form-control"
-                                                    required>
-                                                    <option value="">Pilih Alasan</option>
-                                                    @foreach ($reasons as $reason)
-                                                        <option value="{{ $reason->reason_id }}">
-                                                            {{ $reason->reason_name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="btn-showcase mt-4">
-                                            <div class="button_between">
-                                                <button class="btn btn-square btn-primary" type="button"
-                                                    data-toggle="modal" data-target="#searchRegistData"> <i
-                                                        class="fa fa-search"></i> Search Data </button>
-                                            </div>
-                                        </div>
-                                        <div id="assetFieldsContainer" class="mt-4">
-                                            <!-- Field Asset Pertama -->
-                                            <div class="asset-fields">
-                                                <hr class="mb-4">
-                                                <div class="row">
-                                                    <div class="col-sm-3">
-                                                        <div class="form-group">
-                                                            <label for="asset_id">Data Asset:</label>
-                                                            <select name="asset_id[]" id="asset_id"
-                                                                class="form-control asset-select" required>
-                                                                <!-- <option value="">Pilih Asset</option>
-                                                    @foreach ($assets as $asset)
-<option value="{{ $asset->id }}">{{ $asset->asset_name }}</option>
-@endforeach -->
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-3">
-                                                        <div class="form-group">
-                                                            <label for="merk">Merk:</label>
-                                                            <input class="form-control" type="text"
-                                                                name="merk_display[]" readonly>
-                                                            <!-- Displayed to the user -->
-                                                            <input type="hidden" name="merk[]">
-                                                            <!-- Submitted to the database -->
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-3">
-                                                        <div class="form-group">
-                                                            <label for="qty">Quantity:</label>
-                                                            <input type="text" name="qty[]" id="qty"
-                                                                class="form-control" readonly>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-3">
-                                                        <div class="form-group">
-                                                            <label for="satuan">Satuan:</label>
-                                                            <input class="form-control" type="text"
-                                                                name="satuan_display[]" readonly>
-                                                            <!-- Displayed to the user -->
-                                                            <input type="hidden" name="satuan[]">
-                                                            <!-- Submitted to the database -->
-                                                            <!-- <input type="text" name="satuan[]" id="satuan" class="form-control" readonly> -->
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-3">
-                                                        <div class="form-group">
-                                                            <label for="serial_number">Serial Number:</label>
-                                                            <input type="text" name="serial_number[]"
-                                                                id="serial_number" class="form-control" readonly>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-3">
-                                                        <div class="form-group">
-                                                            <label for="register_code">Register Code:</label>
-                                                            <input type="text" name="register_code[]"
-                                                                id="register_code" class="form-control" readonly>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-3">
-                                                        <div class="form-group">
-                                                            <label for="condition_id_0">Kondisi Asset:</label>
-                                                            <select name="condition_id[]" id="condition_id_0"
-                                                                class="form-control" required>
-                                                                <option value="">Pilih Kondisi</option>
-                                                                @foreach ($conditions as $condition)
-                                                                    <option value="{{ $condition->condition_id }}">
-                                                                        {{ $condition->condition_name }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-3 mb-3">
-                                                        <div class="form-group">
-                                                            <label for="image">Image:</label>
-                                                            <input type="file" name="image[]" id="image"
-                                                                class="form-control" required>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <button type="button"
-                                                    class="btn btn-success btn-add-asset mt-2">+</button>
-                                                <button type="button"
-                                                    class="btn btn-danger btn-remove-asset mt-2">-</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </div>
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                            <button type="submit" id="submit-btn" class="btn btn-primary">Submit</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <!-- Container-fluid Ends-->
-
-            </div>
-            <!-- footer start-->
-            <footer class="footer">
                 <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-6 p-0 footer-left">
-                            <!-- <p class="mb-0">Copyright © 2023 Enzo.  All rights reserved.</p> -->
-                        </div>
-                        <div class="col-md-6 p-0 footer-right">
-                            <ul class="color-varient">
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                            </ul>
-                            <p class="mb-0 ms-3">Hand-crafted & made with <i class="fa fa-heart font-danger"></i></p>
+                    <div class="page-title mt-4">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <h3>Create Data Disposal</h3>
+                            </div>
+                            <div class="col-sm-6">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a>
+                                    </li>
+                                    <li class="breadcrumb-item">ASMI</li>
+                                    <li class="breadcrumb-item active">Request Movement Out Name List</li>
+                                    <li class="breadcrumb-item active">Create Data Disposal</li>
+                                </ol>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </footer>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="modal fade" id="searchRegistData" tabindex="-1" role="dialog"
+                            aria-labelledby="searchRegistDataLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-xl" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="searchRegistDataLabel">Search data Register Asset
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal"
+                                            aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table id="assetTable" class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Register Code</th>
+                                                    <th>Asset Name</th>
+                                                    <th>Type</th>
+                                                    <th>Category</th>
+                                                    <th>Condition</th>
+                                                    <th>Width</th>
+                                                    <th>Height</th>
+                                                    <th>Depth</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            </div>
+                        </div>
+                        <div class="container-fluid">
+                            <div class="section">
+                                <div class="form-group">
+                                    <form action="/disposal/add-request-disposal" method="POST">
+                                        @csrf
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="out_date">Tanggal Disposal Out:</label>
+                                                    <input type="date" name="out_date" id="out_date"
+                                                        class="form-control" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="from_loc">Lokasi Asal:</label>
+                                                    <input class="form-control" type="text"
+                                                        value="{{ $location_user_display }}" readonly>
+                                                    <input type="hidden" name="from_loc_id"
+                                                        value="{{ $user->location_now }}">
+                                                    <!-- <input type="text" id="from_loc" class="form-control" readonly>
+                                    <input type="hidden" name="from_loc_id" id="from_loc_id"> -->
+                                                </div>
+                                            </div>
+                                            <!-- <div class="col-sm-12">
+                                        <label for="dest_loc">Lokasi Tujuan:</label>
+                                        <select name="dest_loc" id="dest_loc" class="form-control" required></select>
+                                        </div> -->
+
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="out_desc">Deskripsi Disposal Out:</label>
+                                                    <input type="text" name="out_desc" id="out_desc"
+                                                        class="form-control" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="reason_id">Alasan Disposal Out:</label>
+                                                    <select name="reason_id" id="reason_id" class="form-select"
+                                                        required>
+                                                        <option value="">Pilih Alasan</option>
+                                                        @foreach ($reasons as $reason)
+                                                            <option value="{{ $reason->reason_id }}">
+                                                                {{ $reason->reason_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="btn-showcase mt-4">
+                                                <div class="button_between">
+                                                    <button class="btn btn-square btn-primary" type="button"
+                                                        data-toggle="modal" data-target="#searchRegistData"> <i
+                                                            class="fa fa-search"></i> Search Data </button>
+                                                </div>
+                                            </div>
+                                            <div id="assetFieldsContainer" class="mt-4">
+                                                <!-- Field Asset Pertama -->
+                                                <div class="asset-fields">
+                                                    <hr class="mb-4">
+                                                    <div class="row">
+                                                        <div class="col-sm-3">
+                                                            <div class="form-group">
+                                                                <label for="asset_id">Data Asset:</label>
+                                                                <input type="hidden" name="asset_id[]" id="asset_id" class="form-control asset-select" readonly required>
+                                                                <input type="text" name="asset_name[]" class="form-control asset-select" readonly required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <div class="form-group">
+                                                                <label for="merk">Merk:</label>
+                                                                <input class="form-control" type="text"
+                                                                    name="merk_display[]" readonly>
+                                                                <!-- Displayed to the user -->
+                                                                <input type="hidden" name="merk[]">
+                                                                <!-- Submitted to the database -->
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <div class="form-group">
+                                                                <label for="qty">Quantity:</label>
+                                                                <input type="text" name="qty[]" id="qty"
+                                                                    class="form-control" readonly>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <div class="form-group">
+                                                                <label for="satuan">Satuan:</label>
+                                                                <input class="form-control" type="text"
+                                                                    name="satuan_display[]" readonly>
+                                                                <!-- Displayed to the user -->
+                                                                <input type="hidden" name="satuan[]">
+                                                                <!-- Submitted to the database -->
+                                                                <!-- <input type="text" name="satuan[]" id="satuan" class="form-control" readonly> -->
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <div class="form-group">
+                                                                <label for="serial_number">Serial Number:</label>
+                                                                <input type="text" name="serial_number[]"
+                                                                    id="serial_number" class="form-control" readonly>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <div class="form-group">
+                                                                <label for="register_code">Register Code:</label>
+                                                                <input type="text" name="register_code[]"
+                                                                    id="register_code" class="form-control" readonly>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <div class="form-group">
+                                                                <label for="condition_id_0">Kondisi Asset:</label>
+                                                                <select name="condition_id[]" id="condition_id_0"
+                                                                    class="form-select" required>
+                                                                    <option value="">Pilih Kondisi</option>
+                                                                    @foreach ($conditions as $condition)
+                                                                        <option
+                                                                            value="{{ $condition->condition_id }}">
+                                                                            {{ $condition->condition_name }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-3 mb-3">
+                                                            <div class="form-group">
+                                                                <label for="image">Image:</label>
+                                                                <input type="file" name="image[]" id="image"
+                                                                    class="form-control" required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <button type="button"
+                                                        class="btn btn-success btn-add-asset mt-2">+</button>
+                                                    <button type="button"
+                                                        class="btn btn-danger btn-remove-asset mt-2">-</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                    <button type="submit" id="submit-btn" class="btn btn-primary ms-2">Submit</button>
+                                </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+        <!-- Container-fluid Ends-->
+
+    </div>
+    <!-- footer start-->
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6 p-0 footer-left">
+                    <!-- <p class="mb-0">Copyright © 2023 Enzo.  All rights reserved.</p> -->
+                </div>
+                <div class="col-md-6 p-0 footer-right">
+                    <ul class="color-varient">
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                    </ul>
+                    <p class="mb-0 ms-3">Hand-crafted & made with <i class="fa fa-heart font-danger"></i></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    </div>
     </div>
 
     <!-- Correct order: jQuery first, then Bootstrap JS -->
@@ -634,38 +655,6 @@
                 this.showPicker(); // Supported in modern browsers like Chrome
             });
 
-            function initializeAssetSelect2(element) {
-                $(element).select2({
-                    placeholder: 'Pilih Asset',
-                    allowClear: true,
-                    width: '100%',
-                    ajax: {
-                        url: '/api/get_data_disposal',
-                        type: 'GET',
-                        dataType: 'json',
-                        delay: 250,
-                        data: function(params) {
-                            return {
-                                search: params.term
-                            };
-                        },
-                        processResults: function(data) {
-                            return {
-                                results: $.map(data, function(item) {
-                                    return {
-                                        id: item.id,
-                                        text: item.asset_tag
-                                    };
-                                })
-                            };
-                        },
-                        cache: true
-                    }
-                }).on('select2:clear', function() {
-                    var $parent = $(this).closest('.asset-fields');
-                    $parent.find('input').val('');
-                });
-            }
 
             function initializeConditionSelect2(element) {
                 $(element).select2({
@@ -779,62 +768,79 @@
                     alert('At least one asset field must remain.');
                 }
             });
+
             // Handle form submission ==================================================================================================================
             $('form').on('submit', function(e) {
-                e.preventDefault();
+                e.preventDefault(); // Cegah submit form langsung
 
-                const registerCodes = $('input[name="register_code[]"]').map(function() {
-                    return $(this).val().trim();
-                }).get();
+                const formElement = this; // Simpan referensi ke form asli
 
-                const uniqueRegisterCodes = [...new Set(registerCodes)];
-
-                if (registerCodes.length !== uniqueRegisterCodes.length) {
-                    alert('Duplicate entry - Register Code cannot be repeated');
-                    return false;
-                }
-
-                // if (!validateLocationsAndHandleSubmit()) {
-                //     return false;
-                // }
-
-                // Additional form validation
-                let isValid = true;
-                $(this).find('[required]').each(function() {
-                    if (!$(this).val()) {
-                        isValid = false;
-                        $(this).addClass('is-invalid');
-                    } else {
-                        $(this).removeClass('is-invalid');
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: 'Tindakan ini tidak dapat dibatalkan.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, lanjutkan!',
+                    cancelButtonText: 'Tidak, batalkan'
+                }).then((result) => {
+                    if (!result.isConfirmed) {
+                        return; // User membatalkan
                     }
-                });
 
-                if (!isValid) {
-                    alert('Please fill in all required fields.');
-                    return false;
-                }
+                    // Lanjut ke validasi
+                    const registerCodes = $('input[name="register_code[]"]').map(function() {
+                        return $(this).val().trim();
+                    }).get();
 
-                // Collect form data
-                var formData = new FormData(this);
+                    const uniqueRegisterCodes = [...new Set(registerCodes)];
 
-                // Submit form via AJAX
-                // Submit form via AJAX
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        alert('Data submitted successfully');
-                        window.location.href = '/disposal/request-disposal';
-                    },
-                    error: function(xhr) {
-                        alert('Error submitting form: ' + xhr.responseText);
+                    if (registerCodes.length !== uniqueRegisterCodes.length) {
+                        alert('Duplicate entry - Register Code cannot be repeated');
+                        return;
                     }
-                });
 
+                    // if (!validateLocationsAndHandleSubmit()) {
+                    //     return;
+                    // }
+
+                    let isValid = true;
+                    $(formElement).find('[required]').each(function() {
+                        if (!$(this).val()) {
+                            isValid = false;
+                            $(this).addClass('is-invalid');
+                        } else {
+                            $(this).removeClass('is-invalid');
+                        }
+                    });
+
+                    if (!isValid) {
+                        alert('Please fill in all required fields.');
+                        return;
+                    }
+
+                    const formData = new FormData(formElement);
+
+                    $.ajax({
+                        url: $(formElement).attr('action'),
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(response) {
+                            Swal.fire('Sukses!', 'Disposal Out Berhasil.', 'success')
+                                .then(() => {
+                                    window.location.href =
+                                        '/disposal/request-disposal';
+                                });
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Gagal', 'Terjadi kesalahan: ' + xhr.responseText,
+                                'error');
+                        }
+                    });
+                });
             });
+
             //end submit ================================================================================================================================
             $('#dest_loc').select2({
                 placeholder: 'Pilih Lokasi Tujuan',
@@ -1005,10 +1011,8 @@
 
                 // Create a new asset field
                 const $newField = createFreshAssetField();
-
-                // Populate the new field with the selected data
-                $newField.find('select.asset-select').html(
-                    `<option value="${rowData.id}" selected>${rowData.asset_name}</option>`);
+                $newField.find('input[name="asset_id[]"]').val(rowData.id);
+                $newField.find('input[name="asset_name[]"]').val(rowData.asset_name);
                 $newField.find('input[name="merk_display[]"]').val(rowData.merk);
                 $newField.find('input[name="merk[]"]').val(rowData.brand_id);
                 $newField.find('input[name="qty[]"]').val(rowData.qty);
@@ -1022,10 +1026,6 @@
 
                 // Sembunyikan baris data yang sudah dipilih
                 $(this).hide();
-
-                // Initialize Select2 for new fields
-                initializeAssetSelect2($newField.find('.asset-select'));
-                initializeConditionSelect2($newField.find('select[name="condition_id[]"]'));
 
                 // Close modal
                 $('#searchRegistData').modal('hide');
@@ -1066,48 +1066,6 @@
                 $newField.find('.select2-container').remove();
 
                 return $newField;
-            }
-
-
-            function initializeAssetSelect2(element) {
-                $(element).select2({
-                    placeholder: 'Pilih Asset',
-                    allowClear: true,
-                    width: '100%',
-                    ajax: {
-                        url: '/api/get_data_disposal',
-                        type: 'GET',
-                        dataType: 'json',
-                        delay: 250,
-                        data: function(params) {
-                            return {
-                                search: params.term
-                            };
-                        },
-                        processResults: function(data) {
-                            return {
-                                results: $.map(data, function(item) {
-                                    return {
-                                        id: item.id,
-                                        text: item.asset_tag
-                                    };
-                                })
-                            };
-                        },
-                        cache: true
-                    }
-                }).on('select2:clear', function() {
-                    var $parent = $(this).closest('.asset-fields');
-                    $parent.find('input').val('');
-                });
-            }
-
-            function initializeConditionSelect2(element) {
-                $(element).select2({
-                    placeholder: 'Pilih Kondisi',
-                    allowClear: true,
-                    width: '100%'
-                });
             }
 
         });

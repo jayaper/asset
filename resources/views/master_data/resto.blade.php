@@ -391,8 +391,8 @@
                                         <p><strong>ID:</strong> <span id="data-id"></span></p>
                                         <p><strong>Kode Resto:</strong> <span id="data-kode-resto"></span></p>
                                         <p><strong>Resto:</strong> <span id="data-resto"></span></p>
+                                        <p><strong>Area Kode:</strong> <span id="data-city"></span></p>
                                         <p><strong>Regional Kode:</strong> <span id="data-regional"></span></p>
-                                        <p><strong>City Kode:</strong> <span id="data-city"></span></p>
                                         <p><strong>Store Code:</strong> <span id="data-store-code"></span></p>
                                         <p><strong>Name Store Street:</strong> <span id="data-name-store-street"></span></p>
                                     </div>
@@ -439,9 +439,9 @@
                         <table class="table table-striped display" id="coba" style="width: 100%;">
                             <thead>
                                 <tr class="text-center">
-                                    <th>No</th>
+                                    <th>Id</th>
                                     <th>Kode Resto</th>
-                                    <th>City</th>
+                                    <th>Area</th>
                                     <th>Region</th>
                                     <th>Nama Resto</th>
                                     <th>Action</th>

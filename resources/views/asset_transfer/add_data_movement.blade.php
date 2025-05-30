@@ -389,6 +389,26 @@
             @include('layouts.sidebar')
             <!-- Page Sidebar Ends-->
             <div class="page-body">
+
+                <div class="container-fluid">
+                    <div class="page-title mt-4">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <h3>Create Asset Movement</h3>
+                            </div>
+                            <div class="col-sm-6">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a>
+                                    </li>
+                                    <li class="breadcrumb-item">ASMI</li>
+                                    <li class="breadcrumb-item active">Request Movement Out Name List</li>
+                                    <li class="breadcrumb-item active">Create Asset Movement</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Container-fluid starts-->
                 <div class="container-fluid">
                     <!-- Breadcrumb -->
@@ -396,10 +416,6 @@
 
                     <!-- Card Wrapper -->
                     <div class="card">
-                        <!-- Card Header -->
-                        <div class="card-header">
-                            <h3><b>Create Asset Movement</b></h3>
-                        </div>
 
                         <!-- Card Body -->
                         <div class="card-body">
@@ -412,6 +428,9 @@
                                         <input type="date" name="out_date" id="out_date" class="form-control"
                                             required readonly>
                                     </div>
+                                    <div class="col sm-6 mb-3">
+
+                                    </div>
 
                                     <!-- Lokasi Asal -->
                                     <div class="col-sm-6 mb-3">
@@ -421,9 +440,6 @@
                                         <!-- <input type="text" id="from_loc" class="form-control"> -->
                                         <!-- <input type="hidden" name="from_loc_id" id="from_loc_id"> -->
                                     </div>
-                                </div>
-
-                                <div class="row">
                                     <!-- Lokasi Tujuan -->
                                     <div class="col-sm-6 mb-3">
                                         <label for="dest_loc">Lokasi Tujuan:</label>
@@ -437,11 +453,8 @@
                                         <input type="text" name="out_desc" id="out_desc" class="form-control"
                                             required>
                                     </div>
-                                </div>
-
-                                <div class="row">
                                     <!-- Alasan Movement Out -->
-                                    <div class="col-sm-12 mb-3">
+                                    <div class="col-sm-6 mb-3">
                                         <label for="reason_id">Alasan Movement Out:</label>
                                         <select name="reason_id" id="reason_id" class="form-control" required>
                                             <option value="">Pilih Alasan</option>
@@ -454,7 +467,7 @@
                                 </div>
 
                                 <!-- Search Data Button -->
-                                <div class="mb-4">
+                                <div class="mb-5 mt-3">
                                     <button id="btn-search" class="btn btn-primary" type="button" data-toggle="modal"
                                         data-target="#searchRegistData">
                                         <i class="fa fa-search"></i> Search Data
@@ -465,18 +478,18 @@
                                 <div id="assetFieldsContainer">
                                     <div class="asset-fields border rounded p-3 mb-3">
                                         <div class="row">
-                                            <div class="col-sm-4 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="asset_id">Data Asset:</label>
                                                 <select name="asset_id[]" id="asset_id"
                                                     class="form-control asset-select" required></select>
                                             </div>
-                                            <div class="col-sm-4 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="merk">Merk:</label>
                                                 <input type="text" name="merk_display[]" readonly
                                                     class="form-control">
                                                 <input type="hidden" name="merk[]">
                                             </div>
-                                            <div class="col-sm-4 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="qty">Quantity:</label>
                                                 <input type="text" name="qty[]" id="qty"
                                                     class="form-control" readonly>
@@ -779,6 +792,9 @@
             $('form').on('submit', function(e) {
                 e.preventDefault();
 
+                const formElement = this;
+
+                // Cek duplikat register code
                 const registerCodes = $('input[name="register_code[]"]').map(function() {
                     return $(this).val().trim();
                 }).get();
@@ -790,13 +806,14 @@
                     return false;
                 }
 
+                // Validasi lokasi (jika aktif)
                 if (!validateLocationsAndHandleSubmit()) {
                     return false;
                 }
 
-                // Additional form validation
+                // Validasi field required
                 let isValid = true;
-                $(this).find('[required]').each(function() {
+                $(formElement).find('[required]').each(function() {
                     if (!$(this).val()) {
                         isValid = false;
                         $(this).addClass('is-invalid');
@@ -810,25 +827,39 @@
                     return false;
                 }
 
-                // Collect form data
-                var formData = new FormData(this);
+                // Tampilkan SweetAlert konfirmasi
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: 'Pastikan data yang diisi sudah benar.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, kirim!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const formData = new FormData(formElement);
 
-                // Submit form via AJAX
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        alert('Data submitted successfully');
-                        window.location.href = '/asset-transfer/request-moveout';
-                    },
-                    error: function(xhr) {
-                        alert('Error submitting form: ' + xhr.responseText);
+                        // Kirim via AJAX
+                        $.ajax({
+                            url: $(formElement).attr('action'),
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                Swal.fire('Sukses!', 'Data berhasil dikirim.', 'success')
+                                    .then(() => {
+                                        window.location.href = '/asset-transfer/request-moveout';
+                                    });
+                            },
+                            error: function(xhr) {
+                                Swal.fire('Gagal', 'Terjadi kesalahan: ' + xhr.responseText, 'error');
+                            }
+                        });
                     }
                 });
             });
+
 
             $('#dest_loc').select2({
                 placeholder: 'Pilih Lokasi Akhir',

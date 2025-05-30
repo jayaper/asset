@@ -86,6 +86,7 @@ class ApprovalOpsSDG extends Controller
 
         // Update data moveout
         $moveout->appr_3_date = Carbon::now();
+        $moveout->confirm_date = Carbon::now();
         $moveout->appr_3 = $request->appr_3;
         $moveout->appr_3_user = auth()->user()->username;
         if ($request->appr_3 == '3') {
@@ -105,9 +106,28 @@ class ApprovalOpsSDG extends Controller
                 'modified_date' => now()
             ]);
             // Salin data dari t_out_detail ke t_in_detail
-            $moveoutDetails = DB::table('t_out_detail')->where('out_id', $moveout->out_id)->get();
+            $moveoutDetails = DB::table('t_out_detail')->where('out_id', $id)->get();
 
             foreach ($moveoutDetails as $detail) {
+                $t_regist = DB::table('table_registrasi_asset')
+                        ->where('register_code', $detail->asset_tag)
+                        ->get();
+    
+                    foreach($t_regist as $table){
+                        DB::table('table_registrasi_asset')
+                        ->where('id', $table->id)
+                        ->update([
+                            'status_asset' => 4
+                        ]);
+                    }
+                    
+                $newQty = max(0, $detail->qty - 1);
+                DB::table('t_out_detail')
+                    ->where('id', $detail->id)
+                    ->update([
+                        'qty' => $newQty,
+                    ]);
+
                 DB::table('t_in_detail')->insert([
                     'in_id' => $moveout->in_id,  // Menghubungkan dengan data baru di t_in
                     'in_det_id' => $detail->out_det_id,
@@ -118,6 +138,17 @@ class ApprovalOpsSDG extends Controller
                     'qty' => $detail->qty,
                     'uom' => $detail->uom,
                     'condition' => $detail->condition,
+                ]);
+
+                DB::table('asset_tracking')->insert([
+                    'start_date' => $moveout->created_at,
+                    'from_loc' => $moveout->from_loc,
+                    'end_date' => Carbon::now(),
+                    'dest_loc' => $moveout->dest_loc,
+                    'reason' => $moveout->reason_id,
+                    'description' => $moveout->out_desc,
+                    'register_code' => $detail->asset_tag,
+                    'out_id' => $id,
                 ]);
             }
         } elseif ($request->appr_3 == '4') {
@@ -153,7 +184,8 @@ class ApprovalOpsSDG extends Controller
                         DB::table('table_registrasi_asset')
                         ->where('id', $table->id)
                         ->update([
-                            'qty' => 1
+                            'qty' => 1,
+                            'status_asset' => 1
                         ]);
                     }
     

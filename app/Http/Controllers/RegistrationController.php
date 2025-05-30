@@ -43,36 +43,6 @@ class RegistrationController extends Controller
     public function AssetsRegist()
     {
 
-        return view("registration.assets_regist.index");
-    }
-
-    public function trackingAsset($id){
-        $t_tracking = DB::table('asset_tracking')
-        ->select(
-            'asset_tracking.*',
-            'miegacoa_keluhan.master_resto.name_store_street as asal',
-            'des.name_store_street as menuju'
-        )
-        ->leftjoin('miegacoa_keluhan.master_resto', 'asset_tracking.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
-        ->leftjoin('miegacoa_keluhan.master_resto as des', 'asset_tracking.dest_loc', '=', 'des.id')
-        ->where('register_code', $id)
-        ->get()
-        ->map(function ($item) {
-            $item->start_date_formatted = Carbon::parse($item->start_date)->format('H:i, d-m-Y');
-            $item->end_date_formatted = Carbon::parse($item->end_date)->format('H:i, d-m-Y');
-            return $item;
-        });
-        return view("registration.assets_regist.tracking_asset", [
-            'trackings' => $t_tracking
-        ]);
-    }
-
-
-    public function GetDataRegistrasiAsset(): JsonResponse
-    {
-
-        // Fetch all assets including soft-deleted ones
-
         $dataAssets = DB::table('table_registrasi_asset')
             ->select(
                 'table_registrasi_asset.id',
@@ -82,6 +52,7 @@ class RegistrationController extends Controller
                 'table_registrasi_asset.purchase_date',
                 'table_registrasi_asset.approve_status',
                 'table_registrasi_asset.serial_number',
+                'table_registrasi_asset.qr_code_path',
                 DB::raw('COALESCE(table_registrasi_asset.qty, 0) as qty'),
                 'm_assets.asset_model',
                 'm_type.type_name',
@@ -96,8 +67,11 @@ class RegistrationController extends Controller
                 'm_condition.condition_name',
                 'm_warranty.warranty_name',
                 'm_periodic_mtc.periodic_mtc_name',
+                'm_status_asset.name AS status_asset_name',
+                'm_status_asset.id AS status_asset_id',
                 'table_registrasi_asset.deleted_at'
             )
+            ->leftJoin('m_status_asset', 'table_registrasi_asset.status_asset', '=', 'm_status_asset.id')
             ->leftJoin('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
             ->leftJoin('m_type', 'table_registrasi_asset.type_asset', '=', 'm_type.type_code')
             ->leftJoin('m_category', 'table_registrasi_asset.category_asset', '=', 'm_category.cat_code')
@@ -167,6 +141,137 @@ class RegistrationController extends Controller
                 }
             }
         }
+
+        return view("registration.assets_regist.index", [
+            'assets' => $dataAsset
+        ]);
+    }
+
+    public function trackingAsset($id){
+        $t_tracking = DB::table('asset_tracking')
+        ->select(
+            'asset_tracking.*',
+            'miegacoa_keluhan.master_resto.name_store_street as asal',
+            'des.name_store_street as menuju',
+            'r.reason_name'
+        )
+        ->leftjoin('miegacoa_keluhan.master_resto', 'asset_tracking.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
+        ->leftjoin('miegacoa_keluhan.master_resto as des', 'asset_tracking.dest_loc', '=', 'des.id')
+        ->leftjoin('m_reason AS r', 'asset_tracking.reason', '=', 'r.reason_id')
+        ->where('register_code', $id)
+        ->get()
+        ->map(function ($item) {
+            $item->start_date_formatted = Carbon::parse($item->start_date)->format('H:i, d-m-Y');
+            $item->end_date_formatted = Carbon::parse($item->end_date)->format('H:i, d-m-Y');
+            return $item;
+        });
+        return view("registration.assets_regist.tracking_asset", [
+            'trackings' => $t_tracking
+        ]);
+    }
+
+
+    public function GetDataRegistrasiAsset(): JsonResponse
+    {
+
+        // Fetch all assets including soft-deleted ones
+
+        // $dataAssets = DB::table('table_registrasi_asset')
+        //     ->select(
+        //         'table_registrasi_asset.id',
+        //         'table_registrasi_asset.register_code',
+        //         'table_registrasi_asset.serial_number',
+        //         'table_registrasi_asset.register_date',
+        //         'table_registrasi_asset.purchase_date',
+        //         'table_registrasi_asset.approve_status',
+        //         'table_registrasi_asset.serial_number',
+        //         DB::raw('COALESCE(table_registrasi_asset.qty, 0) as qty'),
+        //         'm_assets.asset_model',
+        //         'm_type.type_name',
+        //         'm_category.cat_name',
+        //         'm_priority.priority_name',
+        //         'm_brand.brand_name',
+        //         'm_uom.uom_name',
+        //         'miegacoa_keluhan.master_resto.name_store_street',
+        //         'restoo.name_store_street as location_now',
+        //         'm_layout.layout_name',
+        //         'm_supplier.supplier_name',
+        //         'm_condition.condition_name',
+        //         'm_warranty.warranty_name',
+        //         'm_periodic_mtc.periodic_mtc_name',
+        //         'm_status_asset.name AS status_asset_name',
+        //         'table_registrasi_asset.deleted_at'
+        //     )
+        //     ->leftJoin('m_status_asset', 'table_registrasi_asset.status_asset', '=', 'm_status_asset.id')
+        //     ->leftJoin('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
+        //     ->leftJoin('m_type', 'table_registrasi_asset.type_asset', '=', 'm_type.type_code')
+        //     ->leftJoin('m_category', 'table_registrasi_asset.category_asset', '=', 'm_category.cat_code')
+        //     ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
+        //     ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
+        //     ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
+        //     ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
+        //     ->leftJoin('miegacoa_keluhan.master_resto as restoo', 'table_registrasi_asset.location_now', '=', 'restoo.id')
+        //     ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
+        //     ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
+        //     ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
+        //     ->leftJoin('m_warranty', 'table_registrasi_asset.warranty', '=', 'm_warranty.warranty_id')
+        //     ->leftJoin('m_periodic_mtc', 'table_registrasi_asset.periodic_maintenance', '=', 'm_periodic_mtc.periodic_mtc_id');
+        //     if(Auth::User()->hasRole('SM')){
+        //         $dataAssets->where(function($q) {
+        //             $q->where('table_registrasi_asset.location_now', Auth::user()->location_now);
+        //         });
+        //     }else if(Auth::User()->hasRole('AM')){
+        //         $dataAssets->where(function($q) {
+        //             $q->where('restoo.kode_city', Auth::user()->location_now);
+        //         });
+        //     }else if(Auth::User()->hasRole('RM')){
+        //         $dataAssets->where(function($q) {
+        //             $q->where('restoo.id_regional', Auth::user()->location_now);
+        //         });
+        //     }
+            
+        //     $dataAsset = $dataAssets->get();
+
+
+        // foreach ($dataAsset as $Asset) {
+
+        //     // Set data_registrasi_asset_status based on deleted_at
+
+        //     $Asset->data_registrasi_asset_status = is_null($Asset->deleted_at) ? 'active' : 'nonactive';
+
+
+
+        //     // Check if asset_code is not null before generating the QR code
+
+        //     if (!empty($Asset->asset_code)) {
+
+        //         // Define the file path for the QR code
+
+        //         $qrCodeFileName = $Asset->asset_code . '.png';
+
+        //         $qrCodeFilePath = public_path('qrcodes/' . $qrCodeFileName);
+
+
+
+        //         // Check if the QR code already exists
+
+        //         if (file_exists($qrCodeFilePath)) {
+
+        //             // Assign the QR code path to the asset object
+
+        //             $Asset->qr_code_path = asset('public/qrcodes/' . $qrCodeFileName);
+        //         } else {
+
+        //             // Generate the QR code and save it to the defined path if it doesn't exist
+
+        //             QrCode::format('png')->size(300)->generate($Asset->asset_code, $qrCodeFilePath);
+
+        //             // Assign the newly generated QR code path to the asset object
+
+        //             $Asset->qr_code_path = asset('public/qrcodes/' . $qrCodeFileName);
+        //         }
+        //     }
+        // }
 
 
 
@@ -350,7 +455,7 @@ class RegistrationController extends Controller
             'merk' => 'required|string|max:255',
             'qty' => 'required',
             'satuan' => 'required|string|max:255',
-            'register_location' => 'required|string|max:255|exists:miegacoa_keluhan.master_resto,id',
+            'register_location' => 'required|string',
             'layout' => 'required|string|max:255',
             'register_date' => 'required',
             'supplier' => 'required|string|max:255',
@@ -713,19 +818,20 @@ class RegistrationController extends Controller
 
 
 
-
-
-
-
     public function DeleteDataRegistrasiAsset($id)
     {
         $registrasiAsset = MasterRegistrasiModel::find($id);
 
-        if ($registrasiAsset == true) {
-            $registrasiAsset->delete();
+        if(is_null($registrasiAsset->deleted_at)){
+            $registrasiAsset->deleted_at = Carbon::now();
+        }else{
+            $registrasiAsset->deleted_at = null;
+        }
+        
+        if($registrasiAsset->save()){
             return response()->json(['status' => 'Success', 'message' => 'Data Asset Berhasil Terhapus']);
-        } else {
-            return response()->json(['status' => 'Error', 'message' => 'Data Asset Gagal Terhapus'], 404);
+        }else{
+            return response()->json(['status' => 'Error', 'message' => 'Data Gagal dihapus']);
         }
     }
 
@@ -750,6 +856,7 @@ class RegistrationController extends Controller
                 'm_uom.uom_id',
                 'miegacoa_keluhan.master_resto.name_store_street',
                 'miegacoa_keluhan.master_resto.id as master_resto_id',
+                'loc_now.id as lokasi_sekarang',
                 'm_layout.layout_name',
                 'm_layout.layout_id',
                 'm_supplier.supplier_name',
@@ -768,6 +875,7 @@ class RegistrationController extends Controller
             ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
             ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
             ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
+            ->leftJoin('miegacoa_keluhan.master_resto as loc_now', 'table_registrasi_asset.location_now', '=', 'loc_now.id')
             ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
             ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
             ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
@@ -800,6 +908,7 @@ class RegistrationController extends Controller
             'qty' => 'required|integer|min:1',
             'satuan' => 'nullable|string|max:100',
             'register_location' => 'required|string|max:255',
+            'location_now' => 'required|string|max:255',
             'layout' => 'nullable|string|max:255',
             'register_date' => 'nullable|date',
             'supplier' => 'nullable|string|max:255',
@@ -816,7 +925,6 @@ class RegistrationController extends Controller
         // Update the asset data
         
         $updateData = $request->all();
-        $updateData['location_now'] = $request->input('register_location');
         $asset->update($updateData);
 
         // Generate the new QR code URL
@@ -864,7 +972,7 @@ class RegistrationController extends Controller
         $asset->qr_code_path = asset('qrcodes/' . $fileName);
         $asset->save();
 
-        return redirect()->to('/registration/assets-registration');
+        return redirect()->to('/registration/assets-registration')->with('success', 'Data Asset berhasil ter-Update!');
     }
 
 
@@ -1171,7 +1279,7 @@ class RegistrationController extends Controller
             return redirect()->back()->with('success', 'Data imported successfully.');
         } catch (\Exception $e) {
             // Catch the exception and redirect with an error notification
-            return redirect()->back()->with('error', 'data tidak bisa di upload karena barang tersebut sudah ada pada master data');
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
@@ -1519,13 +1627,16 @@ class RegistrationController extends Controller
                     'm_priority.priority_name',
                     'm_brand.brand_name',
                     'm_uom.uom_name',
+                    'q.name AS status_asset_name',
                     'miegacoa_keluhan.master_resto.name_store_street',
+                    'loc_now.name_store_street AS lokasi_sekarang',
                     'm_layout.layout_name',
                     'm_supplier.supplier_name',
                     'm_condition.condition_name',
                     'm_warranty.warranty_name',
                     'm_periodic_mtc.periodic_mtc_name'
                 )
+                ->leftJoin('m_status_asset AS q', 'table_registrasi_asset.status_asset', '=', 'q.id')
                 ->leftJoin('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
                 ->leftJoin('m_type', 'table_registrasi_asset.type_asset', '=', 'm_type.type_code')
                 ->leftJoin('m_category', 'table_registrasi_asset.category_asset', '=', 'm_category.cat_code')
@@ -1533,6 +1644,7 @@ class RegistrationController extends Controller
                 ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
                 ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
                 ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
+                ->leftJoin('miegacoa_keluhan.master_resto AS loc_now', 'table_registrasi_asset.location_now', '=', 'loc_now.id')
                 ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
                 ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
                 ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')

@@ -289,348 +289,38 @@
                                         {{ session('error') }}
                                     </div>
                                 @endif
-
-                                <!-- Modal add -->
-                                <!-- Modal Add Data Asset -->
-                                <div class="modal fade" id="addDataMoveOut" tabindex="-1"
-                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-md">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">+ Add Data Movement Out
-                                                </h5>
-                                                <button type="button" class="close" data-dismiss="modal"
-                                                    aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form id="addMoveOutForm" enctype="multipart/form-data">
-                                                    @csrf
-                                                    <div class="row">
-                                                        <!-- Tanggal, Lokasi, dan Deskripsi -->
-                                                        <div class="col-sm-12">
-                                                            <label for="out_date">Tanggal Movement Out:</label>
-                                                            <input type="date" name="out_date" id="out_date"
-                                                                class="form-control" required>
-                                                        </div>
-                                                        <div class="col-sm-12">
-                                                            <label for="from_loc">Lokasi Asal:</label>
-                                                            <input type="text" name="from_loc" id="from_loc"
-                                                                class="form-control" value="{{ $fromLoc }}"
-                                                                readonly>
-                                                        </div>
-
-                                                        <div class="col-sm-12">
-                                                            <label for="out_desc">Deskripsi Movement Out:</label>
-                                                            <input type="text" name="out_desc" id="out_desc"
-                                                                class="form-control" required>
-                                                        </div>
-                                                        <div class="col-sm-12">
-                                                            <label for="reason_id">Alasan Movement Out:</label>
-                                                            <select name="reason_id" id="reason_id"
-                                                                class="form-control" required>
-                                                                <option value="">Pilih Alasan</option>
-                                                                @foreach ($reasons as $reason)
-                                                                    <option value="{{ $reason->reason_id }}">
-                                                                        {{ $reason->reason_name }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-
-                                                        <!-- Container untuk data asset -->
-                                                        <div id="assetFieldsContainer">
-                                                            <!-- Field Asset Pertama -->
-                                                            <div class="asset-fields">
-                                                                <div class="row">
-                                                                    <div class="col-sm-12">
-                                                                        <label for="asset_id">Data Asset:</label>
-                                                                        <select name="asset_id[]"
-                                                                            class="form-control asset-select" required>
-                                                                            <option value="">Pilih Asset</option>
-                                                                            @foreach ($assets as $asset)
-                                                                                <option value="{{ $asset->id }}">
-                                                                                    {{ $asset->asset_name }}</option>
-                                                                            @endforeach
-                                                                        </select>
-                                                                    </div>
-                                                                    <div class="col-sm-12">
-                                                                        <label for="merk">Merk:</label>
-                                                                        <input type="text" name="merk[]"
-                                                                            id="merk" class="form-control"
-                                                                            readonly>
-                                                                    </div>
-                                                                    <div class="col-sm-12">
-                                                                        <label for="qty">Quantity:</label>
-                                                                        <input type="text" name="qty[]"
-                                                                            id="qty" class="form-control"
-                                                                            readonly>
-                                                                    </div>
-                                                                    <div class="col-sm-12">
-                                                                        <label for="satuan">Satuan:</label>
-                                                                        <input type="text" name="satuan[]"
-                                                                            id="satuan" class="form-control"
-                                                                            readonly>
-                                                                    </div>
-                                                                    <div class="col-sm-12">
-                                                                        <label for="serial_number">Serial
-                                                                            Number:</label>
-                                                                        <input type="text" name="serial_number[]"
-                                                                            id="serial_number" class="form-control"
-                                                                            readonly>
-                                                                    </div>
-                                                                    <div class="col-sm-12">
-                                                                        <label for="register_code">Register
-                                                                            Code:</label>
-                                                                        <input type="text" name="register_code[]"
-                                                                            id="register_code" class="form-control"
-                                                                            readonly>
-                                                                    </div>
-                                                                    <div class="col-sm-12">
-                                                                        <label for="condition_id">Kondisi
-                                                                            Asset:</label>
-                                                                        <select name="condition_id[]"
-                                                                            class="form-control" required>
-                                                                            <option value="">Pilih Kondisi
-                                                                            </option>
-                                                                            @foreach ($conditions as $condition)
-                                                                                <option
-                                                                                    value="{{ $condition->condition_id }}">
-                                                                                    {{ $condition->condition_name }}
-                                                                                </option>
-                                                                            @endforeach
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-                                                                <!-- Tombol untuk menambah atau menghapus field -->
-                                                                <button type="button"
-                                                                    class="btn btn-success btn-add-asset mt-2">+</button>
-                                                                <button type="button"
-                                                                    class="btn btn-danger btn-remove-asset mt-2">-</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-danger"
-                                                    data-dismiss="modal">Close</button>
-                                                <button type="submit" class="btn btn-primary"
-                                                    id="saveMoveOutButton">Save changes</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <!-- Update Modal -->
-                                <div id="updateModal" class="modal fade" tabindex="-1"
-                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-md">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Update Moveout</h5>
-                                                <button type="button" class="close" data-dismiss="modal"
-                                                    aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <form id="updateForm">
-                                                @csrf
-                                                @method('PUT') <!-- Method override for PUT request -->
-                                                <div class="modal-body">
-                                                    <div class="row">
-                                                        <div class="col-sm-12 mb-2">
-                                                            <label for="edit-out_date">Tanggal Movement Out:</label>
-                                                            <input type="date" name="out_date" id="edit-out_date"
-                                                                class="form-control" required readonly>
-                                                        </div>
-                                                        <div class="col-sm-12 mb-2">
-                                                            <label for="edit-from_loc">Lokasi Asal:</label>
-                                                            <input type="text" name="from_loc" id="edit-from_loc"
-                                                                class="form-control" required readonly>
-                                                        </div>
-                                                        <div class="col-sm-12 mb-2">
-                                                            <label for="edit-dest_loc">Lokasi Tujuan:</label>
-                                                            <input type="text" name="dest_loc" id="edit-dest_loc"
-                                                                class="form-control" required>
-                                                        </div>
-                                                        <div class="col-sm-12 mb-2">
-                                                            <label for="edit-out_desc">Deskripsi Movement Out:</label>
-                                                            <input type="text" name="out_desc" id="edit-out_desc"
-                                                                class="form-control" required>
-                                                        </div>
-                                                        <div class="col-sm-12 mb-2">
-                                                            <label for="edit-reason_id">Alasan Movement Out:</label>
-                                                            <select name="reason_id" id="edit-reason_id"
-                                                                class="form-control" required>
-                                                                <option value="">Pilih Alasan</option>
-                                                                @foreach ($reasons as $reason)
-                                                                    <option value="{{ $reason->reason_id }}">
-                                                                        {{ $reason->reason_name }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-sm-12 mb-2">
-                                                            <label for="edit-asset_id">Data Asset:</label>
-                                                            <select name="asset_id" id="edit-asset_id"
-                                                                class="form-control" required readonly>
-                                                                <option value="">Pilih Asset</option>
-                                                                @foreach ($assets as $asset)
-                                                                    <option value="{{ $asset->id }}">
-                                                                        {{ $asset->asset_name }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-sm-12 mb-2">
-                                                            <label for="edit-brand">Merk:</label>
-                                                            <input type="text" name="brand" id="edit-brand"
-                                                                class="form-control" readonly>
-                                                        </div>
-                                                        <div class="col-sm-12 mb-2">
-                                                            <label for="edit-qty">Quantity:</label>
-                                                            <input type="text" name="qty" id="edit-qty"
-                                                                class="form-control" readonly>
-                                                        </div>
-                                                        <div class="col-sm-12 mb-2">
-                                                            <label for="edit-uom">Satuan:</label>
-                                                            <input type="text" name="uom" id="edit-uom"
-                                                                class="form-control" readonly>
-                                                        </div>
-                                                        <div class="col-sm-12 mb-2">
-                                                            <label for="edit-serial_number">Serial Number:</label>
-                                                            <input type="text" name="serial_number"
-                                                                id="edit-serial_number" class="form-control" readonly>
-                                                        </div>
-                                                        <div class="col-sm-12 mb-2">
-                                                            <label for="edit-asset_tag">Register Code:</label>
-                                                            <input type="text" name="asset_tag"
-                                                                id="edit-asset_tag" class="form-control" readonly>
-                                                        </div>
-                                                        <div class="col-sm-12 mb-2">
-                                                            <label for="edit-condition">Kondisi Asset:</label>
-                                                            <select name="condition" id="edit-condition"
-                                                                class="form-control" required>
-                                                                <option value="">Pilih Kondisi</option>
-                                                                @foreach ($conditions as $condition)
-                                                                    <option value="{{ $condition->condition_id }}">
-                                                                        {{ $condition->condition_name }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                        <input type="hidden" name="out_id" id="out_id">
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-dismiss="modal">Close</button>
-                                                    <button type="submit" class="btn btn-primary">Save
-                                                        changes</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="modal fade" id="MoveOutDetailModal" tabindex="-1" role="dialog"
-                                    aria-labelledby="brandModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="brandModalLabel">Detail Movement Out</h5>
-                                                <button type="button" class="close" data-dismiss="modal"
-                                                    aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p><strong>ID:</strong> <span id="moveout-id"></span></p>
-                                                <p><strong>No Movement Out:</strong> <span id="moveout-no"></span></p>
-                                                <p><strong>Tanggal:</strong> <span id="out-date"></span></p>
-                                                <p><strong>Lokasi Asal:</strong> <span id="from-loc"></span></p>
-                                                <p><strong>Lokasi Tujuan:</strong> <span id="dest-loc"></span></p>
-                                                <p><strong>ID Movement In:</strong> <span id="in-id"></span></p>
-                                                <p><strong>Deskripsi:</strong> <span id="out-desc"></span></p>
-                                                <p><strong>ID Asset:</strong> <span id="asset-id"></span></p>
-                                                <p><strong>Nama Asset:</strong> <span id="asset-name"></span></p>
-                                                <p><strong>Tag Asset:</strong> <span id="asset-tag"></span></p>
-                                                <p><strong>Serial Number:</strong> <span id="serial-number"></span></p>
-                                                <p><strong>Brand:</strong> <span id="asset-brand"></span></p>
-                                                <p><strong>Quantity:</strong> <span id="asset-qty"></span></p>
-                                                <p><strong>Satuan:</strong> <span id="asset-uom"></span></p>
-                                                <p><strong>Condition:</strong> <span id="asset-cond"></span></p>
-                                                <p><strong>Gambar:</strong> <span id="asset-img"></span></p>
-                                                <!-- You can add more brand details here -->
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-danger"
-                                                    data-dismiss="modal">Close</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="modal fade" id="importDataExcel" tabindex="-1" role="dialog"
-                                    aria-labelledby="importDataExcelLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="importDataExcelLabel">Import Data Excel
-                                                    Asset</h5>
-                                                <button type="button" class="close" data-dismiss="modal"
-                                                    aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form action="" method="post" enctype="multipart/form-data">
-                                                    <label for="import-data">Import Data Excel : </label>
-                                                    <input type="file" name="data_excel" id="data_excel"
-                                                        class="form-control" placeholder="Upload File Excel">
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="submit" class="btn btn-primary">Submit</button>
-                                                <button type="button" class="btn btn-danger"
-                                                    data-dismiss="modal">Close</button>
-                                            </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-
                                 <div class="card-body">
+                                    <div class="d-flex justify-content-stary mb-5">
+                                        <h5>Movement Out Data</h5>
+                                    </div>
+                                    <form action="/asset-transfer/request-moveout" method="GET" class="mb-4">
+                                        @csrf   
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label for="start_date">Start Date</label>
+                                                <input type="date" id="start_date" name="start_date"
+                                                    class="form-control" value="{{ request('start_date') }}">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="end_date">End Date</label>
+                                                <input type="date" id="end_date" name="end_date"
+                                                    class="form-control" value="{{ request('end_date') }}">
+                                            </div>
+                                            <div class="col-md-4 d-flex align-items-end">
+                                                <button type="submit" class="btn btn-primary">Filter</button>
+                                                <a href="/asset-transfer/request-moveout"
+                                                    class="btn btn-secondary ml-2">Reset</a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div class="d-flex justify-content-end mb-3 mt-3">
+                                        <div class="input-group" style="width: 250px;">
+                                            <input type="text" id="searchInput" class="form-control"
+                                                placeholder="Search for assets..." />
+                                        </div>
+                                    </div>
                                     <div class="table-responsive product-table"
                                         style="max-width: 100%; overflow-x: auto;">
-                                        <form action="{{ route('moveout.filter') }}" method="GET">
-                                            @csrf
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <label for="start_date">Start Date</label>
-                                                    <input type="date" id="start_date" name="start_date"
-                                                        class="form-control" value="{{ request('start_date') }}">
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label for="end_date">End Date</label>
-                                                    <input type="date" id="end_date" name="end_date"
-                                                        class="form-control" value="{{ request('end_date') }}">
-                                                </div>
-                                                <div class="col-md-4 d-flex align-items-end">
-                                                    <button type="submit" class="btn btn-primary">Filter</button>
-                                                    <a href="{{ route('Admin.moveout') }}"
-                                                        class="btn btn-secondary ml-2">Reset</a>
-                                                </div>
-                                            </div>
-                                        </form>
-                                        <div class="d-flex justify-content-between mb-3 mt-3">
-                                            <h5>Movement Out Data</h5> <!-- Add a heading for the table if needed -->
-                                            <!-- Search Input Field aligned to the right -->
-                                            <div class="input-group" style="width: 250px;">
-                                                <input type="text" id="searchInput" class="form-control"
-                                                    placeholder="Search for assets..." />
-                                            </div>
-                                        </div>
-
-
                                         @if (isset($moveouts))
                                             {{-- @if ($moveouts->isNotEmpty()) --}}
                                             <table class="table table-striped display" id="coba"
@@ -663,146 +353,74 @@
                                                 <tbody>
                                                     @php $no = 1; @endphp
                                                     @foreach ($moveouts as $moveout)
-                                                        @if ($moveout->is_confirm != 2 && $moveout->dest_loc != auth()->user()->location_now && auth()->user()->role != 'am')
-                                                            <!-- First condition: is_confirm != 2 -->
-                                                            <tr class="text-center">
-                                                                <td>{{ $no++ }}</td>
-                                                                <td>{{ $moveout->out_id }}</td>
-                                                                <td>{{ $moveout->out_date }}</td>
-                                                                <td>{{ $moveout->from_location }}</td>
-                                                                <td>{{ $moveout->dest_location }}</td>
-                                                                <td>{{ $moveout->in_id }}</td>
-                                                                <td>{{ $moveout->qty }}</td>
-                                                                <td>{{ $moveout->out_desc }}</td>
-                                                                <td>{{ $moveout->reason_name }}</td>
-                                                                <td>{{ $moveout->approval_name }}</td>
-                                                                <td>
-                                                                    {{ $moveout->appr_1 == 2 ? 'Approved' : ($moveout->appr_1 == 4 ? 'Rejected' : 'Belum Approved') }}
-                                                                </td>
-                                                                <td>
-                                                                    {{ $moveout->appr_1_date }}
-                                                                </td>
-                                                                <td>
-                                                                    {{ $moveout->appr_1_user }}
-                                                                </td>
-                                                                <td>
-                                                                    {{ $moveout->appr_2 == 2 ? 'Approved' : ($moveout->appr_2 == 4 ? 'Rejected' : 'Belum Approved') }}
-                                                                </td>
-                                                                <td>
-                                                                    {{ $moveout->appr_2_date }}
-                                                                </td>
-                                                                <td>
-                                                                    {{ $moveout->appr_2_user }}
-                                                                </td>
-                                                                <td>
-                                                                    {{ $moveout->appr_3 == 2 ? 'Approved' : ($moveout->appr_3 == 4 ? 'Rejected' : 'Belum Approved') }}
-                                                                </td>
-                                                                <td>
-                                                                    {{ $moveout->appr_3_date }}
-                                                                </td>
-                                                                <td>
-                                                                    {{ $moveout->appr_3_user }}
-                                                                </td>
-                                                                <td>
-                                                                    @if ($moveout->deleted_at)
-                                                                        Nonactive
-                                                                    @else
-                                                                        Active
-                                                                    @endif
-                                                                </td>
-                                                                <td class="text-center">
-                                                                    @if ($moveout->appr_1 != 2)
+                                                        <tr class="text-center">
+                                                            <td>{{ $no++ }}</td>
+                                                            <td>{{ $moveout->out_id }}</td>
+                                                            <td>{{ $moveout->out_date }}</td>
+                                                            <td>{{ $moveout->from_location }}</td>
+                                                            <td>{{ $moveout->dest_location }}</td>
+                                                            <td>{{ $moveout->in_id }}</td>
+                                                            <td>{{ $moveout->qty }}</td>
+                                                            <td>{{ $moveout->out_desc }}</td>
+                                                            <td>{{ $moveout->reason_name }}</td>
+                                                            <td>{{ $moveout->approval_name }}</td>
+                                                            <td>
+                                                                {{ $moveout->appr_1 == 2 ? 'Approved' : ($moveout->appr_1 == 4 ? 'Rejected' : 'Belum Approved') }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $moveout->appr_1_date }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $moveout->appr_1_user }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $moveout->appr_2 == 2 ? 'Approved' : ($moveout->appr_2 == 4 ? 'Rejected' : 'Belum Approved') }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $moveout->appr_2_date }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $moveout->appr_2_user }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $moveout->appr_3 == 2 ? 'Approved' : ($moveout->appr_3 == 4 ? 'Rejected' : 'Belum Approved') }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $moveout->appr_3_date }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $moveout->appr_3_user }}
+                                                            </td>
+                                                            <td>
+                                                                @if ($moveout->deleted_at)
+                                                                    <b class="text-danger">Deactive</b>
+                                                                @else
+                                                                    <b class="text-success">Active</b>
+                                                                @endif
+                                                            </td>
+                                                            <td class="text-center">
+                                                                @if ($moveout->appr_1 == 1)
                                                                     @can('btn action edit movement out')
-                                                                      <a href="{{ url('/asset-transfer/request-moveout/edit', $moveout->out_id) }}"
+                                                                        <a href="{{ url('/asset-transfer/request-moveout/edit', $moveout->out_id) }}"
                                                                         title="Edit">
                                                                         <i class="fas fa-edit"></i>
-                                                                        {{ $moveout->out_id }}
-                                                                      </a>
+                                                                        </a>
                                                                     @endcan
                                                                     @can('btn action delete movement out')
-                                                                      <form class="delete-form"
+                                                                        <form class="delete-form"
                                                                         action="{{ url('/asset-transfer/request-moveout/delete', $moveout->out_id) }}"
                                                                         method="POST" style="display:inline;">
                                                                         @csrf
                                                                         @method('DELETE')
-                                                                        <button type="button"
-                                                                            class="delete-button" title="Delete"
-                                                                            style="border: none; background: none; cursor: pointer;"
-                                                                            onclick="confirmDelete(event, this)">
-                                                                            <i class="fas fa-trash-alt"
-                                                                                style="color: red;"></i>
-                                                                        </button>
-                                                                      </form>
-                                                                    @endcan
-                                                                    @endif
-                                                                    <a href="{{ url('/asset-transfer/detail-request-moveout/' . $moveout->out_id) }}"
-                                                                        title="Detail">
-                                                                        <i class="fas fa-book"></i>
-                                                                    </a>
-                                                                    <a href="/asset-transfer/pdf-request-moveout/{{ $moveout->out_id }}"
-                                                                        target="_blank"><i
-                                                                            class="fas fa-print mx-1"></i></a>
-                                                                </td>
-                                                            </tr>
-                                                        @elseif($moveout->is_confirm == 3 && $moveout->dest_loc == auth()->user()->location_now && auth()->user()->role == 'am')
-                                                            <!-- Second condition: is_confirm == 2 and other conditions -->
-                                                            <tr class="text-center">
-                                                                <td>{{ $no++ }}</td>
-                                                                <td>{{ $moveout->out_id }}</td>
-                                                                <td>{{ $moveout->out_date }}</td>
-                                                                <td>{{ $moveout->from_location }}</td>
-                                                                <td>{{ $moveout->dest_location }}</td>
-                                                                <td>{{ $moveout->in_id }}</td>
-                                                                <td>{{ $moveout->qty }}</td>
-                                                                <td>{{ $moveout->out_desc }}</td>
-                                                                <td>{{ $moveout->reason_name }}</td>
-                                                                <td>{{ $moveout->approval_name }}</td>
-                                                                <td>
-                                                                    {{ $moveout->appr_1 == 2 ? 'Approved' : ($moveout->appr_1 == 4 ? 'Rejected' : 'Belum Approved') }}
-                                                                </td>
-                                                                <td>
-                                                                    {{ $moveout->appr_1_date }}
-                                                                </td>
-                                                                <td>
-                                                                    {{ $moveout->appr_1_user }}
-                                                                </td>
-                                                                <td>
-                                                                    {{ $moveout->appr_2 == 2 ? 'Approved' : ($moveout->appr_2 == 4 ? 'Rejected' : 'Belum Approved') }}
-                                                                </td>
-                                                                <td>
-                                                                    {{ $moveout->appr_2_date }}
-                                                                </td>
-                                                                <td>
-                                                                    {{ $moveout->appr_2_user }}
-                                                                </td>
-                                                                <td>
-                                                                    {{ $moveout->appr_3 == 2 ? 'Approved' : ($moveout->appr_3 == 4 ? 'Rejected' : 'Belum Approved') }}
-                                                                </td>
-                                                                <td>
-                                                                    {{ $moveout->appr_3_date }}
-                                                                </td>
-                                                                <td>
-                                                                    {{ $moveout->appr_3_user }}
-                                                                </td>
-                                                                <td>
-                                                                    @if ($moveout->deleted_at)
-                                                                        Nonactive
-                                                                    @else
-                                                                        Active
-                                                                    @endif
-                                                                </td>
-                                                                <td class="text-center">
-                                                                    @if ($moveout->appr_1 != 2)
-                                                                        <a href="{{ url('/admin/edit_data_movement', $moveout->out_id) }}"
-                                                                            title="Edit">
-                                                                            <i class="fas fa-edit"></i>
-                                                                            {{ $moveout->out_id }}
-                                                                        </a>
-                                                                        <form class="delete-form"
-                                                                            action="{{ url('admin/moveouts/delete', $moveout->out_id) }}"
-                                                                            method="POST" style="display:inline;">
-                                                                            @csrf
-                                                                            @method('DELETE')
+                                                                        @if ($moveout->deleted_at)
+                                                                            <button type="button"
+                                                                                class="delete-button" title="Delete"
+                                                                                style="border: none; background: none; cursor: pointer;"
+                                                                                onclick="confirmDelete(event, this)">
+                                                                                <i class="fas fa-trash-alt"
+                                                                                    style="color: green;"></i>
+                                                                            </button>
+                                                                        @else
                                                                             <button type="button"
                                                                                 class="delete-button" title="Delete"
                                                                                 style="border: none; background: none; cursor: pointer;"
@@ -810,56 +428,55 @@
                                                                                 <i class="fas fa-trash-alt"
                                                                                     style="color: red;"></i>
                                                                             </button>
+                                                                        @endif
                                                                         </form>
-                                                                    @endif
-                                                                    <a href="{{ url('/admin/get_detail_data_movement/' . $moveout->out_id) }}"
-                                                                        title="Detail">
-                                                                        <i class="fas fa-book"></i>
-                                                                    </a>
-                                                                    <a href="{{ route('moveout.preview', $moveout->out_id) }}"
-                                                                        target="_blank"><i
-                                                                            class="fas fa-print mx-1"></i></a>
-                                                                </td>
-                                                            </tr>
-                                                        @endif
+                                                                    @endcan
+                                                                @endif
+                                                                <a href="{{ url('/asset-transfer/detail-request-moveout/' . $moveout->out_id) }}"
+                                                                    title="Detail">
+                                                                    <i class="fas fa-book"></i>
+                                                                </a>
+                                                                <a href="/asset-transfer/pdf-request-moveout/{{ $moveout->out_id }}"
+                                                                    target="_blank"><i
+                                                                        class="fas fa-print mx-1"></i></a>
+                                                            </td>
+                                                        </tr>
                                                     @endforeach
                                                 </tbody>
 
 
                                             </table>
+                                        @else
                                             <p class="text-center mt-3 mb-2">No data found within this date range.</p>
                                         @endif
-                                        {{-- @else
-                      <p class="text-center mt-3 mb-2">No data found within this date range.</p>
-                  @endif --}}
-                                        <div class="d-flex justify-content-center align-items-center mt-4">
-                                            <div>
-                                                <!-- Previous Button -->
-                                                @if ($moveouts->onFirstPage())
-                                                    <span class="disabled">
-                                                        << Previous</span>
-                                                        @else
-                                                            <a href="{{ $moveouts->previousPageUrl() }}"
-                                                                class="btn btn-link">
-                                                                << Previous</a>
-                                                @endif
-                                            </div>
-                                            <div>
-                                                <!-- Next Button -->
-                                                @if ($moveouts->hasMorePages())
-                                                    <a href="{{ $moveouts->nextPageUrl() }}"
-                                                        class="btn btn-link">Next >></a>
-                                                @else
-                                                    <span class="disabled">Next >></span>
-                                                @endif
-                                            </div>
+                                    </div>
+                                    <div class="d-flex justify-content-center align-items-center mt-4">
+                                        <div>
+                                            <!-- Previous Button -->
+                                            @if ($moveouts->onFirstPage())
+                                                <span class="disabled">
+                                                    << Previous | </span>
+                                                    @else
+                                                        <a href="{{ $moveouts->previousPageUrl() }}"
+                                                            class="btn btn-link">
+                                                            << Previous | </a>
+                                            @endif
                                         </div>
+                                        <div>
+                                            <!-- Next Button -->
+                                            @if ($moveouts->hasMorePages())
+                                                <a href="{{ $moveouts->nextPageUrl() }}"
+                                                    class="btn btn-link"> | Next >></a>
+                                            @else
+                                                <span class="disabled"> | Next >></span>
+                                            @endif
+                                        </div>
+                                    </div>
 
-                                        <!-- Display current page and total pages -->
-                                        <div class="d-flex justify-content-center mt-2">
-                                            <span>Page {{ $moveouts->currentPage() }} of
-                                                {{ $moveouts->lastPage() }}</span>
-                                        </div>
+                                    <!-- Display current page and total pages -->
+                                    <div class="d-flex justify-content-center mt-2">
+                                        <span>Page {{ $moveouts->currentPage() }} of
+                                            {{ $moveouts->lastPage() }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -1279,30 +896,43 @@
     {{-- Delete data moveout --}}
     <script>
         $(document).on('click', '.delete-button', function(e) {
-            e.preventDefault(); // Mencegah submit form default
-            const form = $(this).closest('form'); // Ambil form yang terdekat dari tombol
+            e.preventDefault(); // Prevent default form submission
+            const form = $(this).closest('form'); // Get the closest form to the button
 
-            // Tampilkan dialog konfirmasi
-            if (confirm('Apakah Anda yakin ingin menghapus moveout ini?')) {
-                // Ambil URL dari action form
-                const actionUrl = form.attr('action');
+            // Display confirmation dialog
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: 'Tindakan ini tidak dapat dibatalkan.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Tidak, simpan'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Get the action URL from the form
+                    const actionUrl = form.attr('action');
 
-                $.ajax({
-                    url: actionUrl, // URL dari form
-                    method: 'DELETE', // Method untuk delete
-                    data: form.serialize(), // Kirim data form
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            window.location.href = response.redirect_url; // Redirect ke Admin.moveout
-                        } else {
-                            alert(response.message); // Tampilkan pesan error jika gagal
+                    // Perform AJAX DELETE request
+                    $.ajax({
+                        url: actionUrl, // Form action URL
+                        method: 'DELETE', // HTTP method
+                        data: form.serialize(), // Serialize form data
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                window.location.href = response
+                                .redirect_url; // Redirect on success
+                            } else {
+                                Swal.fire('Error!', response.message,
+                                'error'); // Show error message
+                            }
+                        },
+                        error: function(jqXHR) {
+                            Swal.fire('Gagal!', 'Gagal menghapus data. Coba lagi.',
+                            'error'); // Error message
                         }
-                    },
-                    error: function(jqXHR) {
-                        alert('Gagal menghapus data. Coba lagi.');
-                    }
-                });
-            }
+                    });
+                }
+            });
         });
     </script>
 

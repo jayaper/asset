@@ -11,7 +11,6 @@ use Carbon\Carbon; // Untuk tanggal dan waktu
 class MasterDisOut extends Model
 {
     use HasFactory;
-    use SoftDeletes;
 
     protected $table = 't_out';
     protected $primaryKey = 'out_id';
@@ -38,7 +37,8 @@ class MasterDisOut extends Model
         'modified_date',
         'create_by',
         'modified_by',
-        'is_active'
+        'is_active',
+        'deleted_at'
     ];
     
     

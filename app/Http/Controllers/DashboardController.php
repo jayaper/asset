@@ -138,7 +138,7 @@ class DashboardController extends Controller
                 ->join('t_out_detail AS a', 'a.out_id', 't_out.out_id')
                 ->leftjoin('miegacoa_keluhan.master_resto as resto', 'resto.id', '=', 't_out.from_loc')
                 ->where(function($q) {
-                $q->where('a.condition', 1)->orWhere('a.condition', 3);
+                    $q->where('a.condition', 1)->orWhere('a.condition', 3);
                 })
                 ->where('t_out.out_id', 'like', 'DA%')
                 ->where('t_out.is_confirm', 3);
@@ -162,7 +162,7 @@ class DashboardController extends Controller
                 ->join('t_out_detail AS a', 'a.out_id', 't_out.out_id')
                 ->leftjoin('miegacoa_keluhan.master_resto as resto', 'resto.id', '=', 't_out.from_loc')
                 ->where(function($q) {
-                $q->where('a.condition', 2)->orWhere('a.condition', 4);
+                    $q->where('a.condition', 2)->orWhere('a.condition', 4);
                 })
                 ->where('t_out.out_id', 'like', 'DA%')
                 ->where('t_out.is_confirm', 3);
@@ -183,7 +183,7 @@ class DashboardController extends Controller
 
         
         $t_regist = DB::table('table_registrasi_asset')
-                ->join('miegacoa_keluhan.master_resto as resto', 'resto.id', '=', 'table_registrasi_asset.register_location');
+                ->join('miegacoa_keluhan.master_resto as resto', 'resto.id', '=', 'table_registrasi_asset.location_now');
                 if(Auth::User()->hasRole('SM')){
                     $t_regist->where(function($q){
                         $q->where('resto.id', Auth::User()->location_now);
@@ -237,8 +237,8 @@ class DashboardController extends Controller
             'badAsset' => $bad_asset,
             'goodAsset' => $good_asset,
             'assetDisposal' => $asset_disposal,
-            'badAssetDis' => $good_asset_dis,
-            'goodAssetDis' => $bad_asset_dis,
+            'goodAssetDis' => $good_asset_dis,
+            'badAssetDis' => $bad_asset_dis,
             'totalResto' => $total_resto
         ]);
     }

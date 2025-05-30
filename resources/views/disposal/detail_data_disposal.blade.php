@@ -336,70 +336,110 @@
             @include('layouts.sidebar')
             <!-- Page Sidebar Ends-->
             <div class="page-body pb-5">
-                <br>
-                <h3 class="ps-4"><b>Detail Data Disposal Out</b></h3>
-                <br>
-                <div class="section">
-                    <div class="card p-4">
-                        <h3 class="mb-4">Detail Disposal Out</h3>
-                        <table class="table">
-                            <tr>
-                                <th>Tanggal Movement Out</th>
-                                <td>{{ $moveOutAssets->out_date }}</td>
-                            </tr>
-                            <tr>
-                                <th>Lokasi Asal</th>
-                                <td>{{ $moveOutAssets->from_location }}</td>
-                            </tr>
-                            <tr>
-                                <th>Alasan Movement Out</th>
-                                <td>
-                                    @foreach ($reasons as $reason)
-                                        @if ($reason->reason_id == $moveOutAssets->reason_id)
-                                            {{ $reason->reason_name }}
-                                        @endif
-                                    @endforeach
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Deskripsi Movement Out</th>
-                                <td>{{ $moveOutAssets->out_desc }}</td>
-                            </tr>
-                        </table>
-                    </div>
-                    @foreach ($assets as $asset)
-                        <div class="card p-4">
-                            <h3 class="mb-4">Detail Assets</h3>
-                            <table class="table">
-                                <tr>
-                                    <th class="col-sm-3">Asset</th>
-                                    <td class="col-sm-3">{{ $asset->asset_model }}</td>
-                                    <th class="col-sm-3">Merk</th>
-                                    <td class="col-sm-3">{{ $asset->brand_name }}</td>
-                                </tr>
-                                <tr>
-                                    <th class="col-sm-3">Quantity</th>
-                                    <td class="col-sm-3">{{ $asset->qty }}</td>
-                                    <th class="col-sm-3">Satuan</th>
-                                    <td class="col-sm-3">{{ $asset->uom_name }}</td>
-                                </tr>
-                                <tr>
-                                    <th class="col-sm-3">Serial Number</th>
-                                    <td class="col-sm-3">{{ $asset->serial_number }}</td>
-                                    <th class="col-sm-3">Registrasi Code</th>
-                                    <th class="col-sm-3">{{ $asset->register_code }}</th>
-                                </tr>
-                                <tr>
-                                    <th class="col-sm-3">Kondisi Asset</th>
-                                    <td class="col-sm-3">{{ $asset->condition_name }}</td>
-                                    <th class="col-sm-3">Image</th>
-                                    <td class="col-sm-3">
-                                        <a class="btn btn-success" target="_blank" href="/storage/app/public/{{ $asset->image }}">Open</a>
-                                    </td>
-                                </tr>
-                            </table>
+                <div class="container-fluid">
+                    <div class="page-title mt-4">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <h3>Detail Data Disposal Out</h3>
+                            </div>
+                            <div class="col-sm-6">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a>
+                                    </li>
+                                    <li class="breadcrumb-item">ASMI</li>
+                                    <li class="breadcrumb-item active">Request Disposal Out Name List</li>
+                                    <li class="breadcrumb-item active">Detail Data Disposal Out</li>
+                                </ol>
+                            </div>
                         </div>
-                    @endforeach
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="section">
+                            <table class="table table-bordered mb-4">
+                                <thead class="table-light">
+                                    <tr><th colspan="2">Informasi Movement Out</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>Tanggal Movement Out</th>
+                                        <td>{{ $moveOutAssets->out_date }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Lokasi Asal</th>
+                                        <td>{{ $moveOutAssets->from_location }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Deskripsi</th>
+                                        <td>{{ $moveOutAssets->out_desc }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Alasan</th>
+                                        <td>
+                                            @php
+                                                $reason = $reasons->firstWhere('reason_id', $moveOutAssets->reason_id);
+                                            @endphp
+                                            {{ $reason ? $reason->reason_name : '-' }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            {{-- Data Aset --}}
+                            @foreach ($assets as $index => $asset)
+                                <table class="table table-bordered mb-4">
+                                    <thead class="table-light">
+                                        <tr><th colspan="2">Asset #{{ $index + 1 }}</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th>Asset Tag</th>
+                                            <td>{{ $asset->register_code }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Model</th>
+                                            <td>{{ $asset->asset_model }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Merk</th>
+                                            <td>{{ $asset->brand_name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Quantity</th>
+                                            <td>{{ $asset->qty }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Satuan</th>
+                                            <td>{{ $asset->uom_name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Serial Number</th>
+                                            <td>{{ $asset->serial_number }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Kondisi</th>
+                                            <td>
+                                                {{ $asset->condition_name }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Gambar</th>
+                                            <td>
+                                                @if ($asset->image)
+                                                    <a href="/storage/{{ $asset->image }}" target="_blank">
+                                                        <img src="/storage/{{ $asset->image }}" width="200">
+                                                    </a>
+                                                @else
+                                                    Tidak ada gambar
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- Container-fluid Ends-->

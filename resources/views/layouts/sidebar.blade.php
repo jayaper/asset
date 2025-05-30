@@ -47,7 +47,7 @@
                                 @can('view registration')
                                     <ul class="sidebar-submenu">
                                         <li><a class="sidebar-link sidebar-title link-nav"
-                                                href="/registration/assets-registration"><span>Assets Regist</span></a></li>
+                                                href="/registration/assets-registration"><span>Asset Registered</span></a></li>
                                 </li>
                                 {{-- <li><a class="sidebar-link sidebar-title link-nav"
                                         href="/registration/approval-ops-sm"><span>Approval OPS SM</span></a></li> --}}
@@ -360,7 +360,7 @@
                                     data-feather="clipboard"></i><span>Report</span></a>
                             <ul class="sidebar-submenu">
                                 <li><a class="sidebar-link sidebar-title link-nav"
-                                        href="/reports/registrasi_asset_report"><span>Registrasi Asset</span></a></li>
+                                        href="/reports/registrasi_asset_report"><span>Asset Registered</span></a></li>
                         </li>
                         <li><a class="sidebar-link sidebar-title link-nav"
                                 href="/reports/mutasi_stock_asset"><span>Mutasi Stock Asset</span></a></li>

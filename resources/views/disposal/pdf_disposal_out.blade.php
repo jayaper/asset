@@ -86,7 +86,7 @@
     <div class="header">
         <!-- PT. Pesta Pora Abadi (Left Aligned) -->
         <div class="pt-left">
-           <img src="{{asset('assets/images/image-removebg-preview.png')}}" alt="logo_image" style="width:150px; height:80px; position:relative; right:3rem;">
+           <img src="{{ asset('assets\images\image-removebg-preview.png') }}" alt="logo_image" style="width:150px; height:80px; position:relative; right:3rem;">
         </div>
         <div class="pt-left">JL. S. Supriyadi No. 74, Kec. Sukun, Kota Malang</div>
         <div class="pt-left">Telp : (0341) 3018555</div>
@@ -105,7 +105,7 @@
     <tr>
         <td style="background-color: grey; color:white">Origin Site</td>
         <td style="background-color: #B7B7B7">
-        {{ $firstRecord->origin_site }} - {{ $firstRecord->origin_site }}
+        {{ $firstRecord->origin_site }}
         </td>
         <td style="background-color: grey; color:white">Purpose</td>
         <td style="background-color: #B7B7B7">Dispose</td>
@@ -117,7 +117,9 @@
         <td style="background-color: #B7B7B7">
         
         </td> -->
-        <td colspan="4"></td>
+        <td style="background-color: grey; color:white">Approval</td>
+        <td style="background-color: #B7B7B7">{{ $firstRecord->approval_name }}</td>
+        <td colspan="2"></td>
         <td style="background-color: grey; color:white">Disposal Ref Code</td>
         <td style="background-color: #B7B7B7">{{ $firstRecord->out_id }}</td>
     </tr>

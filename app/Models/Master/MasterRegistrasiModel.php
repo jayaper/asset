@@ -20,19 +20,12 @@ class MasterRegistrasiModel extends Model
 
     use HasFactory;
 
-    use SoftDeletes;
-
-
-
     protected $table = 'table_registrasi_asset';
 
 
 
     protected $primaryKey = 'id';
 
-
-
-    protected $dates = ['deleted_at'];
 
     protected $fillable = [
 

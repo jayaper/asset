@@ -275,12 +275,17 @@ class UserController extends Controller
         $user = MasterUser::find($id);
 
         if ($user) {
+            if(is_null($user->deleted_at)) {
 
-            // Hapus semua role yang dimiliki user
-            $user->roles()->detach();
+                $user->deleted_at = Carbon::now();
+                
+            }else{
 
-            // Hapus user dari database
-            $user->delete();
+                $user->deleted_at = null;
+
+            }
+
+            $user->save();
             
             return response()->json([
 
@@ -311,7 +316,7 @@ class UserController extends Controller
     }
 
     public function userGetRegion(){
-        $region = DB::table('miegacoa_keluhan.master_regional')->select('region_id', 'region_name')->get();
+        $region = DB::table('miegacoa_keluhan.master_regional')->select('id', 'regional')->get();
         return response()->json($region);
     }
 

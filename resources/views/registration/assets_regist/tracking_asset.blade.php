@@ -180,17 +180,17 @@
                             <ul class="profile-dropdown onhover-show-div">
                                 <li><a href="user-profile.html"><i data-feather="user"></i><span>Account </span></a>
                                 </li>
-                                <!-- <li><a href="email_inbox.html"><i data-feather="mail"></i><span>Inbox</span></a></li>
-                  <li><a href="kanban.html"><i data-feather="file-text"></i><span>Taskboard</span></a></li> -->
-                                <>
-                                    <form id="logout-form" action="{{ url('logout') }}" method="POST"
-                                        style="display: none;">
-                                        @csrf
-                                        <li>
-                                            <button id="logoutBtn"><i data-feather="log-out"> </i><span>Log
-                                                    Out</span></button>
-                                        </li>
-                                    </form>
+                                <li>
+                                    <a href="{{ route('logout') }}"
+                                        onclick="event.preventDefault();
+                                        document.getElementById('logout-form').submit();">
+                                        <i data-feather="log-out"></i><span>Log Out</span>
+                                    </a>
+                                </li>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                    class="d-none">
+                                    @csrf
+                                </form>
                             </ul>
                         </li>
                     </ul>
@@ -217,9 +217,19 @@
                 <!-- Container-fluid starts-->
 
                 <div class="container-fluid">
-                    <div class="page-title">
+                    <div class="page-title mt-4">
                         <div class="row">
                             <div class="col-sm-6">
+                                <h3>Assets Registration Tracking History</h3>
+                            </div>
+                            <div class="col-sm-6">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a>
+                                    </li>
+                                    <li class="breadcrumb-item">ASMI</li>
+                                    <li class="breadcrumb-item">Assets Registration </li>
+                                    <li class="breadcrumb-item active">Tracking History </li>
+                                </ol>
                             </div>
                         </div>
                     </div>
@@ -243,23 +253,32 @@
                                             $no = 1;
                                         @endphp
                                         <div class="col-sm-12">
-                                            <table class="table table-stripped">
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th class="text-center" colspan="2">Asal dari</th>
-                                                    <th></th>
-                                                    <th class="text-center" colspan="2">Menuju ke</th>
-                                                </tr>
-                                                @foreach ($trackings as $item)
-                                                <tr>
-                                                    <td>{{ $no++ }}</td>
-                                                    <td>{{ $item->asal }}</td>
-                                                    <td>{{ $item->start_date_formatted }}</td>
-                                                    <th style="vertical-align: middle;">-</th>
-                                                    <td>{{ $item->end_date_formatted }}</td>
-                                                    <td>{{ $item->menuju }}</td>
-                                                </tr>
-                                                @endforeach
+                                            <table class="table table-bordered table-striped align-middle text-center">
+                                                <thead class="table-primary">
+                                                    <tr>
+                                                        <th style="width: 50px">#</th>
+                                                        <th style="min-width: 150px">Reason</th>
+                                                        <th style="min-width: 250px">Deskripsi</th>
+                                                        <th style="min-width: 200px">Tanggal</th>
+                                                        <th style="min-width: 200px">Lokasi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($trackings as $index => $item)
+                                                        <tr>
+                                                            <td>{{ $index + 1 }}</td>
+                                                            <td>{{ $item->reason_name }}</td>
+                                                            <td>{{ $item->description }}</td>
+                                                            <td>{{ $item->start_date_formatted }}<br><strong class="fs-3">→</strong><br>{{ $item->end_date_formatted }}
+                                                            </td>
+                                                            <td>
+                                                                <span class="text-muted">{{ $item->asal }}</span>
+                                                                <br><strong class="fs-3">{{ ($item->reason == 1) ? '→' : ''}}</strong><br>
+                                                                <span class="text-muted">{{ $item->menuju }}</span>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
                                             </table>
                                         </div>
                                     </div>

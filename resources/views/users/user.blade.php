@@ -538,6 +538,7 @@
                                                     <th class="text-start">#</th>
                                                     <th class="text-start">Username</th>
                                                     <th>Role</th>
+                                                    <th>Status</th>
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
@@ -547,6 +548,22 @@
                                                         <td class="text-start">{{ $user->id }}</td>
                                                         <td class="text-start">{{ $user->username }}</td>
                                                         <td>{{ $user->role_name }}</td>
+                                                        <td><form class="delete-form"
+                                                                action="{{ url('user/delete', $user->id) }}"
+                                                                method="POST" style="display:inline;">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="button" class="delete-button"
+                                                                    title="Delete"
+                                                                    style="border: none; background: none; cursor: pointer;">
+                                                                    @if (is_null($user->deleted_at))
+                                                                        <b class="text-success">Active</b>
+                                                                    @else
+                                                                        <b class="text-danger">Deactive</b>
+                                                                    @endif
+                                                                </button>
+                                                            </form>
+                                                        </td>
                                                         <td class="text-center">
                                                             <a href="javascript:void(0);" class="edit-button"
                                                                 data-id="{{ $user->id }}"
@@ -562,22 +579,11 @@
                                                                 data-username="{{ $user->username }}"
                                                                 data-email="{{ $user->email }}"
                                                                 data-location_now="{{ $user->location_now }}"
+                                                                data-role_id="{{ $user->role_id }}"
                                                                 data-role_name="{{ $user->role_name }}"
                                                                 title="Detail">
                                                                 <i class="fas fa-book"></i>
                                                             </a>
-                                                            <form class="delete-form"
-                                                                action="{{ url('user/delete', $user->id) }}"
-                                                                method="POST" style="display:inline;">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="button" class="delete-button"
-                                                                    title="Delete"
-                                                                    style="border: none; background: none; cursor: pointer;">
-                                                                    <i class="fas fa-trash-alt"
-                                                                        style="color: red;"></i>
-                                                                </button>
-                                                            </form>
                                                         </td>
                                                     </tr>
                                                 @endforeach
@@ -779,7 +785,7 @@
 
           let options = '';
           response.forEach(function(data) {
-              options += `<option value="${data.region_id}">${data.region_name}</option>`;
+              options += `<option value="${data.id}">${data.regional}</option>`;
           });
 
           const hasil = `
@@ -881,7 +887,7 @@
 
           let options = '';
           response.forEach(function(data) {
-              options += `<option value="${data.region_id}">${data.region_name}</option>`;
+              options += `<option value="${data.id}">${data.regional}</option>`;
           });
 
           const hasil = `
@@ -985,8 +991,8 @@
 
           let options = '';
           response.forEach(function(data) {
-            const selected = (data.region_id == locationNow) ? 'selected' : '';
-            options += `<option value="${data.region_id}" ${selected}>${data.region_name}</option>`;
+            const selected = (data.id == locationNow) ? 'selected' : '';
+            options += `<option value="${data.id}" ${selected}>${data.regional}</option>`;
           });
 
           const hasil = `
@@ -1041,6 +1047,72 @@
 
         $('#edit-location_now').html('<input type="text" name="location_now" value="">');
         $('#edit-location_now').hide();
+
+      }
+    </script>
+    <script>
+      function selectDetailAdmin(locationNow){
+
+        $('#det-user-location').text('Tidak Ada.');
+
+      }
+      function selectDetailAm(locationNow){
+        $.ajax({
+            url: '/user/user-get-area',
+            type: 'GET',
+            success: function(response) {
+                let hasil = 'Tidak diketahui'; // default jika tidak ketemu
+                response.forEach(function(data) {
+                    if (data.id == locationNow) {
+                        hasil = data.city;
+                    }
+                });
+
+                $('#det-user-location').text(hasil);
+
+            }
+        });
+      }
+
+      function selectDetailRm(locationNow){
+        $.ajax({
+            url: '/user/user-get-region',
+            type: 'GET',
+            success: function(response) {
+                let hasil = 'Tidak diketahui'; // default jika tidak ketemu
+                response.forEach(function(data) {
+                    if (data.id == locationNow) {
+                        hasil = data.regional;
+                    }
+                });
+
+                $('#det-user-location').text(hasil);
+
+            }
+        });
+      }
+
+      function selectDetailSm(locationNow){
+        $.ajax({
+            url: '/user/user-get-location',
+            type: 'GET',
+            success: function(response) {
+                let hasil = 'Tidak diketahui'; // default jika tidak ketemu
+                response.forEach(function(data) {
+                    if (data.id == locationNow) {
+                        hasil = data.name_store_street;
+                    }
+                });
+
+                $('#det-user-location').text(hasil);
+
+            }
+        });
+      }
+
+      function selectDetailSdg(locationNow){
+
+        $('#det-user-location').text('Tidak Ada.');
 
       }
     </script>
@@ -1170,29 +1242,32 @@
                 var userName = $(this).data('username');
                 var eMail = $(this).data('email');
                 var locationNow = $(this).data('location_now');
-                var role = $(this).data('role_name');
+                var roleId = $(this).data('role_id');
+                var role_name = $(this).data('role_name');
 
                 // Set the data into the modal
                 $('#det-user-id').text(userId);
                 $('#det-user-username').text(userName);
                 $('#det-user-email').text(eMail);
-                $('#det-user-role').text(role);
+                $('#det-user-role').text(role_name);
 
-                $.ajax({
-                    url: '/user/user-get-location',
-                    type: 'GET',
-                    success: function(response) {
-                        let hasil = 'Tidak diketahui'; // default jika tidak ketemu
-                        response.forEach(function(data) {
-                            if (data.id == locationNow) {
-                                hasil = data.name_store_street;
-                            }
-                        });
-
-                        $('#det-user-location').text(hasil);
-
-                    }
-                });
+                switch (roleId){
+                    case 1 : //admin
+                    selectDetailAdmin(locationNow);
+                    break;
+                    case 2 : //am
+                    selectDetailAm(locationNow);
+                    break;
+                    case 3 : //rm
+                    selectDetailRm(locationNow);
+                    break;
+                    case 4 : //sm
+                    selectDetailSm(locationNow);
+                    break;
+                    case 5 : //sdg
+                    selectDetailSdg(locationNow);
+                    break;
+                }
 
                 // Show the modal
                 $('#userDetailModal').modal('show');
@@ -1203,31 +1278,43 @@
     {{-- Delete data User --}}
     <script>
         $(document).on('click', '.delete-button', function(e) {
-            e.preventDefault(); // Mencegah submit form default
-            const form = $(this).closest('form'); // Ambil form yang terdekat dari tombol
+            e.preventDefault(); // Prevent default form submission
+            const form = $(this).closest('form'); // Get the closest form to the button
 
-            // Tampilkan dialog konfirmasi
-            if (confirm('Apakah Anda yakin ingin menghapus User ini?')) {
-                // Ambil URL dari action form
-                const actionUrl = form.attr('action');
+            // Display confirmation dialog
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: 'Ingin mengubah Status User?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Lanjut!',
+                cancelButtonText: 'Tidak, simpan'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Get the action URL from the form
+                    const actionUrl = form.attr('action');
 
-                $.ajax({
-                    url: actionUrl, // URL dari form
-                    method: 'DELETE', // Method untuk delete
-                    data: form.serialize(), // Kirim data form
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            alert(response.message)
-                            window.location.href = response.redirect_url; // Redirect ke Admin.User
-                        } else {
-                            alert(response.message); // Tampilkan pesan error jika gagal
+                    // Perform AJAX DELETE request
+                    $.ajax({
+                        url: actionUrl, // Form action URL
+                        method: 'DELETE', // HTTP method
+                        data: form.serialize(), // Serialize form data
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                window.location.href = response
+                                .redirect_url; // Redirect on success
+                            } else {
+                                Swal.fire('Error!', response.message,
+                                'error'); // Show error message
+                            }
+                        },
+                        error: function(jqXHR) {
+                            Swal.fire('Gagal!', 'Gagal menghapus data. Coba lagi.',
+                            'error'); // Error message
                         }
-                    },
-                    error: function(jqXHR) {
-                        alert('Gagal menghapus data. Coba lagi.');
-                    }
-                });
-            }
+                    });
+                }
+            });
         });
     </script>
 

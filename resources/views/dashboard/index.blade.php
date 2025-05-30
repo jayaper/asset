@@ -237,7 +237,15 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="row">
-                                <div class="col-sm-4">
+                                <div class="col-sm-12 text-center">
+                                    <div class="card py-3">
+                                        <label class="p-0">
+                                            <h1 class="text-primary py-2">Asset Management System</h1>
+                                            <h2>Dashboard</h2>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
                                     <div class="card p-4 text-center">
                                         @if (!$user->hasRole('Admin') &&
                                          !$user->hasRole('SDG'))
@@ -255,14 +263,14 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                {{-- <div class="col-sm-4">
                                     <div class="card p-4 text-center">
                                         <label for=""><h4>Total Asset</h4></label>
                                         <p class="count red fs-2 text-primary">{{ $totalAsset }}</p>
                                         <p class="description"><a href="/registration/assets-registration">Show Total Asset Data -></a></p>
                                     </div>
-                                </div>
-                                <div class="col-sm-4">
+                                </div> --}}
+                                <div class="col-sm-6">
                                     <div class="card p-4 text-center">
                                         <label for=""><h4>Total Asset Registered</h4></label>
                                         <p class="count red fs-2 text-success">{{ $totalRegistered }}</p>

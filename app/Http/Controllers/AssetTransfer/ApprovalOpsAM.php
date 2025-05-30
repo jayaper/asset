@@ -119,7 +119,8 @@ class ApprovalOpsAM extends Controller
                 foreach($t_regist as $table){
                     DB::table('table_registrasi_asset')->where('register_code', $table->register_code)->update([
                         'location_now' => $moveout->from_loc,
-                        'qty' => 1
+                        'qty' => 1,
+                        'status_asset' => 1
                     ]);
                 }
             }

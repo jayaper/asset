@@ -2,14 +2,12 @@
 
 namespace App\Exports;
 
-use App\Models\Master\MasterRegistrasiModel;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use App\Exports\QrCode;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class AssetExport implements FromCollection, WithHeadings
+class ReportAssetRegist implements FromCollection, WithHeadings
 {
     public function collection()
     {

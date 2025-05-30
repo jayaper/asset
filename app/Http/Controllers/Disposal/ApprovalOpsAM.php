@@ -125,7 +125,8 @@ class ApprovalOpsAM extends Controller
                     DB::table('table_registrasi_asset')
                     ->where('id', $table->id)
                     ->update([
-                        'qty' => 1
+                        'qty' => 1,
+                        'status_asset' => 1
                     ]);
                 }
 

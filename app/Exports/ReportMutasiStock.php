@@ -5,108 +5,86 @@ namespace App\Exports;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class ReportMutasiStock implements FromCollection, WithHeadings
 {
+    protected $request;
+
+    public function __construct(Request $request)
+    {
+        $this->request = $request;
+    }
+
     public function collection()
     {
-        $DataMutasiStock = DB::table('t_out')
-            ->select(
-                't_out_detail.out_id',
-                't_out.create_by',
-                't_out.tf_code',
-                't_out.appr_1_user',
-                't_out.appr_1_date',
-                't_out.appr_2_user',
-                't_out.appr_2_date',
-                't_out.appr_3_user',
-                't_out.appr_3_date',
-                'table_registrasi_asset.register_code',
-                'm_assets.asset_model',
-                't_out_detail.qty',
-                'm_uom.uom_name',
-                'from_location.name_store_street AS from_store',
-                'dest_location.name_store_street AS dest_store',
-                'm_reason.reason_name AS reason',
-                't_out.out_date',
-                'm_condition.condition_name',
-                'table_registrasi_asset.serial_number',
-                't_out.out_desc',
-                't_out.is_confirm',
-                't_out.updated_at',
-                't_out.created_at'
-            )
-            ->leftJoin('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
-            ->leftJoin('table_registrasi_asset', 't_out_detail.asset_id', '=', 'table_registrasi_asset.id')
-            ->leftJoin(DB::raw('miegacoa_keluhan.master_resto AS from_location'), 't_out.from_loc', '=', 'from_location.id')
-            ->leftJoin(DB::raw('miegacoa_keluhan.master_resto AS dest_location'), 't_out.dest_loc', '=', 'dest_location.id')
-            ->leftJoin('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
-            ->leftJoin('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-            ->leftJoin('m_uom', 't_out_detail.uom', '=', 'm_uom.uom_id')
-            ->leftJoin('m_condition', 't_out_detail.condition', '=', 'm_condition.condition_id')
-            ->get();
+        $query = DB::table('t_out_detail AS a')
+                    ->select(
+                        'a.asset_tag',
+                        'a.out_id',
+                        'c.appr_1_user',
+                        'c.appr_1_date',
+                        'c.appr_2_user',
+                        'c.appr_2_date',
+                        'c.appr_3_user',
+                        'c.appr_3_date',
+                        'd.asset_model',
+                        'a.qty',
+                        'e.uom_name',
+                        'f.name_store_street AS lokasi_asal',
+                        'g.name_store_street AS lokasi_akhir',
+                        'h.condition_name',
+                        'a.serial_number',
+                        'i.reason_name',
+                        'c.create_date',
+                        'j.approval_name',
+                        'c.confirm_date',
+                        'c.out_date'
+                    )
+                    ->leftJoin('table_registrasi_asset AS b', 'b.register_code', '=', 'a.asset_tag')
+                    ->leftJoin('t_out AS c', 'c.out_id', '=', 'a.out_id')
+                    ->leftJoin('m_assets AS d', 'd.asset_id', '=', 'b.asset_name')
+                    ->leftJoin('m_uom AS e', 'e.uom_id', '=', 'b.satuan')
+                    ->leftJoin('miegacoa_keluhan.master_resto AS f', 'f.id', '=', 'c.from_loc')
+                    ->leftJoin('miegacoa_keluhan.master_resto AS g', 'g.id', '=', 'c.dest_loc')
+                    ->leftJoin('m_condition AS h', 'h.condition_id', '=', 'a.condition')
+                    ->leftJoin('m_reason AS i', 'i.reason_id', '=', 'c.reason_id')
+                    ->leftJoin('mc_approval AS j', 'j.approval_id', '=', 'c.is_confirm')
+                    ->where('a.out_id', 'like', 'AM%');
+                    if ($this->request->filled('start_date') && $this->request->filled('end_date')) {
+                        $query->whereBetween('c.out_date', [
+                            $this->request->input('start_date') . ' 00:00:00',
+                            $this->request->input('end_date') . ' 23:59:59'
+                        ]);
+                    }
 
-        $dataWithFormatted = $DataMutasiStock->map(function ($item, $index) {
-            $item = (array) $item;
-
-            return [
-                'No' => $index + 1,
-                'Movement Id' => $item['out_id'],
-                'User Create' => $item['create_by'],
-                'Transfer Code' => $item['tf_code'],
-                'Approval 1 User' => $item['appr_1_user'],
-                'Approval 1 Date' => $item['appr_1_date'],
-                'Approval 2 User' => $item['appr_2_user'],
-                'Approval 2 Date' => $item['appr_2_date'],
-                'Approval 3 User' => $item['appr_3_user'],
-                'Approval 3 Date' => $item['appr_3_date'],
-                'Asset Tag' => $item['register_code'],
-                'Asset Name' => $item['asset_model'],
-                'Quantity' => $item['qty'],
-                'Satuan' => $item['uom_name'],
-                'From Location' => $item['from_store'],
-                'To Location' => $item['dest_store'],
-                'Reason Name' => $item['reason'],
-                'Transfer Date' => $item['out_date'],
-                'Condition' => $item['condition_name'],
-                'Serial No.' => $item['serial_number'],
-                'Reason' => $item['out_desc'],
-                'Confirmation' => ($item['is_confirm'] == 3) ? 'Yes' : 'No',
-                'Confirmation Date' => $item['updated_at'],
-                'Created At' => $item['created_at'],
-            ];
-        });
-
-        return collect($dataWithFormatted);
+        return collect($query->get());
     }
 
     public function headings(): array
     {
         return [
-            'No',
-            'Movement Id',
-            'User Create',
-            'Transfer Code',
+            'Asset Tag',
+            'Transfer Number',
             'Approval 1 User',
             'Approval 1 Date',
             'Approval 2 User',
             'Approval 2 Date',
             'Approval 3 User',
             'Approval 3 Date',
-            'Asset Tag',
             'Asset Name',
             'Quantity',
             'Satuan',
             'From Location',
-            'To Location',
-            'Reason Name',
-            'Transfer Date',
+            'Destination Location',
             'Condition',
             'Serial No.',
-            'Reason',
+            'Reason Name',
+            'Transfer Date',
             'Confirmation',
             'Confirmation Date',
             'Created At'
         ];
     }
 }
+

@@ -352,176 +352,183 @@
             @include('layouts.sidebar')
             <!-- Page Sidebar Ends-->
             <div class="page-body">
-                <div class="card p-5">
-                <!-- Container-fluid starts-->
-                <br>
-                <h3><b>Edit Data Asset Movement</b></h3>
 
-
-
-                <div class="modal fade" id="searchRegistData" tabindex="-1" role="dialog"
-                    aria-labelledby="searchRegistDataLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-xl" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-
+                <div class="container-fluid">
+                    <div class="page-title mt-4">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <h3>Edit Data Asset Movement</h3>
                             </div>
-                            <div class="modal-body">
-                                <table id="assetTable" class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Register Code</th>
-                                            <th>Asset Name</th>
-                                            <th>Type</th>
-                                            <th>Category</th>
-                                            <th>Condition</th>
-                                            <th>Width</th>
-                                            <th>Height</th>
-                                            <th>Depth</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
+                            <div class="col-sm-6">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a>
+                                    </li>
+                                    <li class="breadcrumb-item">ASMI</li>
+                                    <li class="breadcrumb-item active">Request Movement Out Name List</li>
+                                    <li class="breadcrumb-item active">Edit Data Asset Movement</li>
+                                </ol>
                             </div>
                         </div>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     </div>
                 </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="modal fade" id="searchRegistData" tabindex="-1" role="dialog"
+                            aria-labelledby="searchRegistDataLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-xl" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
 
-                <br>
-                <div class="container-fluid">
-                    <div class="section">
-                        <div class="form-group">
-                            <form action="{{ url('/asset-transfer/request-moveout/update', $moveOutAssets->out_id) }}"
-                                method="POST">
-                                @csrf
-                                @method('PUT')
-                                <div class="row">
-                                    <input type="hidden" id="out_id" value="{{ $moveOutAssets->out_id }}">
-                                    <!-- <input type="hidden" id="out_det_id" value="{{ $moveOutAssets->out_det_id }}"> -->
-                                    <div class="col-sm-12 pb-3">
-                                        <label for="out_date">Tanggal Movement Out:</label>
-                                        <input type="date" name="out_date" id="out_date" class="form-control"
-                                            value="{{ $moveOutAssets->out_date }}" required>
                                     </div>
-                                    <div class="col-sm-12 pb-3">
-                                        <label for="from_loc">Lokasi Asal:</label>
-                                        <!-- Visible input for name_store_street -->
-                                        <input type="text" id="from_loc" class="form-control" readonly>
-                                        <!-- Hidden input for id -->
-                                        <input type="hidden" id="from_loc_id" name="from_loc_id">
+                                    <div class="modal-body">
+                                        <table id="assetTable" class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Register Code</th>
+                                                    <th>Asset Name</th>
+                                                    <th>Type</th>
+                                                    <th>Category</th>
+                                                    <th>Condition</th>
+                                                    <th>Width</th>
+                                                    <th>Height</th>
+                                                    <th>Depth</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
                                     </div>
+                                </div>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            </div>
+                        </div>
 
-                                    <div class="col-sm-12 pb-3">
-                                        <label for="dest_loc">Lokasi Tujuan:</label>
-                                        <select name="dest_loc" id="dest_loc" class="form-control" required>
-                                            <option value="{{ $moveOutAssets->dest_loc }}">
-                                                {{ $moveOutAssets->destination_location }}</option>
-                                        </select>
-                                    </div>
+                        <br>
+                        <div class="container-fluid pb-5">
+                            <div class="section">
+                                <div class="form-group">
+                                    <form id="moveout-form"
+                                        action="{{ url('/asset-transfer/request-moveout/update', $moveOutAssets->out_id) }}"
+                                        method="POST">
+                                        @csrf
+                                        @method('PUT')
+                                        <div class="row">
+                                            <input type="hidden" id="out_id"
+                                                value="{{ $moveOutAssets->out_id }}">
+                                            <!-- <input type="hidden" id="out_det_id" value="{{ $moveOutAssets->out_det_id }}"> -->
+                                            <div class="col-sm-6 pb-3">
+                                                <label for="out_date">Tanggal Movement Out:</label>
+                                                <input type="date" name="out_date" id="out_date"
+                                                    class="form-control" value="{{ $moveOutAssets->out_date }}"
+                                                    required readonly>
+                                            </div>
+                                            <div class="col-sm-6 pb-3">
+
+                                            </div>
+                                            <div class="col-sm-6 pb-3">
+                                                <label for="from_loc">Lokasi Asal:</label>
+                                                <input type="text" class="form-control" value="{{ $moveOutAssets->from_location }}" readonly>
+                                                <input type="hidden" name="from_loc" value="{{ $moveOutAssets->from_loc }}">
+                                            </div>
+
+                                            <div class="col-sm-6 pb-3">
+                                                <label for="dest_loc">Lokasi Tujuan:</label>
+                                                <input type="text" class="form-control" value="{{ $moveOutAssets->destination_location }}" readonly>
+                                                <input type="hidden" name="dest_loc" value="{{ $moveOutAssets->dest_loc }}">
+                                            </div>
+                                            <div class="col-sm-6 pb-3">
+                                                <label for="out_desc">Deskripsi Movement Out:</label>
+                                                <input type="text" name="out_desc" id="out_desc"
+                                                    class="form-control" value="{{ $moveOutAssets->out_desc }}"
+                                                    required>
+                                            </div>
+                                            <div class="col-sm-6 pb-3">
+                                                <label for="reason_id">Alasan Movement Out:</label>
+                                                <select name="reason_id" id="reason_id" class="form-control"
+                                                    required>
+                                                    @foreach ($reasons as $reason)
+                                                        <option value="{{ $reason->reason_id }}"
+                                                            @if ($reason->reason_id == $moveOutAssets->reason_id) selected @endif>
+                                                            {{ $reason->reason_name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
 
 
-
-                                    <div class="col-sm-12 pb-3">
-                                        <label for="out_desc">Deskripsi Movement Out:</label>
-                                        <input type="text" name="out_desc" id="out_desc" class="form-control"
-                                            value="{{ $moveOutAssets->out_desc }}" required>
-                                    </div>
-                                    <div class="col-sm-12 pb-3">
-                                        <label for="reason_id">Alasan Movement Out:</label>
-                                        <select name="reason_id" id="reason_id" class="form-control" required>
-                                            @foreach ($reasons as $reason)
-                                                <option value="{{ $reason->reason_id }}"
-                                                    @if ($reason->reason_id == $moveOutAssets->reason_id) selected @endif>
-                                                    {{ $reason->reason_name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-
-                                    <div id="assetFieldsContainer">
-                                        Field Asset Pertama
-                                        <div class="asset-fields">
-                                            <div class="row">
-                                                <div class="col-sm-4">
-                                                    <label for="asset_id">Data Asset:</label>
-                                                    <select name="asset_id[]" id="asset_id"
-                                                        class="form-control asset-select" required>
-                                                        <option value="">Pilih Asset</option>
-                                                        @foreach ($assets as $asset)
-                                                            <option value="{{ $asset->id }}">
-                                                                {{ $asset->asset_model }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                                <div class="col-sm-4">
-                                                    <label for="merk">Merk:</label>
-                                                    <input type="text" name="merk_display[]" class="form-control" readonly>
-                                                    <input type="hidden" name="merk[]">
-                                                </div>
-                                                <div class="col-sm-4">
-                                                    <label for="qty">Quantity:</label>
-                                                    <input type="text" name="qty[]" id="qty"
-                                                        class="form-control" readonly>
-                                                </div>
-                                                <div class="col-sm-3">
-                                                    <label for="satuan">Satuan:</label>
-                                                    <input type="text" name="satuan_display[]" class="form-control" readonly>
-                                                    <input type="hidden" name="satuan[]">
-                                                </div>
-                                                <div class="col-sm-3">
-                                                    <label for="serial_number">Serial Number:</label>
-                                                    <input type="text" name="serial_number[]" id="serial_number"
-                                                        class="form-control" readonly>
-                                                </div>
-                                                <div class="col-sm-3">
-                                                    <label for="register_code">Register Code:</label>
-                                                    <input type="text" name="register_code[]" id="register_code"
-                                                        class="form-control" readonly>
-                                                </div>
-                                                <div class="col-sm-3">
-                                                    <label for="condition_id_0">Kondisi Asset:</label>
-                                                    <select name="condition_id[]" id="condition_id_0"
-                                                        class="form-control" required>
-                                                        <option value="">Pilih Kondisi</option>
-                                                        @foreach ($conditions as $condition)
-                                                            <option value="{{ $condition->condition_id }}">
-                                                                {{ $condition->condition_name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                                <div class="col-sm-3">
-                                                    <label>Image:</label>
-                                                    <input type="file" name="image[]"
-                                                        class="form-control image-input" accept="image/*">
-                                                    <div class="selected-file-name"></div>
-                                                </div>
-                                                <br><br><br><br>
-                                                <div class="row mb-3">
-                                                    <div class="col-sm-3">
-                                                        <label for="image">Image/Gambar Barang Data di dalam
-                                                            database:</label>
-                                                        <div class="container-image"></div>
+                                            @foreach ($assets as $asset)
+                                                <div id="assetFieldsContainer">
+                                                    <div class="asset-fields">
+                                                        <div class="row">
+                                                            <div class="col-sm-3 pb-3">
+                                                                <label for="asset_id">Data Asset:</label>
+                                                                <input type="text" class="form-control" value="{{ $asset->asset_tag }}" readonly>
+                                                                    <input type="hidden" name="det_id[{{ $asset->id }}]" value="{{ $asset->id }}">
+                                                            </div>
+                                                            <div class="col-sm-3 pb-3">
+                                                                <label for="asset_id">Data Asset:</label>
+                                                                <input type="text" class="form-control" value="{{ $asset->asset_model }}" readonly>
+                                                            </div>
+                                                            <div class="col-sm-3 pb-3">
+                                                                <label for="merk">Merk:</label>
+                                                                <input type="text" class="form-control" value="{{ $asset->brand_name }}" readonly>
+                                                            </div>
+                                                            <div class="col-sm-3 pb-3">
+                                                                <label for="qty">Quantity:</label>
+                                                                <input type="text" class="form-control" value="{{ $asset->qty }}" readonly>
+                                                            </div>
+                                                            <div class="col-sm-3 pb-3">
+                                                                <label for="satuan">Satuan:</label>
+                                                                <input type="text" class="form-control" value="{{ $asset->uom_name }}" readonly>
+                                                            </div>
+                                                            <div class="col-sm-3 pb-3">
+                                                                <label for="serial_number">Serial Number:</label>
+                                                                <input type="text" class="form-control" value="{{ $asset->serial_number }}" readonly>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <label for="condition_id_0">Kondisi Asset:</label>
+                                                                <select name="condition_id[{{ $asset->id }}]" class="form-select" required>
+                                                                    <option value="">Pilih Kondisi</option>
+                                                                    @foreach ($conditions as $condition)
+                                                                        @if ($asset->condition == $condition->condition_id)
+                                                                            <option value="{{ $condition->condition_id }}" selected>
+                                                                            {{ $condition->condition_name }}</option>
+                                                                        @else
+                                                                            <option value="{{ $condition->condition_id }}">
+                                                                            {{ $condition->condition_name }}</option>
+                                                                        @endif
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <label>Image:</label>
+                                                                <input type="file" name="image[{{ $asset->id }}]" class="form-control image-input" accept="image/*">
+                                                                <div class="selected-file-name"></div>
+                                                            </div>
+                                                            <br><br><br><br>
+                                                            <div class="row mb-3">
+                                                                <div class="col-sm-3">
+                                                                    <label for="image">Image/Gambar Barang Data di dalam
+                                                                        database:</label>
+                                                                    <a target="_blank" href="/storage/{{ $asset->image }}">
+                                                                        <img src="/storage/{{ $asset->image }}" width="300">
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <button type="button"
-                                                class="btn btn-success btn-add-asset mt-2">+</button>
-                                            <button type="button"
-                                                class="btn btn-danger btn-remove-asset mt-2">-</button>
-                                        </div>
-                                    </div>
+                                        @endforeach
                                 </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                    <button type="submit" id="submit-btn" class="btn btn-primary ms-2">Submit</button>
+                                </div>
+                                </form>
+                            </div>
                         </div>
-                        <div class="btn-submit-form">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                            <button type="submit" id="submit-btn" class="btn btn-primary">Submit</button>
-                        </div>
-                        </form>
                     </div>
                 </div>
-            </div>
             </div>
             <!-- Container-fluid Ends-->
 
@@ -608,656 +615,46 @@
     <!-- Plugin used-->
 </body>
 
-
 <script>
-    $(document).on('change', '.image-input', function() {
-        const file = this.files[0];
-        const $parent = $(this).closest('.col-sm-3');
+    const formElement = document.getElementById('moveout-form');
+    const submitBtn = document.getElementById('submit-btn');
 
-        if (file) {
-            // Show the selected file name
-            $parent.find('.selected-file-name').text('Selected: ' + file.name);
-        } else {
-            $parent.find('.selected-file-name').text('');
-        }
-    });
-</script>
+    submitBtn.addEventListener('click', function(e) {
+        e.preventDefault();
 
-<script>
-    $.ajax({
-        url: '/api/get-location',
-        method: 'GET',
-        success: function(response) {
-            if (response) {
-                // Display the name_store_street in the visible input
-                $('#from_loc').val(response.name_store_street);
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: 'Pastikan data yang diisi sudah benar.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, kirim!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formData = new FormData(formElement);
 
-                // Store the id in the hidden input
-                $('#from_loc_id').val(response.id);
-
-
-
-            } else {
-                console.warn('Location data not found.');
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('AJAX Error: ' + error);
-        }
-    });
-</script>
-
-
-<script>
-    $(document).ready(function() {
-
-        function initializeAssetSelect2(element) {
-            $(element).select2({
-                placeholder: 'Pilih Asset',
-                allowClear: true,
-                width: '100%',
-                ajax: {
-                    url: '/api/get-data-assets',
-                    type: 'GET',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function(params) {
-                        return {
-                            search: params.term
-                        };
+                // Kirim via AJAX
+                $.ajax({
+                    url: formElement.action,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
                     },
-                    processResults: function(data) {
-                        return {
-                            results: $.map(data, function(item) {
-                                return {
-                                    id: item.id,
-                                    text: item.asset_name
-                                };
-                            })
-                        };
+                    success: function(response) {
+                        Swal.fire('Sukses!', 'Data berhasil dikirim.', 'success')
+                            .then(() => {
+                                window.location.href = '/asset-transfer/request-moveout';
+                            });
                     },
-                    cache: true
-                }
-            }).on('select2:clear', function() {
-                var $parent = $(this).closest('.asset-fields');
-                $parent.find('input').val('');
-            });
-        }
-
-        function initializeConditionSelect2(element) {
-            $(element).select2({
-                placeholder: 'Pilih Kondisi',
-                allowClear: true,
-                width: '100%'
-            });
-        }
-
-        // Function to create a fresh asset field
-        function createFreshAssetField() {
-            // Clone the template
-            const $template = $('.asset-fields').first();
-            const $newField = $template.clone();
-
-            // Generate unique ID
-            const uniqueId = 'asset_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-
-            // Reset and update all form elements
-            $newField.find('input').each(function() {
-                $(this).val('');
-                $(this).attr('id', $(this).attr('id') + '_' + uniqueId);
-            });
-
-            // Clear and update asset select
-            const $assetSelect = $newField.find('.asset-select');
-            $assetSelect.empty();
-            $assetSelect.attr('id', 'asset_select_' + uniqueId);
-            $assetSelect.removeData();
-            $assetSelect.removeClass('select2-hidden-accessible');
-            $assetSelect.find('option').remove();
-
-            // Clear and update condition select
-            const $conditionSelect = $newField.find('select[name="condition_id[]"]');
-            $conditionSelect.attr('id', 'condition_' + uniqueId);
-            $conditionSelect.val('');
-            $conditionSelect.removeData();
-            $conditionSelect.removeClass('select2-hidden-accessible');
-
-            // Remove any existing select2 containers
-            $newField.find('.select2-container').remove();
-            $newField.find('.image-input').val('');
-            $newField.find('.selected-file-name').text('');
-
-            return $newField;
-        }
-
-
-
-        // Initialize existing fields
-        $(document).ready(function() {
-            $('.asset-select').each(function() {
-                initializeAssetSelect2(this);
-            });
-
-            $('select[name="condition_id[]"]').each(function() {
-                initializeConditionSelect2(this);
-            });
-        });
-
-        // Handle asset selection change
-        $(document).on('change', '.asset-select', function() {
-            const assetId = $(this).val();
-            const $parent = $(this).closest('.asset-fields');
-
-            if (!assetId) {
-                $parent.find('input').val('');
-                $parent.find('.selected-file-name').text('');
-                return;
-            }
-
-            $.ajax({
-                url: '/api/get-asset-details/' + assetId,
-                type: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    $parent.find('input[name="merk_display[]"]').val(data.brand_name);
-                    $parent.find('input[name="merk[]"]').val(data.brand_id);
-                    $parent.find('input[name="qty[]"]').val(data.qty);
-                    $parent.find('input[name="satuan_display[]"]').val(data.uom_name);
-                    $parent.find('input[name="satuan[]"]').val(data.uom_id);
-                    $parent.find('input[name="serial_number[]"]').val(data.serial_number ||
-                        '');
-                    $parent.find('input[name="register_code[]"]').val(data.register_code ||
-                        '');
-                    //         if (data.image) {
-                    //     const fileName = data.image.split('/').pop(); // Extract filename from the path
-                    //     $parent.find('.selected-file-name').text('Current: ' + fileName);
-                    // }
-                },
-            });
-        });
-
-        // Add new asset field
-        $(document).on('click', '.btn-add-asset', function() {
-            // Create fresh field
-            const $newField = createFreshAssetField();
-
-            // Append the new field
-            $('#assetFieldsContainer').append($newField);
-
-            // Initialize Select2 on new fields
-            initializeAssetSelect2($newField.find('.asset-select'));
-            initializeConditionSelect2($newField.find('select[name="condition_id[]"]'));
-        });
-
-        // Remove asset field
-        $(document).on('click', '.btn-remove-asset', function() {
-            if ($('#assetFieldsContainer .asset-fields').length > 1) {
-                const $field = $(this).closest('.asset-fields');
-                // Destroy Select2 instances before removing
-                $field.find('.select2-hidden-accessible').select2('destroy');
-                $field.remove();
-            } else {
-                alert('At least one asset field must remain.');
+                    error: function(xhr) {
+                        Swal.fire('Gagal', 'Terjadi kesalahan: ' + xhr.responseText, 'error');
+                    }
+                });
             }
         });
-        $('form').on('submit', function(e) {
-            e.preventDefault();
-
-            // Implement proper validation
-            let isValid = true;
-
-            // Check required fields
-            $(this).find('[required]').each(function() {
-                if (!$(this).val()) {
-                    isValid = false;
-                    $(this).addClass('is-invalid');
-                } else {
-                    $(this).removeClass('is-invalid');
-                }
-            });
-
-            // Validate location
-            const fromLocId = $('#from_loc_id').val();
-            if (!fromLocId) {
-                isValid = false;
-                alert('Please select a source location.');
-            }
-
-            if (!isValid) {
-                alert('Please fill in all required fields and select a location.');
-                return false;
-            }
-
-            // Collect form data
-            var formData = new FormData(this);
-
-            // Submit form via AJAX
-            $.ajax({
-                url: $(this).attr('action'),
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    alert('Data submitted successfully');
-                    window.location.href = '/asset-transfer/request-moveout';
-                },
-                error: function(xhr) {
-                    alert('Error submitting form: ' + xhr.responseText);
-                }
-            });
-        });
-
-
-
-    });
-</script>
-
-
-
-<script>
-    $(document).ready(function() {
-        const table = $('#assetTable').DataTable({
-            processing: true,
-            serverSide: false,
-            ajax: {
-                url: '/api/ajaxGetDataRegistAsset/{{ $user->location_now }}',
-                type: 'GET'
-            },
-            columns: [{
-                    data: 'register_code'
-                },
-                {
-                    data: 'asset_name'
-                },
-                {
-                    data: 'type_asset'
-                },
-                {
-                    data: 'category_asset'
-                },
-                {
-                    data: 'condition'
-                },
-                {
-                    data: 'width'
-                },
-                {
-                    data: 'height'
-                },
-                {
-                    data: 'depth'
-                },
-
-            ]
-        });
-
-        // Handle row click event
-        $('#assetTable tbody').on('click', 'tr', function() {
-            const rowData = table.row(this).data(); // Get row data
-
-            if (!rowData) {
-                alert('No data found for this row.');
-                return;
-            }
-
-            const $newField = createFreshAssetField();
-
-            $newField.find('select.asset-select').html(
-                `<option value="${rowData.id}" selected>${rowData.asset_name}</option>`);
-            $newField.find('input[name="merk_display[]"]').val(rowData.merk);
-            $newField.find('input[name="merk[]"]').val(rowData.brand_id)
-            $newField.find('input[name="qty[]"]').val(rowData.qty);
-            $newField.find('input[name="satuan_display[]"]').val(rowData.satuan);
-            $newField.find('input[name="satuan[]"]').val(rowData.uom_id);
-            $newField.find('input[name="serial_number[]"]').val(rowData.serial_number);
-            $newField.find('input[name="register_code[]"]').val(rowData.register_code);
-            $newField.find('input[name="image[]"]').val(rowData.image);
-
-            // Append the new field
-            $('#assetFieldsContainer').append($newField);
-
-            // Initialize Select2 for new fields
-            initializeAssetSelect2($newField.find('.asset-select'));
-            initializeConditionSelect2($newField.find('select[name="condition_id[]"]'));
-
-            // Close modal
-            $('#searchRegistData').modal('hide');
-        });
-
-        function createFreshAssetField() {
-            // Clone the template
-            const $template = $('.asset-fields').first();
-            const $newField = $template.clone();
-
-            // Generate unique ID
-            const uniqueId = 'asset_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-
-            // Reset and update all form elements
-            $newField.find('input').each(function() {
-                $(this).val('');
-                $(this).attr('id', $(this).attr('id') + '_' + uniqueId);
-            });
-
-            // Clear and update asset select
-            const $assetSelect = $newField.find('.asset-select');
-            $assetSelect.empty();
-            $assetSelect.attr('id', 'asset_select_' + uniqueId);
-            $assetSelect.removeData();
-            $assetSelect.removeClass('select2-hidden-accessible');
-            $assetSelect.find('option').remove();
-
-            // Clear and update condition select
-            const $conditionSelect = $newField.find('select[name="condition_id[]"]');
-            $conditionSelect.attr('id', 'condition_' + uniqueId);
-            $conditionSelect.val('');
-            $conditionSelect.removeData();
-            $conditionSelect.removeClass('select2-hidden-accessible');
-
-            // Remove any existing select2 containers
-            $newField.find('.select2-container').remove();
-
-            return $newField;
-        }
-
-
-
-    });
-</script>
-
-
-<script>
-    $(document).ready(function() {
-        // Load initial data if in edit mode
-        const outId = $('#out_id').val(); // Assuming you have a hidden input with out_id
-
-        if (outId) {
-            $.ajax({
-                url: `/api/get-out-details/${outId}`,
-                type: 'GET',
-                success: function(response) {
-                    // Clear existing fields except the first template
-                    $('#assetFieldsContainer .asset-fields:not(:first)').remove();
-
-                    // Loop through each detail record and create fields
-                    response.forEach((detail, index) => {
-                        let $assetField;
-
-                        if (index === 0) {
-                            // Use the existing first field
-                            $assetField = $('.asset-fields').first();
-                        } else {
-                            // Create new fields for additional records
-                            $assetField = createFreshAssetField();
-                            $('#assetFieldsContainer').append($assetField);
-                        }
-
-                        // Populate the fields
-                        populateAssetField($assetField, detail);
-                    });
-
-                    // Initialize Select2 for all fields
-                    $('.asset-select').each(function() {
-                        initializeAssetSelect2($(this));
-                    });
-
-                    $('select[name="condition_id[]"]').each(function() {
-                        initializeConditionSelect2($(this));
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error loading details:', error);
-                    alert('Failed to load asset details');
-                }
-            });
-        }
-
-        function populateAssetField($field, detail) {
-
-            const $assetSelect = $field.find('.asset-select');
-            const assetOption = new Option(detail.asset_model, detail.asset_id, true, true);
-            $assetSelect.append(assetOption).trigger('change');
-
-            $field.find('input[name="merk_display[]"]').val(detail.brand_name);
-            $field.find('input[name="merk[]"]').val(detail.brand_id);
-            $field.find('input[name="qty[]"]').val(detail.qty);
-            $field.find('input[name="satuan_display[]"]').val(detail.uom_name);
-            $field.find('input[name="satuan[]"]').val(detail.uom_id);
-            $field.find('input[name="serial_number[]"]').val(detail.serial_number);
-            $field.find('input[name="register_code[]"]').val(detail.register_code);
-
-            const $imageContainer = $field.find('.container-image');
-
-            // Clear existing images
-            $imageContainer.find('img.img-thumbnail').remove();
-            $imageContainer.find('input[name="existing_image[]"]').remove();
-
-            // Check if image path exists and is valid
-            if (detail.image && detail.image.trim() !== '') {
-                // Construct full image URL
-                const imageUrl = `/storage/app/public/${detail.image}`;
-
-                // Check if the image is already present in the container
-                const existingImage = $imageContainer.find(`img[src="${imageUrl}"]`);
-
-                if (existingImage.length === 0) {
-                    // Create image preview with error handling
-                    const $imagePreview = $('<img>', {
-                        src: imageUrl,
-                        class: 'img-thumbnail mt-2',
-                        style: 'max-width: 800px; max-height: 800px;',
-                        alt: 'Asset Image'
-                    });
-
-                    // Add error handling for image loading
-                    $imagePreview.on('error', function() {
-                        console.warn('Failed to load image:', imageUrl);
-                        $(this).replaceWith('<p class="text-danger">Image not found</p>');
-                    });
-
-                    // Create a hidden input to store the existing image path
-                    const $hiddenImageInput = $('<input>', {
-                        type: 'hidden',
-                        name: 'existing_image[]',
-                        value: detail.image
-                    });
-
-                    // Append preview and hidden input
-                    $imageContainer.append($imagePreview);
-                    $imageContainer.append($hiddenImageInput);
-                } else {
-                    console.log('Image already present for this asset field:', imageUrl);
-                }
-            } else {
-                // Handle the case where there's no image
-                const existingWarning = $imageContainer.find('p.text-warning');
-                if (existingWarning.length === 0) {
-                    $imageContainer.append('<p class="text-warning">No image available</p>');
-                }
-            }
-            const $conditionSelect = $field.find('select[name="condition_id[]"]');
-
-            // Check if the option with the condition_id already exists
-            const existingOption = $conditionSelect.find(`option[value="${detail.condition}"]`);
-
-            if (!existingOption.length) {
-                // Create a new option with condition_name as text and condition as value (which is condition_id)
-                const conditionOption = new Option(detail.condition_name, detail.condition, true, true);
-                conditionOption.disabled = false;
-
-                $conditionSelect.append(conditionOption).trigger('change');
-            }
-
-        }
-
-
-        // Handle add new asset field button
-        $('.btn-add-asset').on('click', function() {
-            const $newField = createFreshAssetField();
-            $('#assetFieldsContainer').append($newField);
-
-            // Initialize Select2 for new fields
-            initializeAssetSelect2($newField.find('.asset-select'));
-            initializeConditionSelect2($newField.find('select[name="condition_id[]"]'));
-        });
-
-        $(document).on('click', '.btn-remove-asset', function() {
-            if ($('#assetFieldsContainer .asset-fields').length > 1) {
-                const $field = $(this).closest('.asset-fields');
-                // Destroy Select2 instances before removing
-                $field.find('.select2-hidden-accessible').select2('destroy');
-                $field.remove();
-            } else {
-                alert('At least one asset field must remain.');
-            }
-        });
-
-
-
-    });
-</script>
-
-
-<script>
-    $(document).ready(function() {
-
-
-        $('.asset-select').each(function() {
-            initializeAssetSelect2(this);
-        });
-
-        $('select[name="condition_id[]"]').each(function() {
-            initializeConditionSelect2(this);
-        });
-
-        // Handle add new asset field
-        $('.btn-add-asset').on('click', function() {
-            const $newField = createFreshAssetField();
-            $('#assetFieldsContainer').append($newField);
-
-            // Initialize Select2 for new fields
-            initializeAssetSelect2($newField.find('.asset-select'));
-            initializeConditionSelect2($newField.find('select[name="condition_id[]"]'));
-
-            // Move the add button to the new field
-            $(this).appendTo($newField);
-        });
-
-        $(document).on('click', '.btn-remove-asset', function() {
-            if ($('#assetFieldsContainer .asset-fields').length > 1) {
-                const $field = $(this).closest('.asset-fields');
-                // Destroy Select2 instances before removing
-                $field.find('.select2-hidden-accessible').select2('destroy');
-                $field.remove();
-            } else {
-                alert('At least one asset field must remain.');
-            }
-        });
-    });
-
-    function createFreshAssetField() {
-        // Clone the template
-        const $template = $('.asset-fields').first();
-        const $newField = $template.clone();
-
-        // Generate unique ID
-        const uniqueId = 'asset_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-
-        // Reset and update all form elements
-        $newField.find('input').each(function() {
-            $(this).val('');
-            $(this).attr('id', $(this).attr('id') + '_' + uniqueId);
-        });
-
-        // Clear and update asset select
-        const $assetSelect = $newField.find('.asset-select');
-        $assetSelect.empty();
-        $assetSelect.attr('id', 'asset_select_' + uniqueId);
-        $assetSelect.removeData();
-        $assetSelect.removeClass('select2-hidden-accessible');
-        $assetSelect.find('option').remove();
-
-        // Clear and update condition select
-        const $conditionSelect = $newField.find('select[name="condition_id[]"]');
-        $conditionSelect.attr('id', 'condition_' + uniqueId);
-        $conditionSelect.val('');
-        $conditionSelect.removeData();
-        $conditionSelect.removeClass('select2-hidden-accessible');
-
-        // Remove any existing select2 containers
-        $newField.find('.select2-container').remove();
-
-        return $newField;
-    }
-
-    function initializeAssetSelect2(element) {
-        $(element).select2({
-            placeholder: 'Pilih Asset',
-            allowClear: true,
-            width: '100%',
-            ajax: {
-                url: '/api/get-data-assets',
-                type: 'GET',
-                dataType: 'json',
-                delay: 250,
-                data: function(params) {
-                    return {
-                        search: params.term
-                    };
-                },
-                processResults: function(data) {
-                    return {
-                        results: $.map(data, function(item) {
-                            return {
-                                id: item.id,
-                                text: item.asset_model
-                            };
-                        })
-                    };
-                },
-                cache: true
-            }
-        }).on('select2:clear', function() {
-            var $parent = $(this).closest('.asset-fields');
-            $parent.find('input').val('');
-        });
-    }
-
-    function initializeConditionSelect2(element) {
-        $(element).select2({
-            placeholder: 'Pilih Kondisi',
-            allowClear: true,
-            width: '100%'
-        });
-    }
-
-    $('#dest_loc').select2({
-        placeholder: 'Pilih Lokasi Tujuan', // Placeholder text
-        allowClear: true, // Allow clearing the selection
-        ajax: {
-            url: '/api/get-dest-locations', // API endpoint to fetch locations
-            type: 'GET', // HTTP method
-            dataType: 'json', // Data format
-            delay: 250, // Delay to prevent rapid requests
-            data: function(params) {
-                return {
-                    search: params.term // Pass the search term to the backend
-                };
-            },
-            processResults: function(data) {
-                // Transform the response to Select2 format
-                return {
-                    results: $.map(data, function(item) {
-                        return {
-                            id: item.id, // Value to be sent to the server
-                            text: item.name_store_street // Label shown to the user
-                        };
-                    })
-                };
-            },
-            cache: true
-        },
-        minimumInputLength: 0 // Require at least 1 character for search
     });
 </script>
 

@@ -83,10 +83,11 @@ class ConfirmAsset extends Controller
             return response()->json(['status' => 'error', 'message' => 'MoveOut not found.'], 404);
         }
 
-        $moveout->is_confirm = $request->is_confirm;
+        $moveout->confirm_date = Carbon::now();
 
         // Update `t_out_detail` quantities based on confirmation
         if ($request->is_confirm == 3) {
+            $moveout->is_confirm = 3;
             $details = DB::table('t_out_detail')->where('out_id', $id)->get();
             foreach ($details as $detail) {
                 $newQtyContinue = max(0, $detail->qty_continue - $detail->qty_continue);
@@ -98,6 +99,7 @@ class ConfirmAsset extends Controller
         
                 DB::table('table_registrasi_asset')->where('register_code', $detail->asset_tag)->update([
                     'qty' => 1,
+                    'status_asset' => 1,
                     'location_now' => $moveout->dest_loc
                 ]);
         
@@ -106,6 +108,8 @@ class ConfirmAsset extends Controller
                     'from_loc' => $moveout->from_loc,
                     'end_date' => Carbon::now(),
                     'dest_loc' => $moveout->dest_loc,
+                    'reason' => $moveout->reason_id,
+                    'description' => $moveout->out_desc,
                     'register_code' => $detail->asset_tag,
                     'out_id' => $id,
                 ]);
@@ -139,6 +143,7 @@ class ConfirmAsset extends Controller
                     DB::table('table_registrasi_asset')->where('register_code', $table->register_code)
                     ->update([
                         'location_now' => $moveout->from_loc,
+                        'status_asset' => 1,
                         'qty' => 1
                     ]);
                 }

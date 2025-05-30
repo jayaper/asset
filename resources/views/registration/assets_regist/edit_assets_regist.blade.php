@@ -219,22 +219,27 @@
                         <li class="profile-nav onhover-dropdown p-0 me-0">
                             <div class="d-flex profile-media"><img class="b-r-50"
                                     src="{{ asset('assets/images/dashboard/profile.jpg') }}">
+                                <?php $session = session(); ?>
+                                <div class="flex-grow-1"><span>{{ Auth::user()->username }}</span>
+                                    <p class="mb-0 font-roboto">{{ Auth::user()->role }}<i
+                                            class="middle fa fa-angle-down"></i></p>
+                                </div>
 
                             </div>
                             <ul class="profile-dropdown onhover-show-div">
                                 <li><a href="user-profile.html"><i data-feather="user"></i><span>Account </span></a>
                                 </li>
-                                <!-- <li><a href="email_inbox.html"><i data-feather="mail"></i><span>Inbox</span></a></li>
-                  <li><a href="kanban.html"><i data-feather="file-text"></i><span>Taskboard</span></a></li> -->
-                                <>
-                                    <form id="logout-form" action="{{ url('logout') }}" method="POST"
-                                        style="display: none;">
-                                        @csrf
-                                        <li>
-                                            <button id="logoutBtn"><i data-feather="log-out"> </i><span>Log
-                                                    Out</span></button>
-                                        </li>
-                                    </form>
+                                <li>
+                                    <a href="{{ route('logout') }}"
+                                        onclick="event.preventDefault();
+                                        document.getElementById('logout-form').submit();">
+                                        <i data-feather="log-out"></i><span>Log Out</span>
+                                    </a>
+                                </li>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                    class="d-none">
+                                    @csrf
+                                </form>
                             </ul>
                         </li>
                     </ul>
@@ -257,12 +262,24 @@
             @include('layouts.sidebar')
             <!-- Page Sidebar Ends-->
             <div class="page-body">
-                <!-- Container-fluid starts-->
-                <br>
-                <div class="card">
-                    <div class="card-header">
-                        <h3><b>Edit Data Registrasi Asset</b></h3>
+                <div class="container-fluid" >
+                    <div class="page-title mt-4">
+                        <div class="row" >
+                        <div class="col-sm-6">
+                            <h3>Edit Data Registrasi Asset</h3>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a></li>
+                            <li class="breadcrumb-item">ASMI</li>
+                            <li class="breadcrumb-item">Assets Registration </li>
+                            <li class="breadcrumb-item active">Edit Data Registrasi Asset </li>
+                            </ol>
+                        </div>
+                        </div>
                     </div>
+                </div>
+                <div class="card">
                     <div class="card-body">
                         <form action="{{ url('/registration/update-assets-registration/' . $asset->id) }}"
                             method="POST">
@@ -386,6 +403,18 @@
                                         @foreach ($restos as $resto)
                                             <option value="{{ $resto->id }}"
                                                 @if (old('register_location', $asset->master_resto_id) == $resto->id) selected @endif>
+                                                {{ $resto->name_store_street }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="col-sm-6 mb-3">
+                                    <label for="lokasi_sekarang">Location Now :</label>
+                                    <select name="location_now" id="lokasi_sekarang" class="form-control">
+                                        @foreach ($restos as $resto)
+                                            <option value="{{ $resto->id }}"
+                                                @if (old('location_now', $asset->lokasi_sekarang) == $resto->id) selected @endif>
                                                 {{ $resto->name_store_street }}
                                             </option>
                                         @endforeach

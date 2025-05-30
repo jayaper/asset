@@ -27,8 +27,8 @@ class Resto extends Controller
             )
             ->leftjoin('miegacoa_keluhan.master_city AS b', 'b.id', '=', 'a.kode_city')
             ->leftjoin('miegacoa_keluhan.master_regional AS c', 'c.id', '=', 'a.id_regional')
-            ->orderBy('id', 'ASC')
-            ->paginate(25);
+            ->orderBy('kode_city', 'ASC')
+            ->get();
         
         return view('master_data.resto', compact('datas', 'countresto', 'cities', 'regions'));
     }
