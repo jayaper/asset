@@ -337,7 +337,7 @@
         <div class="card-body">
             <form action="{{ url('/moveout/update', $moveOutAssets->out_id) }}" method="POST">
                 @csrf
-                @method('PUT')
+                {{-- @method('PUT') --}}
 
                 <!-- Hidden Field -->
                 <input type="hidden" id="out_id" value="{{ $moveOutAssets->out_id }}">

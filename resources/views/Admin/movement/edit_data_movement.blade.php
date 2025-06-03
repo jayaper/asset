@@ -351,7 +351,7 @@
             <div class="form-group">
                 <form action="{{route('moveout.update', $moveOutAssets->out_id) }}" method="POST">
                     @csrf
-                    @method('PUT')
+                    {{-- @method('PUT') --}}
               <div class="row">
               <input type="hidden" id="out_id" value="{{ $moveOutAssets->out_id }}">
               <!-- <input type="hidden" id="out_det_id" value="{{ $moveOutAssets->out_det_id }}"> -->

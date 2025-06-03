@@ -377,7 +377,7 @@
                                             </div>
                                             <form id="updatePermissionForm">
                                                 @csrf
-                                                @method('PUT')
+                                                {{-- @method('PUT') --}}
                                                 <input type="hidden" name="id" id="edit_id">
                                                 <div class="modal-body">
                                                     <div class="row">
@@ -716,7 +716,7 @@
 
             $.ajax({
                 url: '/admin/users/edit/' + $('#id').val(),
-                method: 'PUT',
+                method: 'POST',
                 data: $(this).serialize(), // Serialize all form data
                 success: function(response) {
                     if (response.status === 'success') {

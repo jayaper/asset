@@ -378,7 +378,7 @@
                                     <form id="moveout-form" action="{{ url('disposal/request-disposal/update_data_disposal', $moveOutAssets->out_id) }}"
                                         method="POST">
                                         @csrf
-                                        @method('PUT')
+                                        {{-- @method('PUT') --}}
                                         <div class="row">
                                             <div class="col-sm-6">
                                                 <div class="form-group">

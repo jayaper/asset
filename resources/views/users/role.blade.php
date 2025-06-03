@@ -380,7 +380,7 @@
                                             </div>
                                             <form id="updateForm">
                                                 @csrf
-                                                @method('PUT') <!-- Method override untuk PUT -->
+                                                {{-- @method('PUT') --}} <!-- Method override untuk PUT -->
                                                 <div class="modal-body">
                                                     <div class="row">
                                                         <div class="col-sm-12">
@@ -779,7 +779,7 @@
 
             $.ajax({
                 url: '/admin/users/edit/' + $('#id').val(),
-                method: 'PUT',
+                method: 'POST',
                 data: $(this).serialize(), // Serialize all form data
                 success: function(response) {
                     if (response.status === 'success') {

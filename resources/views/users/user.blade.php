@@ -381,7 +381,7 @@
                                             </div>
                                             <form id="updateForm">
                                                 @csrf
-                                                @method('PUT') <!-- Method override untuk PUT -->
+                                                {{-- @method('PUT') --}} <!-- Method override untuk PUT -->
                                                 <div class="modal-body">
                                                     <div class="row">
                                                         <div class="col-sm-12 pb-2">
@@ -1214,7 +1214,7 @@
 
           $.ajax({
               url: '/user/update-user/' + $('#id').val(),
-              method: 'PUT',
+              method: 'POST',
               data: $(this).serialize(),
               success: function(response) {
                   if (response.status === 'success') {

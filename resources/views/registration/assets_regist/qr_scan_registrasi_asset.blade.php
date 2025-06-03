@@ -42,8 +42,10 @@
         <h1 style="text-align: center;">Asset Details</h1>
         
         <div class="qr-code">
-            <img src="{{ asset('/public/qrcodes/' . $asset->register_code . '.png') }}" alt="QR Code for {{ $asset->register_code }}">
+            <img src="{{ $qrCodeUrl }}" alt="QR Code for {{ $asset->register_code }}">
+
         </div>
+        
 
         <div class="asset-details">
             <p><strong>Data Registrasi Code : </strong> {{ $asset->register_code }}</p>
@@ -53,10 +55,10 @@
             <p><strong>Dimensions           : </strong> {{ $asset->width }} x {{ $asset->height }} x {{ $asset->depth }}</p>
             <!-- Add other asset details as needed -->
         </div>
-
-        <a href="{{ url('/admin/registrasi_asset/lihat_data_registrasi_asset') }}" class="back-button">
+{{-- 
+        <a href="{{ url('/registration/lihat_data_registrasi_asset') }}" class="back-button">
             Back to Asset List
-        </a>
+        </a> --}}
     </div>
 </body>
 </html>

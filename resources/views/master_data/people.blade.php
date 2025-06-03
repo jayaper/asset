@@ -335,7 +335,7 @@
                                       </div>
                                       <form id="updateForm">
                                           @csrf
-                                          @method('PUT') <!-- Method override untuk PUT -->
+                                          {{-- @method('PUT') --}} <!-- Method override untuk PUT -->
                                           <div class="modal-body">
                                               <div class="row">
                                                   <div class="col-sm-12">
@@ -711,7 +711,7 @@
 
             $.ajax({
                 url: '/master-data/update-new-maintenance/' + $('#people_id').val(),
-                method: 'PUT', // Menggunakan PUT untuk memperbarui data
+                method: 'POST', // Menggunakan PUT untuk memperbarui data
                 data: $(this).serialize(), // Serialisasi data form untuk dikirim
                 success: function(response) {
                     if(response.status === 'success') {

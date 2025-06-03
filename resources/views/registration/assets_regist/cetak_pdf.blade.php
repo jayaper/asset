@@ -80,7 +80,7 @@
     <div class="label-container">
         <div class="qr-section">
             @if (!empty($item->qr_code_path))
-                <img src="{{ $item->qr_code_path }}" alt="QR Code for {{ $item->asset_name }}" class="qr-code" />
+                <img src="{{ storage_path('app/public/qrcodes/'. $item->register_code . '.svg') }}" alt="QR Code for {{ $item->asset_name }}" class="qr-code" />
             @else
                 <div class="qr-code">
                     <p style="text-align: center; color: #999;">No QR code available</p>
@@ -98,6 +98,7 @@
         <div class="company">PT. Pesta Pora Abadi</div>
 
         <p class="footer-note">
+            {{-- {{ storage_path('app/public/qrcodes/'. $item->register_code . '.svg') }}<br> --}}
             Label Jangan Sampai Hilang, Rusak, atau Terhapus.<br>
             Segera Hubungi Head Office, Untuk Penerbitan Label Baru.
         </p>

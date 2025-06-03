@@ -382,7 +382,7 @@
             <div class="modal-body">
                 <form id="updateAssetForm">
                     @csrf
-                    @method('PUT')
+                    {{-- @method('PUT') --}}
                     <input type="hidden" id="assetId" name="id">
 
                     <div class="form-group">

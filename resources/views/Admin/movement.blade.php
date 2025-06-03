@@ -377,7 +377,7 @@
                                       </div>
                                       <form id="updateForm">
                                           @csrf
-                                          @method('PUT') <!-- Method override for PUT request -->
+                                          {{-- @method('PUT') --}} <!-- Method override for PUT request -->
                                           <div class="modal-body">
                                               <div class="row">
                                                   <div class="col-sm-12 mb-2">
@@ -836,7 +836,7 @@
   
           $.ajax({
               url: `/admin/moveouts/edit/${$('#out_id').val()}`,
-              method: 'PUT', // Using PUT for updating data
+              method: 'POST', // Using PUT for updating data
               data: $(this).serialize(), // Serialize form data
               success: function(response) {
                   if (response.status === 'success') {

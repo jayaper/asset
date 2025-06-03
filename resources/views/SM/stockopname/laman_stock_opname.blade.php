@@ -369,7 +369,7 @@
                                       </div>
                                       <form id="updateForm" enctype="multipart/form-data">
                                           @csrf
-                                          @method('PUT') <!-- Metode override untuk request PUT -->
+                                          {{-- @method('PUT') --}} <!-- Metode override untuk request PUT -->
                                           <div class="modal-body">
                                               <div class="row">
                                                 <div class="col-sm-12">

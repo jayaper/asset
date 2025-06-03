@@ -836,7 +836,7 @@
             }
             $.ajax({
                 url: `/admin/moveouts/edit/${$outId}`,
-                method: 'PUT',
+                method: 'POST',
                 data: $(this).serialize(),
                 success: function(response) {
                     if (response.status === 'success') {

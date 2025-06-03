@@ -307,7 +307,7 @@
                 <h5 class="card-title"><b>Stock Opname</b></h5>
                 <form action=" {{ url('/admin/stockopname/update_detail_data_stock_opname/'. $moveout->opname_id) }}" method="POST">
                 @csrf
-                @method('PUT')
+                {{-- @method('PUT') --}}
                 <input type="hidden" name="opname_id" id="opname_id" value="{{$moveout->opname_id}}">
                 <div class="row">
                     <div class="col-md-4">

@@ -361,7 +361,7 @@
                                       </div>
                                       <form id="updateForm">
                                           @csrf
-                                          @method('PUT') <!-- Metode override untuk request PUT -->
+                                          {{-- @method('PUT') --}} <!-- Metode override untuk request PUT -->
                                           <div class="modal-body">
                                               <div class="row">
                                                   <div class="col-sm-12 mb-2">
@@ -752,7 +752,7 @@ $('#updateForm').on('submit', function(e) {
         if (result.isConfirmed) {
             $.ajax({
                 url: `/admin/adjuststocks/edit/${$('#opname_id').val()}`,
-                method: 'PUT',
+                method: 'POST',
                 data: $(this).serialize(),
                 success: function(response) {
                     if (response.status === 'success') {

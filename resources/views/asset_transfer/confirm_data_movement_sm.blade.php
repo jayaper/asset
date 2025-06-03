@@ -726,7 +726,7 @@
 
                                           @csrf
 
-                                          @method('PUT') <!-- Method override untuk PUT -->
+                                          {{-- @method('PUT') --}} <!-- Method override untuk PUT -->
 
                                           <div class="modal-body">
 

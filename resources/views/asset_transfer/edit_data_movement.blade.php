@@ -410,7 +410,7 @@
                                         action="{{ url('/asset-transfer/request-moveout/update', $moveOutAssets->out_id) }}"
                                         method="POST">
                                         @csrf
-                                        @method('PUT')
+                                        {{-- @method('PUT') --}}
                                         <div class="row">
                                             <input type="hidden" id="out_id"
                                                 value="{{ $moveOutAssets->out_id }}">

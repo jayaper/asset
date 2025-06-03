@@ -438,7 +438,7 @@
                                             </div>
                                             <form id="updateForm">
                                                 @csrf
-                                                @method('PUT') <!-- Method override untuk PUT -->
+                                                {{-- @method('PUT') --}} <!-- Method override untuk PUT -->
                                                 <div class="modal-body">
                                                     <div class="row">
                                                         <div class="col-sm-12">

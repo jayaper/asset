@@ -680,7 +680,7 @@ $.ajaxSetup({
   
       $.ajax({
           url: `/admin/registrasi_asset/update_data_registrasi_asset/${assetId}`,
-          method: 'PUT',
+          method: 'POST',
           data: $(this).serialize(),
           success: function(response) {
               alert(response.message);

@@ -357,7 +357,7 @@
                                       </div>
                                       <form id="updateForm">
                                           @csrf
-                                          @method('PUT') <!-- Method override untuk PUT -->
+                                          {{-- @method('PUT') --}} <!-- Method override untuk PUT -->
                                           <div class="modal-body">
                                               <div class="row">
                                               
@@ -809,7 +809,7 @@
   
               $.ajax({
                   url: '/admin/regist/update_master_asset/' + $('#edit-asset_id').val(),
-                  method: 'PUT',
+                  method: 'POST',
                   data: $(this).serialize(),
                   success: function(response) {
                       if (response.status === 'success') {

@@ -32,10 +32,12 @@ use App\Models\Master\MasterSupplier;
 use App\Models\Master\MasterUom;
 use App\Models\Master\MasterWarranty;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class RegistrationController extends Controller
 {
@@ -85,61 +87,26 @@ class RegistrationController extends Controller
             ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
             ->leftJoin('m_warranty', 'table_registrasi_asset.warranty', '=', 'm_warranty.warranty_id')
             ->leftJoin('m_periodic_mtc', 'table_registrasi_asset.periodic_maintenance', '=', 'm_periodic_mtc.periodic_mtc_id');
-            if(Auth::User()->hasRole('SM')){
-                $dataAssets->where(function($q) {
-                    $q->where('table_registrasi_asset.location_now', Auth::user()->location_now);
-                });
-            }else if(Auth::User()->hasRole('AM')){
-                $dataAssets->where(function($q) {
-                    $q->where('restoo.kode_city', Auth::user()->location_now);
-                });
-            }else if(Auth::User()->hasRole('RM')){
-                $dataAssets->where(function($q) {
-                    $q->where('restoo.id_regional', Auth::user()->location_now);
-                });
-            }
-            
-            $dataAsset = $dataAssets->get();
+        if (Auth::User()->hasRole('SM')) {
+            $dataAssets->where(function ($q) {
+                $q->where('table_registrasi_asset.location_now', Auth::user()->location_now);
+            });
+        } else if (Auth::User()->hasRole('AM')) {
+            $dataAssets->where(function ($q) {
+                $q->where('restoo.kode_city', Auth::user()->location_now);
+            });
+        } else if (Auth::User()->hasRole('RM')) {
+            $dataAssets->where(function ($q) {
+                $q->where('restoo.id_regional', Auth::user()->location_now);
+            });
+        }
+
+        $dataAsset = $dataAssets->get();
 
 
         foreach ($dataAsset as $Asset) {
 
-            // Set data_registrasi_asset_status based on deleted_at
-
             $Asset->data_registrasi_asset_status = is_null($Asset->deleted_at) ? 'active' : 'nonactive';
-
-
-
-            // Check if asset_code is not null before generating the QR code
-
-            if (!empty($Asset->asset_code)) {
-
-                // Define the file path for the QR code
-
-                $qrCodeFileName = $Asset->asset_code . '.png';
-
-                $qrCodeFilePath = public_path('qrcodes/' . $qrCodeFileName);
-
-
-
-                // Check if the QR code already exists
-
-                if (file_exists($qrCodeFilePath)) {
-
-                    // Assign the QR code path to the asset object
-
-                    $Asset->qr_code_path = asset('public/qrcodes/' . $qrCodeFileName);
-                } else {
-
-                    // Generate the QR code and save it to the defined path if it doesn't exist
-
-                    QrCode::format('png')->size(300)->generate($Asset->asset_code, $qrCodeFilePath);
-
-                    // Assign the newly generated QR code path to the asset object
-
-                    $Asset->qr_code_path = asset('public/qrcodes/' . $qrCodeFileName);
-                }
-            }
         }
 
         return view("registration.assets_regist.index", [
@@ -147,24 +114,25 @@ class RegistrationController extends Controller
         ]);
     }
 
-    public function trackingAsset($id){
+    public function trackingAsset($id)
+    {
         $t_tracking = DB::table('asset_tracking')
-        ->select(
-            'asset_tracking.*',
-            'miegacoa_keluhan.master_resto.name_store_street as asal',
-            'des.name_store_street as menuju',
-            'r.reason_name'
-        )
-        ->leftjoin('miegacoa_keluhan.master_resto', 'asset_tracking.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
-        ->leftjoin('miegacoa_keluhan.master_resto as des', 'asset_tracking.dest_loc', '=', 'des.id')
-        ->leftjoin('m_reason AS r', 'asset_tracking.reason', '=', 'r.reason_id')
-        ->where('register_code', $id)
-        ->get()
-        ->map(function ($item) {
-            $item->start_date_formatted = Carbon::parse($item->start_date)->format('H:i, d-m-Y');
-            $item->end_date_formatted = Carbon::parse($item->end_date)->format('H:i, d-m-Y');
-            return $item;
-        });
+            ->select(
+                'asset_tracking.*',
+                'miegacoa_keluhan.master_resto.name_store_street as asal',
+                'des.name_store_street as menuju',
+                'r.reason_name'
+            )
+            ->leftjoin('miegacoa_keluhan.master_resto', 'asset_tracking.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
+            ->leftjoin('miegacoa_keluhan.master_resto as des', 'asset_tracking.dest_loc', '=', 'des.id')
+            ->leftjoin('m_reason AS r', 'asset_tracking.reason', '=', 'r.reason_id')
+            ->where('register_code', $id)
+            ->get()
+            ->map(function ($item) {
+                $item->start_date_formatted = Carbon::parse($item->start_date)->format('H:i, d-m-Y');
+                $item->end_date_formatted = Carbon::parse($item->end_date)->format('H:i, d-m-Y');
+                return $item;
+            });
         return view("registration.assets_regist.tracking_asset", [
             'trackings' => $t_tracking
         ]);
@@ -229,7 +197,7 @@ class RegistrationController extends Controller
         //             $q->where('restoo.id_regional', Auth::user()->location_now);
         //         });
         //     }
-            
+
         //     $dataAsset = $dataAssets->get();
 
 
@@ -295,18 +263,17 @@ class RegistrationController extends Controller
             // Fetch assets from the database
 
             $assets = DB::table('m_assets')
-            ->select('m_assets.*')
-            // ->select('asset_id','asset_code','asset_model','m_priority.priority_name', 'm_category.cat_name', 'm_type.type_name', 'm_uom.uom_name')
-            // ->join('m_priority', 'm_assets.priority_id', '=', 'm_priority.priority_id')
-            // ->join('m_category', 'm_assets.cat_id', '=', 'm_category.cat_id')
-            // ->join('m_type', 'm_assets.type_id', '=' , 'm_type.type_id')
-            // ->join('m_uom', 'm_assets.uom_id', '=' , 'm_uom.uom_id')
-            ->get();
+                ->select('m_assets.*')
+                // ->select('asset_id','asset_code','asset_model','m_priority.priority_name', 'm_category.cat_name', 'm_type.type_name', 'm_uom.uom_name')
+                // ->join('m_priority', 'm_assets.priority_id', '=', 'm_priority.priority_id')
+                // ->join('m_category', 'm_assets.cat_id', '=', 'm_category.cat_id')
+                // ->join('m_type', 'm_assets.type_id', '=' , 'm_type.type_id')
+                // ->join('m_uom', 'm_assets.uom_id', '=' , 'm_uom.uom_id')
+                ->get();
 
-    
+
 
             return response()->json($assets);
-
         } catch (\Exception $e) {
 
             return response()->json([
@@ -318,9 +285,7 @@ class RegistrationController extends Controller
                 'error' => $e->getMessage()
 
             ], 500);
-
         }
-
     }
 
     public function getTypeJson()
@@ -405,12 +370,13 @@ class RegistrationController extends Controller
         return response()->json($periodics); // Mengembalikan data dalam format JSON
     }
 
-    public function get() {
+    public function get()
+    {
         $assets = MasterAsset::select('asset_id', 'asset_model')
             ->where('is_active', 1)  // If you have an active status column
             ->orderBy('asset_model')
             ->get();
-        
+
         return response()->json($assets);
     }
 
@@ -419,16 +385,15 @@ class RegistrationController extends Controller
         try {
             // Fetch assets from the database
             $assets = DB::table('m_assets')
-            ->select('m_assets.*')
-            // ->select('asset_id','asset_code','asset_model','m_priority.priority_name', 'm_category.cat_name', 'm_type.type_name', 'm_uom.uom_name')
-            // ->join('m_priority', 'm_assets.priority_id', '=', 'm_priority.priority_id')
-            // ->join('m_category', 'm_assets.cat_id', '=', 'm_category.cat_id')
-            // ->join('m_type', 'm_assets.type_id', '=' , 'm_type.type_id')
-            // ->join('m_uom', 'm_assets.uom_id', '=' , 'm_uom.uom_id')
-            ->get();
+                ->select('m_assets.*')
+                // ->select('asset_id','asset_code','asset_model','m_priority.priority_name', 'm_category.cat_name', 'm_type.type_name', 'm_uom.uom_name')
+                // ->join('m_priority', 'm_assets.priority_id', '=', 'm_priority.priority_id')
+                // ->join('m_category', 'm_assets.cat_id', '=', 'm_category.cat_id')
+                // ->join('m_type', 'm_assets.type_id', '=' , 'm_type.type_id')
+                // ->join('m_uom', 'm_assets.uom_id', '=' , 'm_uom.uom_id')
+                ->get();
 
             return response()->json($assets);
-
         } catch (\Exception $e) {
 
             return response()->json([
@@ -444,36 +409,36 @@ class RegistrationController extends Controller
 
         // Validate the request data
         // dd($request->all());
-    try{
-        $validatedData = $request->validate([
-            'register_code' => 'required|string|max:255',
-            'asset_name' => 'required|string|max:255',
-            'serial_number' => 'required|string',
-            'type_asset' => 'required|string|max:255',
-            'category_asset' => 'required|string|max:255',
-            'prioritas' => 'required|string|max:255',
-            'merk' => 'required|string|max:255',
-            'qty' => 'required',
-            'satuan' => 'required|string|max:255',
-            'register_location' => 'required|string',
-            'layout' => 'required|string|max:255',
-            'register_date' => 'required',
-            'supplier' => 'required|string|max:255',
-            'condition' => 'required|string|max:255',
-            'purchase_number' => 'required|string|max:255',
-            'purchase_date' => 'required',
-            'warranty' => 'required',
-            'periodic_maintenance' => 'required',
-            'approve_status' => 'nullable|string|max:255',
-            'width' => 'nullable|int',
-            'height' => 'nullable|int',
-            'depth' => 'nullable|int',
-        ]);
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        return redirect()->back()
-        ->withErrors($e->validator)
-        ->withInput();              
-    }
+        try {
+            $validatedData = $request->validate([
+                'register_code' => 'required|string|max:255',
+                'asset_name' => 'required|string|max:255',
+                'serial_number' => 'required|string',
+                'type_asset' => 'required|string|max:255',
+                'category_asset' => 'required|string|max:255',
+                'prioritas' => 'required|string|max:255',
+                'merk' => 'required|string|max:255',
+                'qty' => 'required',
+                'satuan' => 'required|string|max:255',
+                'register_location' => 'required|string',
+                'layout' => 'required|string|max:255',
+                'register_date' => 'required',
+                'supplier' => 'required|string|max:255',
+                'condition' => 'required|string|max:255',
+                'purchase_number' => 'required|string|max:255',
+                'purchase_date' => 'required',
+                'warranty' => 'required',
+                'periodic_maintenance' => 'required',
+                'approve_status' => 'nullable|string|max:255',
+                'width' => 'nullable|int',
+                'height' => 'nullable|int',
+                'depth' => 'nullable|int',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
+        }
 
 
 
@@ -526,93 +491,26 @@ class RegistrationController extends Controller
         $location_now = $validatedData['location_now'] ?? $register_location;
 
 
-
-        // Generate the URL that the QR code will link to, based on your route
-
+        // Generate URL
         $url = route('assets.details', ['register_code' => $register_code]);
 
+        // Nama file QR
+        $fileName = $register_code . '.svg';
+        $storagePath = 'qrcodes/' . $fileName;
 
+        // Jika file belum ada, buat
+        if (!Storage::disk('public')->exists($storagePath)) {
+            $qrCodeImage = QrCode::format('svg')
+                ->size(300)
+                ->margin(2)
+                ->generate($url); // URL ke halaman detail asset
 
-        // Generate the QR Code with the URL
-
-        $qrCode = QrCode::format('png')->size(300)->generate($url);
-
-
-
-        // Create an image resource from the QR code
-
-        $qrImage = imagecreatefromstring($qrCode);
-
-        if ($qrImage === false) {
-
-            dd('gagal');
-            return response()->json(['status' => 'error', 'message' => 'Failed to create image from QR code.'], 500);
+            // Simpan QR code ke storage/public/qrcodes
+            Storage::disk('public')->put($storagePath, $qrCodeImage);
         }
 
-
-
-        // Define the color based on the asset status
-
-        $squareColor = match ($prioritas) {
-
-            'HIGH' => imagecolorallocate($qrImage, 255, 0, 0), // Red
-
-            'MEDIUM' => imagecolorallocate($qrImage, 255, 255, 0), // Yellow
-
-            'LOW' => imagecolorallocate($qrImage, 0, 0, 255), // Blue
-
-            default => imagecolorallocate($qrImage, 0, 0, 0), // Default to black
-
-        };
-
-
-
-        // Calculate position for the square
-
-        $squareSize = 50; // Size of the small square
-
-        $xPosition = (imagesx($qrImage) / 2) - ($squareSize / 2);
-
-        $yPosition = (imagesy($qrImage) / 2) - ($squareSize / 2);
-
-
-
-        // Draw the square on the QR code
-
-        imagefilledrectangle($qrImage, $xPosition, $yPosition, $xPosition + $squareSize, $yPosition + $squareSize, $squareColor);
-
-
-
-        // Define the file path for the QR code
-
-        $filePath = public_path('/qrcodes');
-
-        $fileName = $register_code . '.png';
-
-
-
-        // Create the directory if it doesn't exist
-
-        if (!File::exists($filePath)) {
-
-            File::makeDirectory($filePath, 0755, true);
-        }
-
-
-
-        if (!File::exists($filePath)) {
-
-            File::makeDirectory($filePath, 0755, true);
-        }
-
-
-
-        // Save the modified QR code image
-
-        imagepng($qrImage, $filePath . '/' . $fileName);
-
-        imagedestroy($qrImage); // Free
-
+        // Buat URL publik
+        $qrCodeUrlPath = asset('public/storage/qrcodes/' . $fileName);
 
 
         // Store asset data in the database
@@ -670,7 +568,7 @@ class RegistrationController extends Controller
 
         // Update the asset's qr_code_path before saving
 
-        $asset->qr_code_path = asset('public/qrcodes/' . $fileName);
+        $asset->qr_code_path = $qrCodeUrlPath;
 
 
 
@@ -680,140 +578,6 @@ class RegistrationController extends Controller
             return redirect()->back()->with('error', 'Gagal Input Ke database');
         }
     }
-    
-
-
-
-
-
-    // public function UpdateDataRegistrasiAsset(Request $request, $id) {
-
-    //     // Validate input
-
-    //     $request->validate([
-
-    //         'register_code' => 'required|string|max:255',
-
-    //         'asset_name' => 'required|string|max:255',
-
-    //         'serial_number' => 'required|string|max:255',
-
-    //         'type_asset' => 'required|string|max:255',
-
-    //         'category_asset' => 'required|string|max:255',
-
-    //         'prioritas' => 'required|string|max:255',
-
-    //         'merk' => 'required|string|max:255',
-
-    //         'qty' => 'required|integer',
-
-    //         'satuan' => 'required|string|max:255',
-
-    //         'register_location' => 'required|string|max:255',
-
-    //         'layout' => 'required|string|max:255',
-
-    //         'register_date' => 'required|date',
-
-    //         'supplier' => 'required|string|max:255',
-
-    //         'status' => 'required|string|max:255',
-
-    //         'purchase_number' => 'required|string|max:255',
-
-    //         'purchase_date' => 'required|date',
-
-    //         'warranty' => 'required|string|max:255',
-
-    //         'periodic_maintenance' => 'required|string|max:255',
-
-    //         'qr_code_path' => 'required|string|max:255',
-
-    //     ]);
-
-
-
-    //     // Find the asset using the provided ID
-
-    //     $registrasiAsset = MasterRegistrasiModel::find($id);
-
-
-
-    //     // Check if the asset exists
-
-    //     if (!$registrasiAsset) {
-
-    //         return response()->json(['status' => 'error', 'message' => 'Asset not found.'], 404);
-
-    //     }
-
-
-
-    //     // Update data using the validated request data
-
-    //     try {
-
-    //         $registrasiAsset->update($request->only([
-
-    //             'register_code',
-
-    //             'asset_name',
-
-    //             'serial_number',
-
-    //             'type_asset',
-
-    //             'category_asset',
-
-    //             'prioritas',
-
-    //             'merk',
-
-    //             'qty',
-
-    //             'satuan',
-
-    //             'register_location',
-
-    //             'layout',
-
-    //             'register_date',
-
-    //             'supplier',
-
-    //             'status',
-
-    //             'purchase_number',
-
-    //             'purchase_date',
-
-    //             'warranty',
-
-    //             'periodic_maintenance',
-
-    //             'qr_code_path'
-
-    //         ])); // Use $request->only() directly for update
-
-
-
-    //         return response()->json([
-
-    //             'status' => 'success',
-
-    //             'message' => 'Asset updated successfully.'
-
-    //         ]);
-
-    //     } catch (\Exception $e) {
-
-    //         return response()->json(['status' => 'error', 'message' => 'Error updating asset: ' . $e->getMessage()], 500);
-
-    //     }
-
-    // }
-
 
 
 
@@ -822,15 +586,15 @@ class RegistrationController extends Controller
     {
         $registrasiAsset = MasterRegistrasiModel::find($id);
 
-        if(is_null($registrasiAsset->deleted_at)){
+        if (is_null($registrasiAsset->deleted_at)) {
             $registrasiAsset->deleted_at = Carbon::now();
-        }else{
+        } else {
             $registrasiAsset->deleted_at = null;
         }
-        
-        if($registrasiAsset->save()){
+
+        if ($registrasiAsset->save()) {
             return response()->json(['status' => 'Success', 'message' => 'Data Asset Berhasil Terhapus']);
-        }else{
+        } else {
             return response()->json(['status' => 'Error', 'message' => 'Data Gagal dihapus']);
         }
     }
@@ -923,7 +687,7 @@ class RegistrationController extends Controller
         $asset = MasterRegistrasiModel::findOrFail($id);
 
         // Update the asset data
-        
+
         $updateData = $request->all();
         $asset->update($updateData);
 
@@ -1171,73 +935,40 @@ class RegistrationController extends Controller
 
                     $periodicMaintenanceDataId = $periodicMaintenanceData->periodic_mtc_id;
 
-                    // $tOutData = DB::table('t_out')
-                    //     ->where('t_out')
-
-
-
-
-                    // Generate QR Code (your existing QR code generation logic)
+                    // Generate URL
                     $url = route('assets.details', ['register_code' => $registerCode]);
-                    $qrCode = QrCode::format('png')->size(300)->generate($url);
 
-                    $qrImage = imagecreatefromstring($qrCode);
-                    if ($qrImage === false) {
-                        throw new \Exception('Failed to create image from QR code.');
+                    // Nama file QR
+                    $fileName = $registerCode . '.svg';
+                    $storagePath = 'qrcodes/' . $fileName;
+
+                    // Jika file belum ada, buat
+                    if (!Storage::disk('public')->exists($storagePath)) {
+                        $qrCodeImage = QrCode::format('svg')
+                            ->size(300)
+                            ->margin(2)
+                            ->generate($url); // URL ke halaman detail asset
+
+                        // Simpan QR code ke storage/public/qrcodes
+                        Storage::disk('public')->put($storagePath, $qrCodeImage);
                     }
 
-                    // QR Code color logic based on priority
-                    $squareColor = match ($priorityAsset) {
-                        'HIGH' => imagecolorallocate($qrImage, 255, 0, 0), // Red
-                        'MEDIUM' => imagecolorallocate($qrImage, 255, 255, 0), // Yellow
-                        'LOW' => imagecolorallocate($qrImage, 0, 0, 255), // Blue
-                        default => imagecolorallocate($qrImage, 0, 0, 0), // Default to black
-                    };
-
-                    // Calculate position for the square
-                    $squareSize = 50; // Size of the small square
-                    $xPosition = (imagesx($qrImage) / 2) - ($squareSize / 2);
-                    $yPosition = (imagesy($qrImage) / 2) - ($squareSize / 2);
-
-                    // Draw the square on the QR code
-                    imagefilledrectangle(
-                        $qrImage,
-                        $xPosition,
-                        $yPosition,
-                        $xPosition + $squareSize,
-                        $yPosition + $squareSize,
-                        $squareColor
-                    );
-
-                    // Define the file path for the QR code
-                    $filePath = public_path('/qrcodes');
-                    $fileName = $registerCode . '.png';
-
-                    // Create the directory if it doesn't exist
-                    if (!File::exists($filePath)) {
-                        File::makeDirectory($filePath, 0755, true);
-                    }
-
-                    // Save the modified QR code image
-                    imagepng($qrImage, $filePath . '/' . $fileName);
-                    imagedestroy($qrImage); // Free up memory
-
-                    // Store the URL path instead of the server path
-                    $qrCodeUrlPath = asset('public/qrcodes/' . $fileName);
+                    // Buat URL publik
+                    $qrCodeUrlPath = asset('public/storage/qrcodes/' . $fileName);
 
 
-                    // Check if the register_location already matches dest_loc in t_out
+                    // ------------------------------------
+                    // Check register_location vs dest_loc
                     $existingConflict = DB::table('table_registrasi_asset')
                         ->join('t_out', DB::raw('table_registrasi_asset.register_location COLLATE utf8mb4_unicode_ci'), '=', DB::raw('t_out.dest_loc COLLATE utf8mb4_unicode_ci'))
                         ->where(DB::raw('table_registrasi_asset.register_location COLLATE utf8mb4_unicode_ci'), $registerLocationAsset)
                         ->exists();
 
-
                     if ($existingConflict) {
                         throw new \Exception("Data tidak bisa di upload karena barang sudah di movement");
                     }
 
-                    // Proceed with the insertion
+                    // Insert data
                     DB::table('table_registrasi_asset')->insert([
                         'register_code' => $registerCode,
                         'asset_name' => $assetNameDataId,
@@ -1264,14 +995,6 @@ class RegistrationController extends Controller
                         'qr_code_path' => $qrCodeUrlPath,
                         'created_at' => now(),
                     ]);
-
-
-                    // // When inserting into m_assets, use the priority_code
-                    // DB::table('m_assets')->insert([
-                    //     'asset_model' => $assetName,
-                    //     'asset_quantity' => $quantityAsset,
-                    //     'prioritas' => $priorityId // Use the priority_code here
-                    // ]);
                 }
             }, $request->file('file'));
 
@@ -1510,30 +1233,14 @@ class RegistrationController extends Controller
             ->where('table_registrasi_asset.register_code', $register_code)
             ->first();
 
-        if (!$asset) {
-            return redirect()->route('assets.details')->with('error', 'Asset not found.');
-        }
-
-        // Generate QR code
-        $qrCodeFileName = $register_code . '.png';
-        $qrCodeFilePath = public_path('qrcodes/' . $qrCodeFileName);
-        $qrCodeUrl = asset('qrcodes/' . $qrCodeFileName);
-
-        // Generate QR code if it doesn't exist
-        if (!file_exists($qrCodeFilePath)) {
-            // Create qrcodes directory if it doesn't exist
-            if (!file_exists(public_path('qrcodes'))) {
-                mkdir(public_path('qrcodes'), 0777, true);
+            if (!$asset) {
+                return redirect()->route('assets.details')->with('error', 'Asset not found.');
             }
 
-            // Generate QR code with asset details
-            QrCode::format('png')
-                ->size(200)
-                ->generate($register_code, $qrCodeFilePath);
-        }
+            $qrCodeUrl = $asset->qr_code_path;
 
         // Pass both asset data and QR code URL to the view
-        return view('Admin.registrasi_asset.qr_scan_registrasi_asset', compact('asset', 'qrCodeUrl'));
+        return view('registration.assets_regist.qr_scan_registrasi_asset', compact('asset', 'qrCodeUrl'));
     }
 
     public function approve(Request $request)
@@ -1589,21 +1296,8 @@ class RegistrationController extends Controller
             ->where('table_registrasi_asset.register_code', $registerCode)
             ->get();
 
-        // Ensure QR codes are base64 encoded for embedding
-        foreach ($data as $item) {
-            if (!empty($item->registrasi_code)) {
-                $qrCodeFileName = $item->registrasi_code . '.png';
-                $qrCodeFilePath = public_path('qrcodes/' . $qrCodeFileName);
 
-                // Generate QR code if it doesn't exist
-                if (!file_exists($qrCodeFilePath)) {
-                    QrCode::format('png')->size(10)->generate($item->registrasi_code, $qrCodeFilePath);
-                }
 
-                // Convert QR code image to base64
-                $item->qr_code_path = 'data:image/png;base64,' . base64_encode(file_get_contents($qrCodeFilePath));
-            }
-        }
 
         // Load a view and pass the data to it, with landscape orientation
         $pdf = Pdf::loadView('registration.assets_regist.cetak_pdf', compact('data'))
@@ -1652,55 +1346,16 @@ class RegistrationController extends Controller
                 ->leftJoin('m_periodic_mtc', 'table_registrasi_asset.periodic_maintenance', '=', 'm_periodic_mtc.periodic_mtc_id')
                 ->where('table_registrasi_asset.register_code', $id)
                 ->first();
-
-            // $asset = MasterRegistrasiModel::findOrFail($id);
-
-            // Generate the QR code (without the square)
-            $qrCode = QrCode::format('png')->size(300)->generate($asset->register_code);
-
-            // Create an image from the QR code
-            $qrImage = imagecreatefromstring($qrCode);
-            if ($qrImage === false) {
-                throw new \Exception('Failed to create image from QR code.');
-            }
-
-            // Define the color for the square based on asset priority
-            $priorityAsset = $asset->prioritas;
-            $squareColor = match ($priorityAsset) {
-                'HIGH' => imagecolorallocate($qrImage, 255, 0, 0), // Red
-                'MEDIUM' => imagecolorallocate($qrImage, 255, 255, 0), // Yellow
-                'LOW' => imagecolorallocate($qrImage, 0, 0, 255), // Blue
-                default => imagecolorallocate($qrImage, 0, 0, 0), // Black
-            };
-
-            // Draw the square in the center of the QR code
-            $squareSize = 50;
-            $xPosition = (imagesx($qrImage) / 2) - ($squareSize / 2);
-            $yPosition = (imagesy($qrImage) / 2) - ($squareSize / 2);
-            imagefilledrectangle($qrImage, $xPosition, $yPosition, $xPosition + $squareSize, $yPosition + $squareSize, $squareColor);
-
-            // Define the file path for the QR code
-            $filePath = public_path('/qrcodes');
-            $fileName = $asset->register_code . '.png';
-
-            // Create the directory if it doesn't exist
-            if (!File::exists($filePath)) {
-                File::makeDirectory($filePath, 0755, true);
-            }
-
-            // Save the modified QR code image
-            imagepng($qrImage, $filePath . '/' . $fileName);
-            imagedestroy($qrImage);
         } catch (ModelNotFoundException $e) {
             return redirect()->back()->with('error', 'Data Registrasi Asset not found.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
 
-        return view('Admin.registrasi_asset.detail_data_asset', compact('asset'));
+        return view('registration.assets_regist.detail_data_asset', compact('asset'));
     }
 
-    public function HalamanApproval() 
+    public function HalamanApproval()
 
     {
 
@@ -1712,7 +1367,7 @@ class RegistrationController extends Controller
 
         $uomies = DB::table('m_uom')->select('uom_id', 'uom_name')->get();
 
-        
+
 
         return view("registration.approval_ops_sm.index", [
 
@@ -1725,7 +1380,6 @@ class RegistrationController extends Controller
             'uomies' => $uomies,
 
         ]);
-
     }
 
     public function AddDataAssets(Request $request)
@@ -1821,9 +1475,6 @@ class RegistrationController extends Controller
                 'redirect_url' => url('/admin/regist')
 
             ]);
-
-            
-
         } catch (\Exception $e) {
 
             return response()->json([
@@ -1833,8 +1484,6 @@ class RegistrationController extends Controller
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
 
             ]);
-
         }
-
     }
 }

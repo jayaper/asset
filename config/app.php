@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://asset.miegacoan.co.id'),
+    'url' => env('APP_URL', 'https://asset.miegacoan.id'),
 
     /*
     |--------------------------------------------------------------------------

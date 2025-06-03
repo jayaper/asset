@@ -409,7 +409,7 @@
                 <form id="updateAssetForm" >
                 <div class="row">
                     @csrf
-                    @method('PUT')
+                    {{-- @method('PUT') --}}
                     <input type="hidden" id="assetId" name="id">
 
                     <div class="col-sm-6">
