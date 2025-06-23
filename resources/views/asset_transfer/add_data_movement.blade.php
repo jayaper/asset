@@ -351,37 +351,6 @@
                 <script class="empty-template" type="text/x-handlebars-template"><div class="EmptyMessage">Your search turned up 0 results. This most likely means the backend is down, yikes!</div></script>
             </div>
         </div>
-        <div class="modal fade" id="searchRegistData" tabindex="-1" role="dialog"
-            aria-labelledby="searchRegistDataLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="searchRegistDataLabel">Search data Register Asset</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <table id="assetTable" class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Register Code</th>
-                                    <th>Asset Name</th>
-                                    <th>Type</th>
-                                    <th>Category</th>
-                                    <th>Condition</th>
-                                    <th>Width</th>
-                                    <th>Height</th>
-                                    <th>Depth</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            </div>
-        </div>
         <!-- Page Header Ends                              -->
         <!-- Page Body Start-->
         <div class="page-body-wrapper">
@@ -419,6 +388,39 @@
 
                         <!-- Card Body -->
                         <div class="card-body">
+                            <div class="modal fade" id="searchRegistData" tabindex="-1" role="dialog"
+                                aria-labelledby="searchRegistDataLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-xl" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="searchRegistDataLabel">Search data Register
+                                                Asset</h5>
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <table id="assetTable" class="table table-bordered table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Register Code</th>
+                                                        <th>Asset Name</th>
+                                                        <th>Type</th>
+                                                        <th>Category</th>
+                                                        <th>Condition</th>
+                                                        <th>Width</th>
+                                                        <th>Height</th>
+                                                        <th>Depth</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                </div>
+                            </div>
                             <form action="/asset-transfer/add-request-moveout" method="post">
                                 @csrf
                                 <div class="row">
@@ -428,17 +430,20 @@
                                         <input type="date" name="out_date" id="out_date" class="form-control"
                                             required readonly>
                                     </div>
-                                    <div class="col sm-6 mb-3">
-
-                                    </div>
-
                                     <!-- Lokasi Asal -->
                                     <div class="col-sm-6 mb-3">
                                         <label for="from_loc">Lokasi Asal:</label>
                                         <input value="{{ $lokasi_user_display }}" class="form-control" readonly>
-                                        <input value="{{ $lokasi_user }}" type="hidden" name="from_loc_id" id="from_loc" class="form-control" required>
+                                        <input value="{{ $lokasi_user }}" type="hidden" name="from_loc_id"
+                                            id="from_loc" class="form-control" required>
                                         <!-- <input type="text" id="from_loc" class="form-control"> -->
                                         <!-- <input type="hidden" name="from_loc_id" id="from_loc_id"> -->
+                                    </div>
+                                    <!-- Alasan Movement Out -->
+                                    <div class="col-sm-6 mb-3">
+                                        <label for="reason_id">Alasan Movement Out:</label>
+                                        <input type="text" class="form-control" value="{{ $name_reason }}" readonly>
+                                        <input type="hidden" class="form-control" name="reason_id" value="{{ $id_reason }}" required>
                                     </div>
                                     <!-- Lokasi Tujuan -->
                                     <div class="col-sm-6 mb-3">
@@ -450,26 +455,15 @@
                                     <!-- Deskripsi Movement Out -->
                                     <div class="col-sm-6 mb-3">
                                         <label for="out_desc">Deskripsi Movement Out:</label>
-                                        <input type="text" name="out_desc" id="out_desc" class="form-control"
-                                            required>
-                                    </div>
-                                    <!-- Alasan Movement Out -->
-                                    <div class="col-sm-6 mb-3">
-                                        <label for="reason_id">Alasan Movement Out:</label>
-                                        <select name="reason_id" id="reason_id" class="form-control" required>
-                                            <option value="">Pilih Alasan</option>
-                                            @foreach ($reasons as $reason)
-                                                <option value="{{ $reason->reason_id }}">{{ $reason->reason_name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <textarea class="form-control" name="out_desc" id="out_desc" rows="5" placeholder="Description Here..."
+                                            required></textarea>
                                     </div>
                                 </div>
 
                                 <!-- Search Data Button -->
                                 <div class="mb-5 mt-3">
-                                    <button id="btn-search" class="btn btn-primary" type="button" data-toggle="modal"
-                                        data-target="#searchRegistData">
+                                    <button id="btn-search" class="btn btn-primary" type="button"
+                                        data-toggle="modal" data-target="#searchRegistData">
                                         <i class="fa fa-search"></i> Search Data
                                     </button>
                                 </div>
@@ -480,8 +474,9 @@
                                         <div class="row">
                                             <div class="col-sm-3 mb-3">
                                                 <label for="asset_id">Data Asset:</label>
-                                                <select name="asset_id[]" id="asset_id"
-                                                    class="form-control asset-select" required></select>
+                                                <input type="text" name="asset_display[]" readonly
+                                                    class="form-control">
+                                                <input type="hidden" name="asset_id[]">
                                             </div>
                                             <div class="col-sm-3 mb-3">
                                                 <label for="merk">Merk:</label>
@@ -513,7 +508,7 @@
                                             <div class="col-sm-3 mb-3">
                                                 <label for="condition_id_0">Kondisi Asset:</label>
                                                 <select name="condition_id[]" id="condition_id_0"
-                                                    class="form-control" required>
+                                                    class="form-select" required>
                                                     <option value="">Pilih Kondisi</option>
                                                     @foreach ($conditions as $condition)
                                                         <option value="{{ $condition->condition_id }}">
@@ -535,7 +530,8 @@
 
                                 <!-- Submit Buttons -->
                                 <div class="text-right">
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="window.location.reload()">Refresh</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal"
+                                        onclick="window.location.reload()">Refresh</button>
                                     <button type="submit" id="submit-btn" class="btn btn-primary">Submit</button>
                                 </div>
                             </form>
@@ -636,53 +632,6 @@
     <script>
         let selectedAssetIds = [];
         $(document).ready(function() {
-            function initializeAssetSelect2(element) {
-                $(element).select2({
-                    placeholder: 'Pilih Asset',
-                    allowClear: true,
-                    width: '100%',
-                    ajax: {
-                        url: '/api/get-data-assets/{{ $user->location_now }}',
-                        type: 'GET',
-                        dataType: 'json',
-                        delay: 250,
-                        data: function(params) {
-                            return {
-                                search: params.term
-                            };
-                        },
-                        processResults: function(data) {
-                            // Filter data supaya tidak menampilkan asset yang sudah dipilih
-                            const filtered = data.filter(item => !selectedAssetIds.includes(item.id));
-                            return {
-                                results: $.map(filtered, function(item) {
-                                    return {
-                                        id: item.id,
-                                        text: item.asset_model
-                                    };
-                                })
-                            };
-                        },
-                        cache: true
-                    }
-                })
-                .on('select2:select', function(e) {
-                    const selectedId = e.params.data.id;
-                    if (!selectedAssetIds.includes(selectedId)) {
-                        selectedAssetIds.push(selectedId);
-                    }
-                });
-            }
-
-
-            function initializeConditionSelect2(element) {
-                $(element).select2({
-                    placeholder: 'Pilih Kondisi',
-                    allowClear: true,
-                    width: '100%'
-                });
-            }
-
             // Function to create a fresh asset field
             function createFreshAssetField() {
                 // Clone the template
@@ -847,13 +796,16 @@
                             processData: false,
                             contentType: false,
                             success: function(response) {
-                                Swal.fire('Sukses!', 'Data berhasil dikirim.', 'success')
+                                Swal.fire('Sukses!', 'Data berhasil dikirim.',
+                                        'success')
                                     .then(() => {
-                                        window.location.href = '/asset-transfer/request-moveout';
+                                        window.location.href =
+                                            '/asset-transfer/request-moveout';
                                     });
                             },
                             error: function(xhr) {
-                                Swal.fire('Gagal', 'Terjadi kesalahan: ' + xhr.responseText, 'error');
+                                Swal.fire('Gagal', 'Terjadi kesalahan: ' + xhr
+                                    .responseText, 'error');
                             }
                         });
                     }
@@ -925,7 +877,8 @@
 
                     if (destLocId && fromLocId && destLocId === fromLocId) {
                         alert(
-                            'Data tidak bisa di input - Lokasi tujuan tidak boleh sama dengan lokasi asal');
+                            'Data tidak bisa di input - Lokasi tujuan tidak boleh sama dengan lokasi asal'
+                            );
                         $(this).val(null).trigger('change');
                         return;
                     }
@@ -939,7 +892,8 @@
                     if (destLocId && fromLocId && destLocId === fromLocId) {
                         $('#dest_loc').val(null).trigger('change');
                         alert(
-                            'Data tidak bisa di input - Lokasi tujuan tidak boleh sama dengan lokasi asal');
+                            'Data tidak bisa di input - Lokasi tujuan tidak boleh sama dengan lokasi asal'
+                            );
                     }
                 });
             });
@@ -1006,7 +960,6 @@
 
 
     <script>
-        
         $(document).ready(function() {
             const table = $('#assetTable').DataTable({
                 processing: true,
@@ -1043,7 +996,7 @@
             });
 
             // Handle row click event
-            $('#assetTable tbody').on('click', 'tr', function () {
+            $('#assetTable tbody').on('click', 'tr', function() {
                 const row = table.row(this);
                 const rowData = row.data(); // Get row data
 
@@ -1052,12 +1005,32 @@
                     return;
                 }
 
-                // Buat field baru
-                const $newField = createFreshAssetField();
+                // Cek jika ID aset sudah ada dalam form yang sudah ada
+                const existingAssetIds = $('#assetFieldsContainer').find('select.asset-select').map(
+                    function() {
+                        return $(this).val();
+                    }).get();
 
-                // Isi field dengan data
-                $newField.find('select.asset-select').html(
-                    `<option value="${rowData.id}" selected>${rowData.asset_name}</option>`);
+                // Jika ID sudah ada, tampilkan peringatan dan hentikan proses
+                if (existingAssetIds.includes(rowData.id.toString())) {
+                    alert('Data ini sudah dipilih sebelumnya.');
+                    return;
+                }
+
+                // Cari field kosong berdasarkan asset_id
+                let $newField = $('#assetFieldsContainer .asset-fields').filter(function () {
+                    return !$(this).find('input[name="asset_id[]"]').val();
+                }).first();
+
+                // Jika tidak ada field kosong, buat baru
+                if ($newField.length === 0) {
+                    $newField = createFreshAssetField();
+                    $('#assetFieldsContainer').append($newField);
+                }
+
+                // Isi data asset ke field
+                $newField.find('input[name="asset_id[]"]').val(rowData.id);
+                $newField.find('input[name="asset_display[]"]').val(rowData.asset_name);
                 $newField.find('input[name="merk_display[]"]').val(rowData.merk);
                 $newField.find('input[name="merk[]"]').val(rowData.brand_id);
                 $newField.find('input[name="qty[]"]').val(rowData.qty);
@@ -1065,13 +1038,6 @@
                 $newField.find('input[name="satuan[]"]').val(rowData.uom_id);
                 $newField.find('input[name="serial_number[]"]').val(rowData.serial_number);
                 $newField.find('input[name="register_code[]"]').val(rowData.register_code);
-
-                // Append ke form
-                $('#assetFieldsContainer').append($newField);
-
-                // Inisialisasi Select2
-                initializeAssetSelect2($newField.find('.asset-select'));
-                initializeConditionSelect2($newField.find('select[name="condition_id[]"]'));
 
                 // Hapus baris dari DataTable
                 row.remove().draw();
@@ -1118,44 +1084,45 @@
             //ini tidak dipakai
             function initializeAssetSelect2(element) {
                 $(element).select2({
-                    placeholder: 'Pilih Asset',
-                    allowClear: true,
-                    width: '100%',
-                    ajax: {
-                        url: '/api/asset-transfer/get-data-assets',
-                        type: 'GET',
-                        dataType: 'json',
-                        delay: 250,
-                        data: function(params) {
-                            return {
-                                search: params.term
-                            };
-                        },
-                        processResults: function(data) {
-                            const filteredData = data.filter(item => !selectedAssetIds.includes(item.id));
-                            return {
-                                results: $.map(filteredData, function(item) {
-                                    return {
-                                        id: item.id,
-                                        text: item.asset_model
-                                    };
-                                })
-                            };
-                        },
-                        cache: true
-                    }
-                })
-                .on('select2:select', function(e) {
-                    const selectedId = e.params.data.id;
-                    if (!selectedAssetIds.includes(selectedId)) {
-                        selectedAssetIds.push(selectedId);
-                    }
-                })
-                .on('select2:unselecting', function(e) {
-                    // user menghapus pilihannya secara manual
-                    const removedId = $(this).val();
-                    selectedAssetIds = selectedAssetIds.filter(id => id != removedId);
-                });
+                        placeholder: 'Pilih Asset',
+                        allowClear: true,
+                        width: '100%',
+                        ajax: {
+                            url: '/api/asset-transfer/get-data-assets',
+                            type: 'GET',
+                            dataType: 'json',
+                            delay: 250,
+                            data: function(params) {
+                                return {
+                                    search: params.term
+                                };
+                            },
+                            processResults: function(data) {
+                                const filteredData = data.filter(item => !selectedAssetIds.includes(item
+                                    .id));
+                                return {
+                                    results: $.map(filteredData, function(item) {
+                                        return {
+                                            id: item.id,
+                                            text: item.asset_model
+                                        };
+                                    })
+                                };
+                            },
+                            cache: true
+                        }
+                    })
+                    .on('select2:select', function(e) {
+                        const selectedId = e.params.data.id;
+                        if (!selectedAssetIds.includes(selectedId)) {
+                            selectedAssetIds.push(selectedId);
+                        }
+                    })
+                    .on('select2:unselecting', function(e) {
+                        // user menghapus pilihannya secara manual
+                        const removedId = $(this).val();
+                        selectedAssetIds = selectedAssetIds.filter(id => id != removedId);
+                    });
             }
 
 

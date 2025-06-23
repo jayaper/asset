@@ -383,7 +383,7 @@
                             <tbody>
                                 @foreach($moveouts as $moveout)
                                     <tr class="text-center">
-                                        <td>{{ $moveout->out_no }}</td>
+                                        <td>{{ $moveout->id }}</td>
                                         <td>{{ $moveout->out_date }}</td>
                                         <td>{{ $moveout->from_location }}</td>
                                         <td>{{ $moveout->dest_location }}</td>
@@ -393,7 +393,7 @@
                                         <td>{{ $moveout->approval_name }}</td>
                                         <td class="text-center">
                                             @if($moveout->appr_3 != 2 && $moveout->appr_3 != 4)
-                                                <a href="javascript:void(0);" class="edit-button" data-id="{{ $moveout->out_id }}" data-no="{{ $moveout->out_no }}" title="Edit">
+                                                <a href="javascript:void(0);" class="edit-button" data-id="{{ $moveout->out_id }}" data-no="{{ $moveout->id }}" title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 @endif
@@ -514,14 +514,14 @@
                         rows += `
                             <tr>
                                 <td>${moveout.out_id}</td> <!-- Tampilkan ID moveout -->
-                                <td>${moveout.out_no}</td> <!-- Tampilkan Nama moveout -->
+                                <td>${moveout.id}</td> <!-- Tampilkan Nama moveout -->
                                 <td>
-                                <a href="javascript:void(0);" class="edit-button" data-id="${moveout.out_id}" data-name="${moveout.out_no}" title="Edit">
+                                <a href="javascript:void(0);" class="edit-button" data-id="${moveout.out_id}" data-name="${moveout.id}" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form class="delete-form" action="{{ url('admin/moveouts/delete') }}/${moveout.out_id}" method="POST" style="display:inline;">
                                     @csrf
-                                    @method('DELETE')
+                                    {{-- @method('DELETE') --}}
                                     <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">
                                         <i class="fas fa-trash-alt" style="color: red;"></i>
                                     </button>
@@ -607,12 +607,12 @@
     <script>
         $(document).on('click', '.edit-button', function() {
             const moveoutId = $(this).data('id'); // Ambil out_id dari atribut data
-            const moveoutNo = $(this).data('no'); // Ambil out_no dari atribut data
-            const moveoutApproval = $(this).data('approval'); // Ambil out_no dari atribut data
+            const moveoutNo = $(this).data('no'); // Ambil id dari atribut data
+            const moveoutApproval = $(this).data('approval'); // Ambil id dari atribut data
 
             // Isi input dengan data
             $('#out_id').val(moveoutId);
-            $('#out_no').val(moveoutNo);
+            $('#id').val(moveoutNo);
             $('#appr_3').val(moveoutApproval);
 
             // Tampilkan modal
@@ -626,7 +626,7 @@
             $.ajax({
                 url: '/admin/apprmoveout-sdgassets/edit/' + $('#out_id').val(),
                 method: 'POST', // Menggunakan PUT untuk memperbarui data
-                data: $(this).serialize() + '&_method=PUT', // Add _method=PUT manually
+                data: $(this).serialize() + '&_method=POST', // Add _method=PUT manually
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
@@ -651,11 +651,11 @@
               // Get brand data from the clicked button
               var moveoutId = $(this).data('id');
               var moveoutNo = $(this).data('no');
-            const moveoutDate = $(this).data('date'); // Ambil out_no dari atribut data
-            const moveoutFromloc = $(this).data('from'); // Ambil out_no dari atribut data
-            const moveoutDestloc = $(this).data('dest'); // Ambil out_no dari atribut data
-            const moveoutDesc = $(this).data('desc'); // Ambil out_no dari atribut data
-            const moveoutReason = $(this).data('reason'); // Ambil out_no dari atribut data
+            const moveoutDate = $(this).data('date'); // Ambil id dari atribut data
+            const moveoutFromloc = $(this).data('from'); // Ambil id dari atribut data
+            const moveoutDestloc = $(this).data('dest'); // Ambil id dari atribut data
+            const moveoutDesc = $(this).data('desc'); // Ambil id dari atribut data
+            const moveoutReason = $(this).data('reason'); // Ambil id dari atribut data
               
               // Set the data into the modal
                 $('#moveout-id').text(moveoutId);
@@ -685,7 +685,7 @@
             
             $.ajax({
                 url: actionUrl, // URL dari form
-                method: 'DELETE', // Method untuk delete
+                method: 'POST', // Method untuk delete
                 data: form.serialize(), // Kirim data form
                 success: function(response) {
                     if (response.status === 'success') {

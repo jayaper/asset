@@ -179,11 +179,7 @@
                         <div class="col-sm-12">
                             <div class="card">
                                 <div class="card-header pb-0">
-                                    <h5>Assets Registration</h5><span>adalah daftar atau kumpulan aset yang dimiliki
-                                        oleh
-                                        seseorang, organisasi, atau perusahaan. Daftar ini biasanya mencakup rincian
-                                        tentang setiap aset, seperti jenis aset, nilai, lokasi, dan informasi relevan
-                                        lainnya.</span>
+                                    <h5>Assets Registration</h5><span>Adalah tempat dimana data yang telah diregistrasi atau berlokasi di wilayah tersebut, ini adalah semua data asset yang ada di wilayah anda!</span>
                                 </div>
                                 <div class="card-body">
                                     <div class="btn-showcase">
@@ -265,18 +261,6 @@
                                                     data-dismiss="modal">Close</button>
                                             </div>
                                             </form>
-                                            @if (session('success'))
-                                                <div class="p-4">
-                                                    <div class="alert alert-success">{{ session('success') }}</div>
-                                                </div>
-                                            @endif
-
-                                            @if (session('error'))
-                                                <div class="p-4">
-                                                    <div class="alert alert-danger">{{ session('error') }}</div>
-                                                </div>
-                                            @endif
-
                                         </div>
                                     </div>
                                 </div>
@@ -300,7 +284,8 @@
                                                     <th>Asset Name</th>
                                                     <th>Register Location</th>
                                                     <th>Location Now</th>
-                                                    <th>Qty</th>
+                                                    <th>Last Transaction Code</th>
+                                                    {{-- <th>Qty</th> --}}
                                                     <th>Status Asset</th>
                                                     <th>Serial Number</th>
                                                     <th>Type Asset</th>
@@ -326,14 +311,18 @@
                                                         <td>{{ $asset->asset_model }}</td>
                                                         <td>{{ $asset->name_store_street }}</td>
                                                         <td>{{ $asset->location_now }}</td>
-                                                        <td>{{ $asset->qty }}</td>
+                                                        <td>{{ $asset->last_transaction_code }}</td>
+                                                        {{-- <td>{{ $asset->qty }}</td> --}}
                                                         <td>
                                                             @if ($asset->status_asset_id == 1)
-                                                                <b class="text-success">{{ $asset->status_asset_name }}</b>
+                                                                <b
+                                                                    class="text-success">{{ $asset->status_asset_name }}</b>
                                                             @elseif($asset->status_asset_id == 2)
-                                                                <b class="text-warning">{{ $asset->status_asset_name }}</b>
+                                                                <b
+                                                                    class="text-warning">{{ $asset->status_asset_name }}</b>
                                                             @else
-                                                                <b class="text-danger">{{ $asset->status_asset_name }}</b>
+                                                                <b
+                                                                    class="text-danger">{{ $asset->status_asset_name }}</b>
                                                             @endif
                                                         </td>
                                                         <td>{{ $asset->serial_number }}</td>
@@ -369,7 +358,8 @@
                                                                 <div class="dropdown-menu"
                                                                     aria-labelledby="dropdownMenuButton{{ $asset->id }}">
                                                                     <a class="dropdown-item"
-                                                                        href="/registration/generate-pdf/{{ $asset->register_code }}">Cetak QR
+                                                                        href="/registration/generate-pdf/{{ $asset->register_code }}">Cetak
+                                                                        QR
                                                                         Code</a>
                                                                     <a class="dropdown-item"
                                                                         href="/registration/tracking-asset-registration/{{ $asset->register_code }}">Tracking
@@ -657,7 +647,7 @@
                 if (result.isConfirmed) {
                     $.ajax({
                         url: `/registration/delete-assets-registration/${assetId}`,
-                        type: 'DELETE',
+                        type: 'POST',
                         success: function(response) {
                             Swal.fire(
                                 'Berhasil!',

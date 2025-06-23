@@ -289,7 +289,7 @@
                                     <form action="{{ url('/registration/add-assets-registration') }}" method="post">
                                         @csrf
                                         <div class="row">
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="register_code">Asset Tag : </label>
                                                 <input type="text" name="register_code" id="register_code"
                                                     class="form-control" placeholder="Masukkan Kode Registrasi..."
@@ -298,7 +298,8 @@
                                                     <div class="text-danger text-sm">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-9"></div>
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="asset_name">Asset Name : </label>
                                                 <select name="asset_name" id="asset_name" class="form-control">
                                                     <option value="" selected disabled> --- Pilih Asset Name ---
@@ -308,7 +309,7 @@
                                                     <div class="text-danger text-sm">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="serial_number">Serial Number : </label>
                                                 <input value="{{ old('serial_number') }}" type="text" name="serial_number" id="serial_number"
                                                     class="form-control" placeholder="Masukkan Serial Number"
@@ -317,7 +318,7 @@
                                                     <div class="text-danger text-sm">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="type_asset">Type Asset : </label>
                                                 <select name="type_asset" id="type_asset" class="form-control">
                                                     <option value="" selected disabled>--- Pilih Type ----
@@ -327,7 +328,7 @@
                                                     <div class="text-danger text-sm">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="category_asset">Category Asset : </label>
                                                 <select name="category_asset" id="category_asset"
                                                     class="form-control">
@@ -338,7 +339,7 @@
                                                     <div class="text-danger text-sm">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="prioritas">Priority : </label>
                                                 <select name="prioritas" id="prioritas" class="form-control">
                                                     <option value="" selected disabled> --- PILIH PRIORITAS ----
@@ -348,7 +349,7 @@
                                                     <div class="text-danger text-sm">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="merk">Merk : </label>
                                                 <select name="merk" id="merk" class="form-control">
                                                     <option value="" selected disabled> --- Pilih Merk ---
@@ -358,7 +359,17 @@
                                                     <div class="text-danger text-sm">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
+                                                <label for="satuan">Satuan : </label>
+                                                <select name="satuan" id="satuan" class="form-control">
+                                                    <option value="" selected disabled> --- PILIH SATUAN ----
+                                                    </option>
+                                                </select>
+                                                @error('satuan')
+                                                    <div class="text-danger text-sm">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="qty">Quantity : </label>
                                                 <input type="number" name="qty" id="qty"
                                                     class="form-control" placeholder="Masukkan Quantity" required
@@ -369,17 +380,7 @@
                                                     <div class="text-danger text-sm">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-sm-6 mb-3">
-                                                <label for="satuan">Satuan : </label>
-                                                <select name="satuan" id="satuan" class="form-control">
-                                                    <option value="" selected disabled> --- PILIH SATUAN ----
-                                                    </option>
-                                                </select>
-                                                @error('satuan')
-                                                    <div class="text-danger text-sm">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="width">Width : </label>
                                                 <input type="number" name="width" id="width"
                                                     class="form-control" placeholder="Masukkan Width Barang" required
@@ -390,7 +391,7 @@
                                                     <div class="text-danger text-sm">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="height">Height : </label>
                                                 <input type="number" name="height" id="height"
                                                     class="form-control" placeholder="Masukkan Height Barang" required
@@ -401,7 +402,7 @@
                                                     <div class="text-danger text-sm">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="depth">Depth : </label>
                                                 <input type="number" name="depth" id="depth"
                                                     class="form-control" placeholder="Masukkan Depth Barang" required
@@ -412,7 +413,7 @@
                                                     <div class="text-danger text-sm">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="register_location">Register Location :</label>
                                                 <select name="register_location" id="register_location"
                                                     class="form-control">
@@ -422,7 +423,7 @@
                                                     <div class="text-danger text-sm">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="layout">Layout : </label>
                                                 <select name="layout" id="layout" class="form-control">
                                                     <option value="" selected disabled> --- Pilih Layout ---
@@ -432,7 +433,7 @@
                                                     <div class="text-danger text-sm">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="asset_model">Condition : </label>
                                                 <select name="condition" id="condition" class="form-control">
                                                     <option value="" selected disabled> --- Pilih Condition
@@ -442,7 +443,7 @@
                                                     <div class="text-danger text-sm">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="register_date">Register Date : </label>
                                                 <input type="date" name="register_date" id="register_date"
                                                     class="form-control" placeholder="Masukkan Register Date"
@@ -451,7 +452,7 @@
                                                     <div class="text-danger text-sm">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="supplier">Supplier : </label>
                                                 <select name="supplier" id="supplier" class="form-control">
                                                     <option value="" selected disabled> --- Pilih Supplier ---
@@ -461,7 +462,7 @@
                                                     <div class="text-danger text-sm">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="purchase_number">Purchase Number : </label>
                                                 <input value="{{ old('purchase_number') }}" type="text" name="purchase_number" id="purchase_number"
                                                     class="form-control" placeholder="Masukkan Purchase Number"
@@ -470,7 +471,7 @@
                                                     <div class="text-danger text-sm">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="purchase_date">Purchase Date : </label>
                                                 <input type="date" name="purchase_date" id="purchase_date"
                                                     class="form-control" placeholder="Masukkan Purchase Date"
@@ -481,7 +482,7 @@
                                             </div>
                                             <input type="hidden" name="approve_status" id="approve_status"
                                                 class="form-control">
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="warranty">Warranty : </label>
                                                 <select name="warranty" id="warranty" class="form-control">
                                                     <option value=""> --- PILIH WARRANTY ---- </option>
@@ -490,7 +491,7 @@
                                                     <div class="text-danger text-sm">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-sm-6 mb-3">
+                                            <div class="col-sm-3 mb-3">
                                                 <label for="periodic_maintenance">Periodic Maintenance : </label>
                                                 <select name="periodic_maintenance" id="periodic_maintenance"
                                                     class="form-control">
@@ -771,7 +772,7 @@
                     $.each(data, function(index, layout) {
                         regionSelect.append($('<option>', {
                             value: layout
-                            .layout_code, // Assuming 'id' is the unique identifier for the region
+                            .layout_id, // Assuming 'id' is the unique identifier for the region
                             text: layout
                                 .layout_name // Assuming 'name' is the display name of the region
                         }));

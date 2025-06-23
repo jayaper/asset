@@ -215,9 +215,14 @@
                                             <div class="col-md-4">
                                                 <div class="row">
                                                     <div class="col-md-8 mb-3">
-                                                        <label>Date</label>
+                                                        <label>Date (Opsional)</label>
                                                         <input type="date" name="date"
                                                             class="form-control" value="{{ request('date') }}">
+                                                    </div>
+                                                    <div class="col-md-4 mb-3">
+                                                        <label>Time (Opsional)</label>
+                                                        <input type="time" name="time"
+                                                            class="form-control" value="{{ request('time') }}">
                                                     </div>
                                                     <div class="col-md-8 mb-4">
                                                         <label>Location</label>

@@ -422,24 +422,9 @@
                                                     required readonly>
                                             </div>
                                             <div class="col-sm-6 pb-3">
-
-                                            </div>
-                                            <div class="col-sm-6 pb-3">
                                                 <label for="from_loc">Lokasi Asal:</label>
                                                 <input type="text" class="form-control" value="{{ $moveOutAssets->from_location }}" readonly>
                                                 <input type="hidden" name="from_loc" value="{{ $moveOutAssets->from_loc }}">
-                                            </div>
-
-                                            <div class="col-sm-6 pb-3">
-                                                <label for="dest_loc">Lokasi Tujuan:</label>
-                                                <input type="text" class="form-control" value="{{ $moveOutAssets->destination_location }}" readonly>
-                                                <input type="hidden" name="dest_loc" value="{{ $moveOutAssets->dest_loc }}">
-                                            </div>
-                                            <div class="col-sm-6 pb-3">
-                                                <label for="out_desc">Deskripsi Movement Out:</label>
-                                                <input type="text" name="out_desc" id="out_desc"
-                                                    class="form-control" value="{{ $moveOutAssets->out_desc }}"
-                                                    required>
                                             </div>
                                             <div class="col-sm-6 pb-3">
                                                 <label for="reason_id">Alasan Movement Out:</label>
@@ -452,6 +437,15 @@
                                                         </option>
                                                     @endforeach
                                                 </select>
+                                            </div>
+                                            <div class="col-sm-6 pb-3">
+                                                <label for="dest_loc">Lokasi Tujuan:</label>
+                                                <input type="text" class="form-control" value="{{ $moveOutAssets->destination_location }}" readonly>
+                                                <input type="hidden" name="dest_loc" value="{{ $moveOutAssets->dest_loc }}">
+                                            </div>
+                                            <div class="col-sm-6 pb-3">
+                                                <label for="out_desc">Deskripsi Movement Out:</label>
+                                                <textarea class="form-control" name="out_desc" id="out_desc" rows="5" placeholder="Isi deskripsi..." required>{{ $moveOutAssets->out_desc }}</textarea>
                                             </div>
 
 
@@ -509,8 +503,8 @@
                                                                 <div class="col-sm-3">
                                                                     <label for="image">Image/Gambar Barang Data di dalam
                                                                         database:</label>
-                                                                    <a target="_blank" href="/storage/{{ $asset->image }}">
-                                                                        <img src="/storage/{{ $asset->image }}" width="300">
+                                                                    <a target="_blank" href="{{ asset('storage/' . $asset->image) }}">
+                                                                        <img src="{{ asset('storage/' . $asset->image) }}" width="300">
                                                                     </a>
                                                                 </div>
                                                             </div>

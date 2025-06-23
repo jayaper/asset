@@ -22,6 +22,13 @@ class ApprovalSDGAsset extends Controller
         $moveouts = DB::table('t_out')
             ->select(
                 't_out.*',
+                DB::raw("
+                    CASE
+                        WHEN LENGTH(t_out.out_desc) > 50
+                            THEN CONCAT(SUBSTRING(t_out.out_desc, 1, 50), '...')
+                        ELSE t_out.out_desc
+                    END as out_desc
+                "),
                 'b.qty',
                 'm_reason.reason_name',
                 'mc_approval.approval_name',
@@ -84,87 +91,15 @@ class ApprovalSDGAsset extends Controller
             if (!$moveout) {
                 return response()->json(['status' => 'error', 'message' => 'MoveOut not found.'], 404);
             }
-    
-            // Get transaction codes
-            $trx_code = DB::table('t_trx')->where('trx_name', 'Confirmation Movement')->value('trx_code');
-            $trx_code_1 = DB::table('t_trx')->where('trx_name', 'Transfer')->value('trx_code');
-            $today = Carbon::now()->format('ymd');
-            $transaction_number = 1;
-    
-            // Update the moveout data
+
             $moveout->appr_3_date = Carbon::now();
             $moveout->appr_3 = $request->appr_3;
             $moveout->appr_3_user = auth()->user()->username;
-    
-            // Generate new in_id and tf_code
-            $new_in_id = null;
-            $new_tf_code = null;
-            do {
-                $transaction_number_str = str_pad($transaction_number, 3, '0', STR_PAD_LEFT);
-                $new_in_id = "{$trx_code}.{$today}.{$request->input('reason_id')}.{$request->input('from_loc_id')}.{$transaction_number_str}";
-                $new_tf_code = "{$trx_code_1}.{$today}.{$request->input('reason_id')}.{$request->input('from_loc_id')}.{$transaction_number_str}";
-    
-                $existing_in_id = DB::table('t_in')->where('in_id', $new_in_id)->exists();
-                $existing_tf_code = DB::table('t_out')->where('tf_code', $new_tf_code)->exists();
-    
-                if ($existing_in_id && $existing_tf_code) {
-                    $transaction_number++;
-                }
-            } while ($existing_in_id && $existing_tf_code);
-    
-            $moveout->in_id = $new_in_id;
-            $moveout->tf_code = $new_tf_code;
-    
-            // Check approval and process accordingly
-            if ($request->appr_3 == '2' && $moveout->appr_2 == '2') {
-                // Insert into t_in
-                DB::table('t_in')->insert([
-                    'in_id' => $new_in_id,
-                    'out_id' => $moveout->out_id,
-                    'in_date' => $moveout->out_date,
-                    'from_loc' => $moveout->dest_loc,
-                    'out_desc' => $moveout->out_desc,
-                    'reason_id' => $moveout->reason_id,
-                    'appr_1' => 1,
-                    'create_date' => now(),
-                    'modified_date' => now()
-                ]);
-    
-                // Get the moveout details
-                $moveoutDetails = DB::table('t_out_detail')->where('out_id', $moveout->out_id)->get();
-    
-                $previous_asset_tag = null;
-                foreach ($moveoutDetails as $index => $detail) {
-                    if ($previous_asset_tag != $detail->asset_tag) {
-                        $transaction_number++;
-                        $transaction_number_str = str_pad($transaction_number, 3, '0', STR_PAD_LEFT);
-                        $new_in_id = "{$trx_code}.{$today}.{$request->input('reason_id')}.{$request->input('from_loc_id')}.{$transaction_number_str}";
-                        $previous_asset_tag = $detail->asset_tag;
-                    }
-    
-                    $existing_detail = DB::table('t_in_detail')
-                        ->where('in_id', $new_in_id)
-                        ->where('asset_tag', $detail->asset_tag)
-                        ->exists();
-    
-                    if (!$existing_detail) {
-                        DB::table('t_in_detail')->insert([
-                            'in_id' => $new_in_id,
-                            'in_det_id' => $detail->out_det_id,
-                            'asset_tag' => $detail->asset_tag,
-                            'asset_id' => $detail->asset_id,
-                            'serial_number' => $detail->serial_number,
-                            'brand' => $detail->brand,
-                            'qty' => $detail->qty,
-                            'uom' => $detail->uom,
-                            'condition' => $detail->condition,
-                            'image' => $detail->image,
-                        ]);
-                    }
-                }
-            } elseif ($request->appr_3 == '4') {
+
+            if ($request->appr_3 == '4' && $moveout->appr_2 == '2') {       
+
                 $moveout->is_confirm = '4';
-                $moveout->in_id = null;
+                $moveout->confirm_date = Carbon::now();
     
                 DB::table('t_out_detail')
                     ->where('out_id', $id)
@@ -194,20 +129,6 @@ class ApprovalSDGAsset extends Controller
                             'status_asset' => 1
                         ]);
                     }
-                }
-    
-                $transactions = DB::table('t_transaction_qty')
-                    ->where('out_id', $id)
-                    ->get();
-    
-                foreach ($transactions as $transaction) {
-                    DB::table('t_transaction_qty')
-                        ->where('id', $transaction->id)
-                        ->update([
-                            'qty' => $transaction->qty_continue,
-                            'qty_continue' => 0,
-                            'qty_disposal' => 0
-                        ]);
                 }
             }
     

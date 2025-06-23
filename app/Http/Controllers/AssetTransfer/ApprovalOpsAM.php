@@ -23,6 +23,13 @@ class ApprovalOpsAM extends Controller
         $moveouts = DB::table('t_out')
             ->select(
                 't_out.*',
+                DB::raw("
+                    CASE
+                        WHEN LENGTH(t_out.out_desc) > 50
+                            THEN CONCAT(SUBSTRING(t_out.out_desc, 1, 50), '...')
+                        ELSE t_out.out_desc
+                    END as out_desc
+                "),
                 'b.qty',
                 'm_reason.reason_name',
                 'mc_approval.approval_name',
@@ -93,6 +100,8 @@ class ApprovalOpsAM extends Controller
         } elseif ($request->appr_1 == '4') {
 
             $moveout->is_confirm = '4';
+            $moveout->confirm_date = Carbon::now();
+
             DB::table('t_out_detail')
                 ->where('out_id', $id)
                 ->update(['status' => 4]);
@@ -122,24 +131,6 @@ class ApprovalOpsAM extends Controller
                         'qty' => 1,
                         'status_asset' => 1
                     ]);
-                }
-            }
-
-            // Update t_transaction_qty
-            $transactions = DB::table('t_transaction_qty')
-                ->where('out_id', $id)
-                ->get();
-
-            foreach ($transactions as $transaction) {
-                // If appr_1 is 4, move qty_continue back to qty
-                if ($request->appr_1 == '4') {
-                    DB::table('t_transaction_qty')
-                        ->where('id', $transaction->id)
-                        ->update([
-                            'qty' => $transaction->qty_continue,
-                            'qty_continue' => 0,
-                            'qty_disposal' => 0
-                        ]);
                 }
             }
         }

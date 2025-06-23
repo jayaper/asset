@@ -736,7 +736,7 @@ class MovementOutController  extends Controller
 
             'out_id' => $moveOut->out_id,
 
-            'out_no' => $moveOut->out_no,
+            'id' => $moveOut->id,
 
             'out_date' => $moveOut->out_date,
 
@@ -841,10 +841,10 @@ class MovementOutController  extends Controller
 //     $moveout->is_confirm = '1';
 //     $moveout->create_by = Auth::user()->username;
 
-//     // Set the out_no
-//     $maxMoveoutId = MasterMoveOut::max('out_no');
-//     $out_no_base = $maxMoveoutId ? $maxMoveoutId + 1 : 1;
-//     $moveout->out_no = $out_no_base;
+//     // Set the id
+//     $maxMoveoutId = MasterMoveOut::max('id');
+//     $id_base = $maxMoveoutId ? $maxMoveoutId + 1 : 1;
+//     $moveout->id = $id_base;
 
 
 //     $moveout->out_id = $out_id;
@@ -896,7 +896,7 @@ class MovementOutController  extends Controller
     
 //         // Insert into t_out_detail
 //         DB::table('t_out_detail')->insert([
-//             'out_det_id' => $moveout->out_no, 
+//             'out_det_id' => $moveout->id, 
 //             'out_id' => $out_id,
 //             'asset_id' => $assetId,
 //             'asset_tag' => $registerCode,
@@ -972,9 +972,9 @@ public function AddDataMoveOut(Request $request) {
    $moveout->create_by = Auth::user()->username;
 
 
-   $maxMoveoutId = MasterMoveOut::max('out_no');
-   $out_no_base = $maxMoveoutId ? $maxMoveoutId + 1 : 1;
-   $moveout->out_no = $out_no_base;
+   $maxMoveoutId = MasterMoveOut::max('id');
+   $id_base = $maxMoveoutId ? $maxMoveoutId + 1 : 1;
+   $moveout->id = $id_base;
 
 
    $moveout->out_id = $out_id;
@@ -1030,7 +1030,7 @@ foreach ($request->input('asset_id') as $index => $assetId) {
    } else {
        // Insert a new detail record into `t_out_detail`
        DB::table('t_out_detail')->insert([
-           'out_det_id' => $moveout->out_no,
+           'out_det_id' => $moveout->id,
            'out_id' => $out_id,
            'asset_id' => $assetId,
            'asset_tag' => $registerCode,
@@ -1120,10 +1120,10 @@ foreach ($request->input('asset_id') as $index => $assetId) {
 //     $moveout->is_confirm = '1';
 //     $moveout->create_by = Auth::user()->username;
 
-//     // Menghasilkan out_no secara otomatis untuk setiap aset
-//     $maxMoveoutId = MasterMoveOut::max('out_no');
-//     $out_no_base = $maxMoveoutId ? $maxMoveoutId + 1 : 1;
-//     $moveout->out_no = $out_no_base;
+//     // Menghasilkan id secara otomatis untuk setiap aset
+//     $maxMoveoutId = MasterMoveOut::max('id');
+//     $id_base = $maxMoveoutId ? $maxMoveoutId + 1 : 1;
+//     $moveout->id = $id_base;
 
 //     // Format out_id
 //     $trx_code = DB::table('t_trx')->where('trx_name', 'Asset Movement')->value('trx_code');
@@ -1159,7 +1159,7 @@ foreach ($request->input('asset_id') as $index => $assetId) {
 
 //         // Simpan data detail untuk aset
 //         DB::table('t_out_detail')->insert([
-//             'out_det_id' => $moveout->out_no,  
+//             'out_det_id' => $moveout->id,  
 //             'out_id' => $out_id,
 //             'asset_id' => $assetId,
 //             'asset_tag' => $request->input('register_code')[$index],
@@ -1746,7 +1746,95 @@ public function searchRegisterAsset(Request $request)
             'recordsTotal' => count($data),
             'recordsFiltered' => count($data),
         ]);
-    }   
+    } 
+
+    public function ajaxGetDataRegistAssetSO(Request $request, $lokasi_user)
+    {
+        $assets =  DB::table('table_registrasi_asset')
+        ->select('table_registrasi_asset.id'
+                ,'table_registrasi_asset.register_code'    
+                ,'table_registrasi_asset.serial_number'
+                ,'table_registrasi_asset.register_date'
+                ,'table_registrasi_asset.purchase_date'
+                ,'table_registrasi_asset.approve_status'
+                ,'table_registrasi_asset.serial_number'
+                ,'table_registrasi_asset.width'
+                ,'table_registrasi_asset.height'
+                ,'table_registrasi_asset.depth'
+                ,'table_registrasi_asset.qty'
+                ,'table_registrasi_asset.location_now'
+                ,'lokasi_sekarang.name_store_street as nama_lokasi_sekarang'
+                ,'m_assets.asset_model'
+                ,'m_type.type_name'
+                ,'m_category.cat_name'
+                ,'m_priority.priority_name'
+                ,'m_brand.brand_name'
+                ,'m_brand.brand_id'
+                ,'m_uom.uom_name'
+                ,'m_uom.uom_id'
+                ,'miegacoa_keluhan.master_resto.name_store_street'
+                ,'m_layout.layout_name'
+                ,'m_supplier.supplier_name'
+                ,'m_condition.condition_name'
+                ,'m_warranty.warranty_name'
+                ,'m_periodic_mtc.periodic_mtc_name'
+                ,'t_out_detail.image'
+                ,'table_registrasi_asset.deleted_at')
+        ->leftJoin('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
+        ->leftJoin('m_type', 'table_registrasi_asset.type_asset', '=', 'm_type.type_code')
+        ->leftJoin('m_category', 'table_registrasi_asset.category_asset', '=', 'm_category.cat_code')
+        ->leftJoin('m_priority', 'table_registrasi_asset.prioritas', '=', 'm_priority.priority_code')
+        ->leftJoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
+        ->leftJoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
+        ->leftJoin('miegacoa_keluhan.master_resto', 'table_registrasi_asset.register_location', '=', 'miegacoa_keluhan.master_resto.id')
+        ->leftJoin('miegacoa_keluhan.master_resto as lokasi_sekarang', 'table_registrasi_asset.location_now', '=', 'lokasi_sekarang.id')
+        ->leftJoin('m_layout', 'table_registrasi_asset.layout', '=', 'm_layout.layout_id')
+        ->leftJoin('m_supplier', 'table_registrasi_asset.supplier', '=', 'm_supplier.supplier_code')
+        ->leftJoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
+        ->leftJoin('m_warranty', 'table_registrasi_asset.warranty', '=', 'm_warranty.warranty_id')
+        ->leftJoin('m_periodic_mtc', 'table_registrasi_asset.periodic_maintenance', '=', 'm_periodic_mtc.periodic_mtc_id')
+        ->leftJoin('t_out_detail', 'table_registrasi_asset.id', '=', 't_out_detail.asset_id')
+        ->leftJoin('t_stockopname', 'table_registrasi_asset.register_code', '=', 't_stockopname.asset_tag')
+        ->whereNull('t_stockopname.asset_tag')
+        ->whereNull('table_registrasi_asset.deleted_at')
+        ->where('table_registrasi_asset.qty', '>', 0)
+        ->where('table_registrasi_asset.location_now', '=', $lokasi_user)
+        ->get();
+        $data = [];
+        foreach ($assets as $asset) {
+            $data[] = [
+                'id' => $asset->id,
+                'register_code' => $asset->register_code,
+                'asset_name' => $asset->asset_model,
+                'merk' => $asset->brand_name,
+                'qty' => $asset->qty,
+                'satuan' => $asset->uom_name,
+                'serial_number' => $asset->serial_number,
+                'register_code' => $asset->register_code,
+                'condition' => $asset->condition_name,
+                'type_asset' => $asset->type_name,
+                'category_asset' => $asset->cat_name,
+                'condition' => $asset->condition_name,
+                'width' => $asset->width,
+                'height' => $asset->height,
+                'depth' => $asset->depth,
+                'brand_id' => $asset->brand_id,
+                'uom_id' => $asset->uom_id,
+                'location_now' => $asset->location_now,
+                'location_now_display' => $asset->nama_lokasi_sekarang,
+
+                // 'serial_number' => $asset->serial_number,
+            ];
+        }
+
+        $datas = collect($data)->unique('id')->values();
+    
+        return response()->json([
+            'data' => $datas,
+            'recordsTotal' => count($data),
+            'recordsFiltered' => count($data),
+        ]);
+    }
     
         
         public function dataDetailMovement($id) {

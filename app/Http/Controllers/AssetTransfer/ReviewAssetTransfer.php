@@ -42,10 +42,18 @@ class ReviewAssetTransfer extends Controller
                 ->join('miegacoa_keluhan.master_resto AS toResto', 't_out.dest_loc', '=', 'toResto.id')
                 ->where('t_out.is_confirm', '=', '3')
                 ->where('t_out.out_id', 'like', 'AM%');
-            if (!$user->hasRole('Admin')) {
-                $query->where(function($q) use ($lokasi_user) {
-                    $q->where('t_out.from_loc', $lokasi_user)
-                      ->orWhere('t_out.dest_loc', $lokasi_user);
+                // Filter lokasi berdasarkan role user
+            if (Auth::user()->hasRole('SM')){
+                $query->where(function($q){
+                    $q->where('fromResto.id', Auth::user()->location_now);
+                });
+            }else if(Auth::user()->hasRole('AM')){
+                $query->where(function($q){
+                    $q->where('fromResto.kode_city', Auth::user()->location_now);
+                });
+            }else if(Auth::user()->hasRole('RM')){
+                $query->where(function($q){
+                    $q->where('fromResto.id_regional', Auth::user()->location_now);
                 });
             }
         $moveins = $query->paginate(10);

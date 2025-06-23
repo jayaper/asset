@@ -93,7 +93,9 @@ class ApprovalOpsRM extends Controller
         if ($request->appr_2 == '2') {
             $moveout->appr_3 = '1';
         } elseif ($request->appr_2 == '4') {
+            
             $moveout->is_confirm = '4';
+            $moveout->confirm_date = Carbon::now();
     
             DB::table('t_out_detail')
                 ->where('out_id', $id)
@@ -164,13 +166,12 @@ class ApprovalOpsRM extends Controller
 
         $assets = DB::table('table_registrasi_asset')
         ->leftjoin('t_out_detail', 'table_registrasi_asset.register_code', 't_out_detail.asset_tag')
-        ->leftjoin('t_transaction_qty', 't_out_detail.out_id', '=', 't_transaction_qty.out_id')
-        ->leftjoin('t_out', 't_transaction_qty.out_id', 't_out.out_id')
+        ->leftjoin('t_out', 't_out_detail.out_id', 't_out.out_id')
         ->leftjoin('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
         ->leftjoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
         ->leftjoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
         ->leftjoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-        ->select('m_assets.asset_model', 'm_brand.brand_name', 't_transaction_qty.qty', 'm_uom.uom_name', 'table_registrasi_asset.serial_number', 'table_registrasi_asset.register_code', 'm_condition.condition_name', 't_out_detail.image')
+        ->select('m_assets.asset_model', 'm_brand.brand_name', 't_out_detail.qty', 'm_uom.uom_name', 'table_registrasi_asset.serial_number', 'table_registrasi_asset.register_code', 'm_condition.condition_name', 't_out_detail.image')
         ->where('t_out.out_id', 'like', 'DA%')
         ->where('t_out_detail.out_id', $id)
         ->get();

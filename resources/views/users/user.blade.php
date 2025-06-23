@@ -270,9 +270,7 @@
                             <div class="card">
                                 <div class="card-header pb-0">
                                     <h5>User Name List</h5>
-                                    <span>adalah daftar atau kumpulan aset yang dimiliki oleh seseorang, organisasi,
-                                        atau perusahaan. Daftar ini biasanya mencakup rincian tentang setiap aset,
-                                        seperti jenis aset, nilai, lokasi, dan informasi relevan lainnya.</span>
+                                    <span>adalah daftar data dan role user serta konfigurasi role di masing - masing user.</span>
                                 </div>
                                 <div class="card-body">
                                     <div class="btn-showcase">
@@ -552,7 +550,7 @@
                                                                 action="{{ url('user/delete', $user->id) }}"
                                                                 method="POST" style="display:inline;">
                                                                 @csrf
-                                                                @method('DELETE')
+                                                                {{-- @method('DELETE') --}}
                                                                 <button type="button" class="delete-button"
                                                                     title="Delete"
                                                                     style="border: none; background: none; cursor: pointer;">
@@ -718,7 +716,7 @@
                                 </a>
                                 <form class="delete-form" action="{{ url('admin/users/delete') }}/${user.id}" method="POST" style="display:inline;">
                                     @csrf
-                                    @method('DELETE')
+                                    {{-- @method('DELETE') --}}
                                     <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">
                                         <i class="fas fa-trash-alt" style="color: red;"></i>
                                     </button>
@@ -1297,7 +1295,7 @@
                     // Perform AJAX DELETE request
                     $.ajax({
                         url: actionUrl, // Form action URL
-                        method: 'DELETE', // HTTP method
+                        method: 'POST', // HTTP method
                         data: form.serialize(), // Serialize form data
                         success: function(response) {
                             if (response.status === 'success') {

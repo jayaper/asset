@@ -258,9 +258,7 @@
                             <div class="card">
                                 <div class="card-header pb-0">
                                     <h5>Movement Out Name List</h5>
-                                    <span>adalah daftar atau kumpulan aset yang dimiliki oleh seseorang, organisasi,
-                                        atau perusahaan. Daftar ini biasanya mencakup rincian tentang setiap aset,
-                                        seperti jenis aset, nilai, lokasi, dan informasi relevan lainnya.</span>
+                                    <span>adalah daftar atau kumpulan aset yang telah di request untuk movement dari wilayah satu ke wilayah lainnya!</span>
                                 </div>
                                 <div class="card-body">
                                     <div class="btn-showcase">
@@ -332,8 +330,7 @@
                                                         <th>Tanggal Movement Out</th>
                                                         <th>Lokasi Awal</th>
                                                         <th>Lokasi Akhir</th>
-                                                        <th>ID Movement In</th>
-                                                        <th>Quantity Barang</th>
+                                                        {{-- <th>Quantity Barang</th> --}}
                                                         <th>Deskripsi</th>
                                                         <th>Alasan</th>
                                                         <th>Konfirmasi Movement</th>
@@ -359,8 +356,7 @@
                                                             <td>{{ $moveout->out_date }}</td>
                                                             <td>{{ $moveout->from_location }}</td>
                                                             <td>{{ $moveout->dest_location }}</td>
-                                                            <td>{{ $moveout->in_id }}</td>
-                                                            <td>{{ $moveout->qty }}</td>
+                                                            {{-- <td>{{ $moveout->qty }}</td> --}}
                                                             <td>{{ $moveout->out_desc }}</td>
                                                             <td>{{ $moveout->reason_name }}</td>
                                                             <td>{{ $moveout->approval_name }}</td>
@@ -411,7 +407,7 @@
                                                                         action="{{ url('/asset-transfer/request-moveout/delete', $moveout->out_id) }}"
                                                                         method="POST" style="display:inline;">
                                                                         @csrf
-                                                                        @method('DELETE')
+                                                                        {{-- @method('DELETE') --}}
                                                                         @if ($moveout->deleted_at)
                                                                             <button type="button"
                                                                                 class="delete-button" title="Delete"
@@ -556,342 +552,6 @@
 
     {{-- Get Data moveout --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Mengambil data moveout menggunakan Ajax
-            $.ajax({
-                url: "{{ route('get.moveout') }}", // Route untuk get_moveout
-                method: "GET",
-                success: function(data) {
-                    let rows = '';
-                    data.forEach(function(moveout) {
-                        rows += `
-                          <tr>
-                              <td>${moveout.out_id}</td> <!-- Tampilkan ID moveout -->
-                              <td>${moveout.out_no}</td> <!-- Tampilkan Nama moveout -->
-                              <td>
-                              <a href="javascript:void(0);" class="edit-button" data-id="${moveout.out_id}" data-name="${moveout.out_no}" title="Edit">
-                                  <i class="fas fa-edit"></i>
-                              </a>
-                              <form class="delete-form" action="{{ url('admin/moveouts/delete') }}/${moveout.out_id}" method="POST" style="display:inline;">
-                                  @csrf
-                                  @method('DELETE')
-                                  <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">
-                                      <i class="fas fa-trash-alt" style="color: red;"></i>
-                                  </button>
-                              </form>
-                          </td>
-                          </tr>
-                      `;
-                    });
-                    $('#moveoutTableBody').html(rows); // Memasukkan baris ke dalam tbody
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('Error fetching data:', textStatus, errorThrown);
-                }
-            });
-        });
-    </script>
-
-    {{-- Add Data moveout --}}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Get the CSRF token from the meta tag
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-            $('#saveMoveOutButton').click(function(e) {
-                e.preventDefault();
-
-                // Ambil data form
-                var moveoutData = {
-                    out_date: $('#out_date').val(),
-                    from_loc: $('#from_loc').val(),
-                    dest_loc: $('#dest_loc').val(),
-                    out_desc: $('#out_desc').val(),
-                    reason_id: $('#reason_id').val(),
-                    // Gather asset data as arrays
-                    asset_id: [],
-                    register_code: [],
-                    serial_number: [],
-                    merk: [],
-                    qty: [],
-                    satuan: [],
-                    condition_id: []
-                };
-
-                // Loop through each asset field
-                $('.asset-select').each(function(index) {
-                    moveoutData.asset_id.push($(this).val());
-                });
-                $('input[name^="register_code"]').each(function(index) {
-                    moveoutData.register_code.push($(this).val());
-                });
-                $('input[name^="serial_number"]').each(function(index) {
-                    moveoutData.serial_number.push($(this).val());
-                });
-                $('input[name^="merk"]').each(function(index) {
-                    moveoutData.merk.push($(this).val());
-                });
-                $('input[name^="qty"]').each(function(index) {
-                    moveoutData.qty.push($(this).val());
-                });
-                $('input[name^="satuan"]').each(function(index) {
-                    moveoutData.satuan.push($(this).val());
-                });
-                $('select[name^="condition_id"]').each(function(index) {
-                    moveoutData.condition_id.push($(this).val());
-                });
-
-                // Send the gathered data
-                $.ajax({
-                    url: '/add-moveout', // Update this to your correct URL
-                    method: 'POST',
-                    data: moveoutData,
-                    success: function(response) {
-                        console.log(response);
-                        if (response.status === 'success') {
-                            $('#addDataMoveOut').modal('hide');
-                            window.location.href = response.redirect_url;
-                        } else {
-                            alert(response.message);
-                        }
-                    },
-                    error: function(jqXHR) {
-                        const message = jqXHR.responseJSON?.message ||
-                            'Failed to update moveout.';
-                        alert(message);
-                    }
-                });
-            });
-        });
-    </script>
-
-    {{-- Update Data moveout --}}
-    {{-- <script>
-    function formatDate(dateString) {
-      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-      const date = new Date(dateString);
-      return date.toLocaleDateString(undefined, options); // Adjust locale and options as needed
-    }
-
-    $(document).on('click', '.edit-button', function() {
-          const outId = $(this).data('id'); // Ambil ID dari button
-
-          $.when(
-            $.ajax({
-                url: `/admin/moveouts/put/${outId}`,
-                method: 'GET'
-            }),
-            $.ajax({
-                url: `/admin/moveoutdetails/put/${outId}`,
-                method: 'GET'
-            })
-        ).done(function(data1, data2) {
-            // data1 dan data2 adalah array [response, statusText]
-            const moveOutData = data1[0];
-            const moveOutDetailsData = data2[0];
-
-            // Mengisi data moveouts
-            $('#out_id').val(moveOutData.out_id);
-            $('#edit-from_loc').val(moveOutData.from_loc);
-            $('#edit-dest_loc').val(moveOutData.dest_loc);
-            $('#edit-reason_id').val(moveOutData.reason_id);
-            $('#edit-out_desc').val(moveOutData.out_desc);
-            $('#edit-out_date').val(moveOutData.out_date);
-
-            // Mengisi data moveoutdetails
-            $('#edit-asset_id').val(moveOutDetailsData.asset_id);
-            $('#edit-asset_tag').val(moveOutDetailsData.asset_tag);
-            $('#edit-serial_number').val(moveOutDetailsData.serial_number);
-            $('#edit-brand').val(moveOutDetailsData.brand);
-            $('#edit-qty').val(moveOutDetailsData.qty);
-            $('#edit-uom').val(moveOutDetailsData.uom);
-            $('#edit-condition').val(moveOutDetailsData.condition);
-
-            $('#updateModal').modal('show');
-        }).fail(function(xhr) {
-            alert(`Error fetching data: ${xhr.responseJSON?.message || 'Unknown error occurred'}`);
-        });
-    });
-
-    document.querySelectorAll('.asset-select').forEach(function(select) {
-        select.addEventListener('change', function () {
-            const assetId = this.value;
-            const container = this.closest('.asset-fields');
-
-            if (assetId) {
-                fetch(`/admin/moveouts/get-asset-details/${assetId}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log(data); // Log the response to see the structure
-
-                        // Mengisi field hanya jika data ada
-                        if (data) {
-                            container.querySelector('input[name="merk[]"]').value = data.merk || '';
-                            container.querySelector('input[name="qty[]"]').value = data.qty || '';
-                            container.querySelector('input[name="satuan[]"]').value = data.satuan || '';
-                            container.querySelector('input[name="serial_number[]"]').value = data.serial_number || '';
-                            container.querySelector('input[name="register_code[]"]').value = data.register_code || '';
-                        } else {
-                            console.warn('No data returned for asset ID:', assetId);
-                        }
-                    })
-                    .catch(error => console.error('Error fetching asset details:', error));
-            } else {
-                // Kosongkan field jika tidak ada aset yang dipilih
-                container.querySelector('input[name="merk[]"]').value = '';
-                container.querySelector('input[name="qty[]"]').value = '';
-                container.querySelector('input[name="satuan[]"]').value = '';
-                container.querySelector('input[name="serial_number[]"]').value = '';
-                container.querySelector('input[name="register_code[]"]').value = '';
-            }
-        });
-    });
-
-    // Form submission untuk mengupdate asset
-    $('#updateForm').on('submit', function(e) {
-        e.preventDefault(); // Prevent form reload
-
-        $.ajax({
-            url: `/admin/moveouts/edit/${$('#out_id').val()}`,
-            method: 'PUT', // Menggunakan PUT untuk mengupdate data
-            data: $(this).serialize(), // Serialize form data
-            success: function(response) {
-                if (response.status === 'success') {
-                    window.location.href = response.redirect_url; // Redirect ke halaman yang diatur
-                }
-            },
-            error: function(jqXHR) {
-                const message = jqXHR.responseJSON?.message || 'Failed to update moveout.';
-                alert(message); // Tampilkan pesan error jika gagal
-            }
-        });
-    });
-</script> --}}
-
-    <script>
-        // Event handler for edit button click
-        $(document).on('click', '.edit-button', function() {
-            const outId = $(this).data('id'); // Ambil ID dari button
-
-            $.ajax({
-                url: `/admin/moveouts/put/${outId}`,
-                method: 'GET',
-                success: function(data) {
-                    $('#out_id').val(data.out_id);
-                    console.log('Out ID set to:', data.out_id);
-                    $('#edit-from_loc').val(data.from_loc);
-                    $('#edit-dest_loc').val(data.dest_loc);
-                    $('#edit-reason_id').val(data.reason_id);
-                    $('#edit-out_desc').val(data.out_desc);
-                    $('#edit-out_date').val(data.out_date);
-                    $('#updateModal').modal('show');
-                },
-                error: function(xhr) {
-                    alert(`Error fetching data: ${xhr.responseJSON.message}`);
-                }
-            });
-
-            console.log('Second AJAX Request - outId:', outId);
-            $.ajax({
-                url: `/admin/moveoutdetails/put/${outId}`,
-                method: 'GET',
-                success: function(data) {
-                    console.log('Moveoutdetails Data:', data);
-                    $('#out_id').val(data.out_id);
-                    console.log('Out ID set to:', data.out_id);
-                    $('#edit-asset_id').val(data.asset_id);
-                    $('#edit-asset_tag').val(data.asset_tag);
-                    $('#edit-serial_number').val(data.serial_number);
-                    $('#edit-brand').val(data.brand);
-                    $('#edit-qty').val(data.qty);
-                    $('#edit-uom').val(data.uom);
-                    $('#edit-condition').val(data.condition);
-                    $('#updateModal').modal('show');
-                },
-                error: function(xhr) {
-                    alert(`Error fetching data: ${xhr.responseJSON.message}`);
-                }
-            });
-        });
-
-        // Submit form dengan konfirmasi SweetAlert
-        $('#updateForm').on('submit', function(e) {
-            e.preventDefault();
-            const outId = $('#out_id').val(); // Retrieve out_id from the hidden input
-
-            // Check if out_id is set correctly
-            if (!outId || outId === '0') {
-                alert('Error: out_id is missing or invalid.');
-                return;
-            }
-            $.ajax({
-                url: `/admin/moveouts/edit/${$outId}`,
-                method: 'POST',
-                data: $(this).serialize(),
-                success: function(response) {
-                    if (response.status === 'success') {
-                        alert('Data telah berhasil diubah.');
-                        window.location.href = response.redirect_url;
-                    }
-                },
-                error: function(jqXHR) {
-                    const message = jqXHR.responseJSON?.message || 'Gagal mengupdate data.';
-                    alert(`Error: ${message}`);
-                }
-            });
-        });
-    </script>
-
-    {{-- Detail --}}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).on('click', '.detail-button', function() {
-            var outId = $(this).data('id');
-
-            // AJAX request to fetch data from the server
-            $.ajax({
-                url: '/fetch-moveout-details/' + outId, // Adjust URL as needed
-                method: 'GET',
-                success: function(response) {
-                    // Assuming response is a JSON object containing the necessary data
-                    $('#moveout-id').text(response.out_id);
-                    $('#moveout-no').text(response.out_no);
-                    $('#out-date').text(response.out_date);
-                    $('#from-loc').text(response.from_loc);
-                    $('#dest-loc').text(response.dest_loc);
-                    $('#reason-id').text(response.reason_id);
-                    $('#in-id').text(response.in_id);
-                    $('#out-desc').text(response.out_desc);
-                    $('#asset-id').text(response.asset_id);
-                    $('#asset-name').text(response.asset_name);
-                    $('#asset-tag').text(response.asset_tag);
-                    $('#serial-number').text(response.serial_number);
-                    $('#asset-brand').text(response.brand);
-                    $('#asset-qty').text(response.qty);
-                    $('#asset-uom').text(response.uom);
-                    $('#asset-cond').text(response.condition);
-                    $('#asset-img').text(response.image); // Change this to an <img> tag if needed
-
-                    // Show the modal
-                    $('#MoveOutDetailModal').modal('show');
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching move out details:', error);
-                    alert('Unable to fetch details. Please try again.');
-                }
-            });
-        });
-    </script>
 
     {{-- Delete data moveout --}}
     <script>
@@ -915,7 +575,7 @@
                     // Perform AJAX DELETE request
                     $.ajax({
                         url: actionUrl, // Form action URL
-                        method: 'DELETE', // HTTP method
+                        method: 'POST', // HTTP method
                         data: form.serialize(), // Serialize form data
                         success: function(response) {
                             if (response.status === 'success') {
@@ -972,82 +632,5 @@
             });
         });
     </script>
-
-    <script>
-        document.addEventListener('change', function(e) {
-            if (e.target.classList.contains('asset-select')) {
-                const assetId = e.target.value;
-                const container = e.target.closest('.asset-fields');
-
-                if (assetId) {
-                    fetch(`/admin/moveouts/get-asset-details/${assetId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            // Check if data exists and update fields if available
-                            if (data) {
-                                container.querySelector('input[name="merk[]"]').value = data.merk || '';
-                                container.querySelector('input[name="qty[]"]').value = data.qty || '';
-                                container.querySelector('input[name="satuan[]"]').value = data.satuan || '';
-                                container.querySelector('input[name="serial_number[]"]').value = data
-                                    .serial_number || '';
-                                container.querySelector('input[name="register_code[]"]').value = data
-                                    .register_code || '';
-                            } else {
-                                console.warn('No data returned for asset ID:', assetId);
-                            }
-                        })
-                        .catch(error => console.error('Error fetching asset details:', error));
-                } else {
-                    // Clear fields if no asset is selected
-                    container.querySelector('input[name="merk[]"]').value = '';
-                    container.querySelector('input[name="qty[]"]').value = '';
-                    container.querySelector('input[name="satuan[]"]').value = '';
-                    container.querySelector('input[name="serial_number[]"]').value = '';
-                    container.querySelector('input[name="register_code[]"]').value = '';
-                }
-            }
-        });
-    </script>
-    <script>
-        $(document).ready(function() {
-            // Menambahkan field baru
-            $('.btn-add-asset').click(function() {
-                var assetFields = $(this).closest('.asset-fields').clone(); // Clone field
-                assetFields.find('input').val(''); // Reset nilai input
-                assetFields.find('select').val(''); // Reset nilai select
-                $('#assetFieldsContainer').append(assetFields); // Tambahkan field yang baru
-            });
-
-            // Menghapus field aset
-            $('#assetFieldsContainer').on('click', '.btn-remove-asset', function() {
-                if ($('.asset-fields').length > 1) {
-                    $(this).closest('.asset-fields').remove();
-                }
-            });
-        });
-    </script>
-    <script>
-        function convertDateFormat() {
-            let startDate = document.getElementById('start_date');
-            let endDate = document.getElementById('end_date');
-
-            // Menyusun tanggal dalam format yyyy-mm-dd
-            startDate.value = formatDate(startDate.value);
-            endDate.value = formatDate(endDate.value);
-        }
-
-        function formatDate(dateString) {
-            let dateParts = dateString.split('/');
-            // pastikan dateParts[2] ada dalam format 'yy' atau 'yyyy'
-            if (dateParts.length === 3) {
-                return `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
-            }
-            return dateString;
-        }
-    </script>
-
-    <!-- login js-->
-    <!-- Plugin used-->
-</body>
 
 </html>

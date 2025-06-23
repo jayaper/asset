@@ -350,9 +350,11 @@ class UserController extends Controller
 
     public function userPermission() {
         
-        // Ambil semua permissions
-        $permissions = $permissions = Permission::orderBy('id', 'desc')->get();        ;
         $rolesUser = Role::all();
+        
+        // Ambil semua permissions
+        $permissions = $permissions = Permission::orderBy('name', 'ASC')
+        ->get();        ;
 
         // Inisialisasi array untuk menyimpan data permission dan roles
         $permissionRoles = [];

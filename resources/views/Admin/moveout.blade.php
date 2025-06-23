@@ -566,7 +566,7 @@
                             <tbody>
                                 @foreach($moveouts as $moveout)
                                     <tr class="text-center">
-                                        <td>{{ $moveout->out_no }}</td>
+                                        <td>{{ $moveout->id }}</td>
                                         <td>{{ $moveout->out_id }}</td>
                                         <td>{{ $moveout->out_date }}</td>
                                         <td>{{ $moveout->from_loc }}</td>
@@ -585,7 +585,7 @@
                                             </a>
                                             <form class="delete-form" action="{{ url('admin/moveouts/delete', $moveout->out_id) }}" method="POST" style="display:inline;">
                                               @csrf
-                                              @method('DELETE')
+                                              {{-- @method('DELETE') --}}
                                               <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;" onclick="confirmDelete(event, this)">
                                                   <i class="fas fa-trash-alt" style="color: red;"></i>
                                               </button>
@@ -593,7 +593,7 @@
                                             @endif
                                             <a href="javascript:void(0);" class="detail-button" 
                                             data-id="{{ $moveout->out_id }}" 
-                                            data-no="{{ $moveout->out_no }}" 
+                                            data-no="{{ $moveout->id }}" 
                                             title="Detail">
                                                 <i class="fas fa-book"></i>
                                             </a>
@@ -719,14 +719,14 @@
                       rows += `
                           <tr>
                               <td>${moveout.out_id}</td> <!-- Tampilkan ID moveout -->
-                              <td>${moveout.out_no}</td> <!-- Tampilkan Nama moveout -->
+                              <td>${moveout.id}</td> <!-- Tampilkan Nama moveout -->
                               <td>
-                              <a href="javascript:void(0);" class="edit-button" data-id="${moveout.out_id}" data-name="${moveout.out_no}" title="Edit">
+                              <a href="javascript:void(0);" class="edit-button" data-id="${moveout.out_id}" data-name="${moveout.id}" title="Edit">
                                   <i class="fas fa-edit"></i>
                               </a>
                               <form class="delete-form" action="{{ url('admin/moveouts/delete') }}/${moveout.out_id}" method="POST" style="display:inline;">
                                   @csrf
-                                  @method('DELETE')
+                                  {{-- @method('DELETE') --}}
                                   <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">
                                       <i class="fas fa-trash-alt" style="color: red;"></i>
                                   </button>
@@ -1015,7 +1015,7 @@ if (!outId || outId === '0') {
           success: function(response) {
               // Assuming response is a JSON object containing the necessary data
               $('#moveout-id').text(response.out_id);
-              $('#moveout-no').text(response.out_no);
+              $('#moveout-no').text(response.id);
               $('#out-date').text(response.out_date);
               $('#from-loc').text(response.from_loc);
               $('#dest-loc').text(response.dest_loc);
@@ -1056,7 +1056,7 @@ if (!outId || outId === '0') {
           
           $.ajax({
               url: actionUrl, // URL dari form
-              method: 'DELETE', // Method untuk delete
+              method: 'POST', // Method untuk delete
               data: form.serialize(), // Kirim data form
               success: function(response) {
                   if (response.status === 'success') {

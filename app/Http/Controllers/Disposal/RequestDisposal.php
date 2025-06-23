@@ -54,6 +54,13 @@ class RequestDisposal extends Controller
         $query = DB::table('t_out')
             ->select(
                 't_out.*',
+                DB::raw("
+                    CASE
+                        WHEN LENGTH(t_out.out_desc) > 50
+                            THEN CONCAT(SUBSTRING(t_out.out_desc, 1, 50), '...')
+                        ELSE t_out.out_desc
+                    END as out_desc
+                "),
                 'b.qty',
                 'm_reason.reason_name',
                 'mc_approval.approval_name',
@@ -112,8 +119,15 @@ class RequestDisposal extends Controller
     }
     public function AddRequestDisposal() {
 
+        $disposal_id = 3;
+
         $user = Auth::User();
-        $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
+        $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->where('reason_id', $disposal_id)->first();
+
+        $id_reason = $reasons->reason_id;
+        
+        $name_reason = $reasons->reason_name;
+
         $approvals = DB::table('mc_approval')->select('approval_id', 'approval_name')->get();
         $assets = DB::table('table_registrasi_asset')->select('id', 'asset_name')->get();
         $conditions = DB::table('m_condition')->select('condition_id', 'condition_name')->get();
@@ -128,11 +142,14 @@ class RequestDisposal extends Controller
 
         $location_user = DB::table('miegacoa_keluhan.master_resto')->where('id', $user->location_now)->first();
         $location_user_display = $location_user->name_store_street;
+        $date_now = Carbon::now()->format('Y-m-d');
 
         return view('disposal.add_data_disposal', [
             'location_user_display' => $location_user_display,
+            'date_now' => $date_now,
             'user' => $user,
-            'reasons' => $reasons,
+            'id_reason' => $id_reason,
+            'name_reason' => $name_reason,
             'assets' => $assets, 
             'conditions' => $conditions,
             'moveouts' => $moveouts,
@@ -173,9 +190,9 @@ class RequestDisposal extends Controller
             $moveout->is_confirm = '1';
             $moveout->create_by = Auth::user()->username;
     
-            $maxMoveoutId = MasterDisOut::max('out_no');
-            $out_no_base = $maxMoveoutId ? $maxMoveoutId + 1 : 1;
-            $moveout->out_no = $out_no_base;
+            $maxMoveoutId = MasterDisOut::max('id');
+            $id_base = $maxMoveoutId ? $maxMoveoutId + 1 : 1;
+            $moveout->id = $id_base;
     
             $moveout->out_id = $out_id;
             $moveout->save();
@@ -211,7 +228,7 @@ class RequestDisposal extends Controller
                     ]);
     
                 DB::table('t_out_detail')->insert([
-                    'out_det_id' => $moveout->out_no,
+                    'out_det_id' => $moveout->id,
                     'out_id' => $out_id,
                     'asset_id' => $assetId,
                     'asset_tag' => $request->input('register_code')[$index],
@@ -221,21 +238,8 @@ class RequestDisposal extends Controller
                     'uom' => $request->input('satuan')[$index],
                     'condition' => $request->input('condition_id')[$index],
                     'image' => $imagePath,
-                ]);
-
-                DB::table('t_transaction_qty')->insert([
-                    'out_det_id' => $moveout->out_no,
-                    'out_id' => $out_id, 
-                    'asset_tag' => $request->input('register_code')[$index],
-                    'asset_id' => $assetId,
-                    'from_loc' => $request->input('from_loc_id')[$index],
-                    'qty' => $moveoutQty,
-                    'qty_continue' => 1,
-                    'qty_total' => 0,
-                    'qty_disposal' => 0,
-                    'qty_difference' => 0,
                     'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
                 ]);
 
             }
@@ -273,13 +277,12 @@ class RequestDisposal extends Controller
 
         $assets = DB::table('table_registrasi_asset')
         ->leftjoin('t_out_detail', 'table_registrasi_asset.register_code', 't_out_detail.asset_tag')
-        ->leftjoin('t_transaction_qty', 't_out_detail.out_id', '=', 't_transaction_qty.out_id')
-        ->leftjoin('t_out', 't_transaction_qty.out_id', 't_out.out_id')
+        ->leftjoin('t_out', 't_out_detail.out_id', 't_out.out_id')
         ->leftjoin('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
         ->leftjoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
         ->leftjoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
         ->leftjoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-        ->select('m_assets.asset_model', 'm_brand.brand_name', 't_transaction_qty.qty', 'm_uom.uom_name', 'table_registrasi_asset.serial_number', 'table_registrasi_asset.register_code', 'm_condition.condition_name', 't_out_detail.image')
+        ->select('m_assets.asset_model', 'm_brand.brand_name', 't_out_detail.qty', 'm_uom.uom_name', 'table_registrasi_asset.serial_number', 'table_registrasi_asset.register_code', 'm_condition.condition_name', 't_out_detail.image')
         ->where('t_out.out_id', 'like', 'DA%')
         ->where('t_out_detail.out_id', $id)
         ->get();

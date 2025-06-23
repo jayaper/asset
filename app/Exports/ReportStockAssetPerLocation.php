@@ -19,32 +19,48 @@ class ReportStockAssetPerLocation implements FromCollection, WithHeadings
 
     public function collection()
     {
-        return DB::table('table_registrasi_asset AS a')
-            ->select(
-                'a.register_date',
-                'a.register_code',
-                'b.asset_model',
-                'a.serial_number',
-                'a.qty',
-                'c.uom_name',
-                'd.name AS status_asset',
-                'e.condition_name',
-                'f.type_name',
-                'g.cat_name',
-                'h.name_store_street AS lokasi_sekarang',
-                'i.layout_name',
-            )
-            ->leftJoin('m_assets AS b', 'b.asset_id', '=', 'a.asset_name')
-            ->leftJoin('m_uom AS c', 'c.uom_id', '=', 'a.satuan')
-            ->leftJoin('m_status_asset AS d', 'd.id', '=', 'a.status_asset')
-            ->leftJoin('m_condition AS e', 'e.condition_id', '=', 'a.condition')
-            ->leftJoin('m_type AS f', 'f.type_id', '=', 'a.type_asset')
-            ->leftJoin('m_category AS g', 'g.cat_code', '=', 'a.category_asset')
-            ->leftJoin('miegacoa_keluhan.master_resto AS h', 'h.id', '=', 'a.location_now')
-            ->leftJoin('m_layout AS i', 'i.layout_id', '=', 'a.layout')
-            ->where('a.register_date', $this->request->input('date'))
-            ->where('a.location_now', $this->request->input('location'))
-            ->get();
+
+        $T_regist = DB::table('table_registrasi_asset AS a')
+                ->select(
+                    'a.register_date',
+                    'a.register_code',
+                    'b.asset_model',
+                    'a.serial_number',
+                    'a.qty',
+                    'c.uom_name',
+                    'd.name AS status_asset',
+                    'e.condition_name',
+                    'f.type_name',
+                    'g.cat_name',
+                    'h.name_store_street AS lokasi_sekarang',
+                    'i.layout_name',
+                )
+                ->leftJoin('m_assets AS b', 'b.asset_id', '=', 'a.asset_name')
+                ->leftJoin('m_uom AS c', 'c.uom_id', '=', 'a.satuan')
+                ->leftJoin('m_status_asset AS d', 'd.id', '=', 'a.status_asset')
+                ->leftJoin('m_condition AS e', 'e.condition_id', '=', 'a.condition')
+                ->leftJoin('m_type AS f', 'f.type_id', '=', 'a.type_asset')
+                ->leftJoin('m_category AS g', 'g.cat_code', '=', 'a.category_asset')
+                ->leftJoin('miegacoa_keluhan.master_resto AS h', 'h.id', '=', 'a.location_now')
+                ->leftJoin('m_layout AS i', 'i.layout_id', '=', 'a.layout')
+                ->leftJoin('t_out_detail AS j', 'j.asset_tag', '=', 'a.register_code')
+                ->where('a.location_now', $this->request->input('location'));
+                if ($this->request->filled('date')) {
+                    $T_regist->where(function ($q) {
+                        $q->whereRaw('DATE(a.last_transaction_date) = ?', [$this->request->input('date')]);
+                    });
+                } else {
+                    $today = Carbon::now()->toDateString();
+                    $T_regist->where(function ($q) use ($today) {
+                        $q->whereRaw('DATE(a.last_transaction_date) = ?', [$today]);
+                    });
+                }
+
+
+
+            $final = $T_regist->get();
+
+        return $final;
     }
 
     public function map($row): array

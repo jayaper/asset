@@ -609,14 +609,14 @@
                         rows += `
                             <tr>
                                 <td>${movein.out_id}</td> <!-- Tampilkan ID movein -->
-                                <td>${movein.out_no}</td> <!-- Tampilkan Nama movein -->
+                                <td>${movein.id}</td> <!-- Tampilkan Nama movein -->
                                 <td>
-                                <a href="javascript:void(0);" class="edit-button" data-id="${movein.out_id}" data-name="${movein.out_no}" title="Edit">
+                                <a href="javascript:void(0);" class="edit-button" data-id="${movein.out_id}" data-name="${movein.id}" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form class="delete-form" action="{{ url('admin/moveins/delete') }}/${movein.out_id}" method="POST" style="display:inline;">
                                     @csrf
-                                    @method('DELETE')
+                                    {{-- @method('DELETE') --}}
                                     <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">
                                         <i class="fas fa-trash-alt" style="color: red;"></i>
                                     </button>
@@ -744,7 +744,7 @@
             success: function(response) {
                 // Assuming response is a JSON object containing the necessary data
                 $('#movein-id').text(response.out_id);
-                $('#movein-no').text(response.out_no);
+                $('#movein-no').text(response.id);
                 $('#out-date').text(response.out_date);
                 $('#from-loc').text(response.from_loc);
                 $('#dest-loc').text(response.dest_loc);
@@ -784,7 +784,7 @@
             
             $.ajax({
                 url: actionUrl, // URL dari form
-                method: 'DELETE', // Method untuk delete
+                method: 'POST', // Method untuk delete
                 data: form.serialize(), // Kirim data form
                 success: function(response) {
                     if (response.status === 'success') {

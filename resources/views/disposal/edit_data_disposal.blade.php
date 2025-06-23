@@ -396,8 +396,7 @@
                                             <div class="col-sm-6">
                                                 <div class="form-group">
                                                     <label for="out_desc">Deskripsi Disposal Out:</label>
-                                                    <input type="text" name="out_desc" id="out_desc" class="form-control"
-                                                    value="{{ $moveOutAssets->out_desc }}" required>
+                                                    <textarea class="form-control" name="out_desc" id="out_desc" rows="5" required>{{ $moveOutAssets->out_desc }}</textarea>
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
@@ -483,8 +482,8 @@
                                                                 <div class="col-sm-3">
                                                                     <label for="image">Image/Gambar Barang Data di dalam
                                                                         database:</label>
-                                                                    <a target="_blank" href="/storage/{{ $asset->image }}">
-                                                                        <img src="/storage/{{ $asset->image }}" width="300">
+                                                                    <a target="_blank" href="{{ asset('storage/' . $asset->image) }}">
+                                                                        <img src="{{ asset('storage/' . $asset->image) }}" width="300">
                                                                     </a>
                                                                 </div>
                                                             </div>

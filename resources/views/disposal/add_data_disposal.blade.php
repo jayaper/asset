@@ -347,7 +347,7 @@
                                     <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a>
                                     </li>
                                     <li class="breadcrumb-item">ASMI</li>
-                                    <li class="breadcrumb-item active">Request Movement Out Name List</li>
+                                    <li class="breadcrumb-item active">Disposal Out Name List</li>
                                     <li class="breadcrumb-item active">Create Data Disposal</li>
                                 </ol>
                             </div>
@@ -399,7 +399,7 @@
                                                 <div class="form-group">
                                                     <label for="out_date">Tanggal Disposal Out:</label>
                                                     <input type="date" name="out_date" id="out_date"
-                                                        class="form-control" required>
+                                                        class="form-control" value="{{ $date_now }}" readonly required>
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
@@ -421,21 +421,14 @@
                                             <div class="col-sm-6">
                                                 <div class="form-group">
                                                     <label for="out_desc">Deskripsi Disposal Out:</label>
-                                                    <input type="text" name="out_desc" id="out_desc"
-                                                        class="form-control" required>
+                                                    <textarea class="form-control" name="out_desc" id="out_desc" rows="5" placeholder="Description here..." required></textarea>
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
                                                 <div class="form-group">
-                                                    <label for="reason_id">Alasan Disposal Out:</label>
-                                                    <select name="reason_id" id="reason_id" class="form-select"
-                                                        required>
-                                                        <option value="">Pilih Alasan</option>
-                                                        @foreach ($reasons as $reason)
-                                                            <option value="{{ $reason->reason_id }}">
-                                                                {{ $reason->reason_name }}</option>
-                                                        @endforeach
-                                                    </select>
+                                                    <label for="reason_id">Alasan:</label>
+                                                    <input type="text" class="form-control" value="{{ $name_reason }}" readonly>
+                                                    <input type="hidden" name="reason_id" value="{{ $id_reason }}" required>
                                                 </div>
                                             </div>
                                             <div class="btn-showcase mt-4">
@@ -842,112 +835,6 @@
             });
 
             //end submit ================================================================================================================================
-            $('#dest_loc').select2({
-                placeholder: 'Pilih Lokasi Tujuan',
-                allowClear: true,
-                ajax: {
-                    url: '/api/get-dest-locations',
-                    type: 'GET',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function(params) {
-                        return {
-                            search: params.term
-                        };
-                    },
-                    processResults: function(data) {
-                        // Transform the response to Select2 format
-                        return {
-                            results: $.map(data, function(item) {
-                                return {
-                                    id: item.id, // Value to be sent to the server
-                                    text: item.name_store_street // Label shown to the user
-                                };
-                            })
-                        };
-                    },
-                    cache: true
-                },
-                minimumInputLength: 0 // Require at least 1 character for search
-            });
-
-
-
-            $.ajax({
-                url: '/api/get-location',
-                method: 'GET',
-                success: function(response) {
-                    if (response) {
-                        // Display the name_store_street in the visible input
-                        $('#from_loc').val(response.name_store_street);
-
-                        // Store the id in the hidden input
-                        $('#from_loc_id').val(response.id);
-                    } else {
-                        console.warn('Location data not found.');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('AJAX Error: ' + error);
-                }
-            });
-
-            // function validateLocationsAndHandleSubmit() {
-            //     const fromLocId = $('#from_loc').val();
-            //     const $submitBtn = $('#submit-btn');
-
-            //     // Check if both locations are selected
-            //     if (!fromLocId || !destLocId) {
-            //         $submitBtn.prop('disabled', true);
-            //         return false;
-            //     }
-
-            //     // Check if locations are the same
-            //     if (fromLocId === destLocId) {
-            //         $submitBtn.prop('disabled', true);
-            //         alert('Data tidak bisa di input - Lokasi tujuan tidak boleh sama dengan lokasi asal');
-            //         $('#dest_loc').val(null).trigger('change');
-            //         return false;
-            //     }
-
-            //     // Enable submit button if validation passes
-            //     $submitBtn.prop('disabled', false);
-            //     return true;
-            // }
-
-            $('#dest_loc').on('change', function() {
-                const destLocId = $(this).val();
-                const fromLocId = $('#from_loc').val();
-
-                if (destLocId && fromLocId && destLocId === fromLocId) {
-                    alert('Data tidak bisa di input - Lokasi tujuan tidak boleh sama dengan lokasi asal');
-                    $(this).val(null).trigger('change'); // Reset the destination location
-                    return;
-                }
-            });
-
-            // Validate when "Lokasi Asal" is changed
-            $('#from_loc').on('change', function() {
-                const fromLocId = $(this).val();
-                const destLocId = $('#dest_loc').val();
-
-                if (destLocId && fromLocId && destLocId === fromLocId) {
-                    $('#dest_loc').val(null).trigger('change'); // Reset the destination location
-                    alert('Data tidak bisa di input - Lokasi tujuan tidak boleh sama dengan lokasi asal');
-                }
-            });
-
-            $('#from_loc').on('change', function() {
-                const fromLocId = $(this).val();
-                const destLocId = $('#dest_loc').val();
-
-                if (destLocId && fromLocId && destLocId === fromLocId) {
-                    $('#dest_loc').val(null).trigger('change');
-                    alert('Data tidak bisa di input - Lokasi tujuan tidak boleh sama dengan lokasi asal');
-                }
-            });
-
-
         });
     </script>
 
@@ -1009,8 +896,18 @@
                     return;
                 }
 
-                // Create a new asset field
-                const $newField = createFreshAssetField();
+                // Cari field kosong berdasarkan asset_id
+                let $newField = $('#assetFieldsContainer .asset-fields').filter(function () {
+                    return !$(this).find('input[name="asset_id[]"]').val();
+                }).first();
+
+                // Jika tidak ada field kosong, buat baru
+                if ($newField.length === 0) {
+                    $newField = createFreshAssetField();
+                    $('#assetFieldsContainer').append($newField);
+                }
+
+                // Isi data asset ke field
                 $newField.find('input[name="asset_id[]"]').val(rowData.id);
                 $newField.find('input[name="asset_name[]"]').val(rowData.asset_name);
                 $newField.find('input[name="merk_display[]"]').val(rowData.merk);
@@ -1021,8 +918,6 @@
                 $newField.find('input[name="serial_number[]"]').val(rowData.serial_number);
                 $newField.find('input[name="register_code[]"]').val(rowData.register_code);
 
-                // Append the new field
-                $('#assetFieldsContainer').append($newField);
 
                 // Sembunyikan baris data yang sudah dipilih
                 $(this).hide();

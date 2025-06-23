@@ -251,7 +251,7 @@
                           <tr>
                             <th>QR Code</th>
                             <td>
-                              <img src="{{ $asset->qr_code_path }}"
+                              <img src="{{ asset($asset->qr_code_path) }}"
                                 alt="QR Code for {{ $asset->register_code }}" class="img-fluid">
                             </td>
                           </tr>

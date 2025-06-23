@@ -257,9 +257,7 @@
                             <div class="card">
                                 <div class="card-header pb-0">
                                     <h5>Approval RM - Disposal Out</h5>
-                                    <span>adalah daftar atau kumpulan aset yang dimiliki oleh seseorang, organisasi,
-                                        atau perusahaan. Daftar ini biasanya mencakup rincian tentang setiap aset,
-                                        seperti jenis aset, nilai, lokasi, dan informasi relevan lainnya.</span>
+                                    <span>Asset yang sudah di request untuk melakukan disposal akan melalui approval terlebih dahulu, dilanjutkan oleh Region Manager!</span>
                                 </div>
                                 <div class="card-body">
                                     <div class="btn-showcase">
@@ -413,11 +411,10 @@
                                             style="width: 100%;">
                                             <thead>
                                                 <tr class="text-center">
-                                                    <th>No Disposal Out</th>
+                                                    <th>Disposal Code</th>
                                                     <th>Tanggal Disposal Out</th>
                                                     <th>Lokasi Asal</th>
-                                                    <th>Quantity</th>
-                                                    <th>ID Disposal In</th>
+                                                    {{-- <th>Quantity</th> --}}
                                                     <th>Deskripsi</th>
                                                     <th>Alasan</th>
                                                     <th>Status RM</th>
@@ -428,11 +425,10 @@
                                             <tbody>
                                                 @foreach ($moveouts as $moveout)
                                                     <tr class="text-center">
-                                                        <td>{{ $moveout->out_no }}</td>
+                                                        <td>{{ $moveout->out_id }}</td>
                                                         <td>{{ $moveout->out_date }}</td>
                                                         <td>{{ $moveout->from_location }}</td>
-                                                        <td>{{ $moveout->qty }}</td>
-                                                        <td>{{ $moveout->in_id }}</td>
+                                                        {{-- <td>{{ $moveout->qty }}</td> --}}
                                                         <td>{{ $moveout->out_desc }}</td>
                                                         <td>{{ $moveout->reason_name }}</td>
                                                         <td>{{ $moveout->approval_name }}</td>
@@ -441,7 +437,7 @@
                                                                 @can('btn dis action edit approval rm')
                                                                     <a href="javascript:void(0);" class="edit-button"
                                                                         data-id="{{ $moveout->out_id }}"
-                                                                        data-no="{{ $moveout->out_no }}" title="Edit">
+                                                                        data-no="{{ $moveout->id }}" title="Edit">
                                                                         <i class="fas fa-edit"></i>
                                                                     </a>
                                                                 @endcan
@@ -561,120 +557,16 @@
         integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous">
     </script>
 
-    {{-- Get Data moveout --}}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Mengambil data moveout menggunakan Ajax
-            $.ajax({
-                url: "{{ route('get.moveout') }}", // Route untuk get_moveout
-                method: "GET",
-                success: function(data) {
-                    let rows = '';
-                    data.forEach(function(moveout) {
-                        rows += `
-                            <tr>
-                                <td>${moveout.out_id}</td> <!-- Tampilkan ID moveout -->
-                                <td>${moveout.out_no}</td> <!-- Tampilkan Nama moveout -->
-                                <td>
-                                <a href="javascript:void(0);" class="edit-button" data-id="${moveout.out_id}" data-name="${moveout.out_no}" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form class="delete-form" action="{{ url('admin/moveouts/delete') }}/${moveout.out_id}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">
-                                        <i class="fas fa-trash-alt" style="color: red;"></i>
-                                    </button>
-                                </form>
-                            </td>
-                            </tr>
-                        `;
-                    });
-                    $('#moveoutTableBody').html(rows); // Memasukkan baris ke dalam tbody
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('Error fetching data:', textStatus, errorThrown);
-                }
-            });
-        });
-    </script>
-
-    {{-- Add Data moveout --}}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Get the CSRF token from the meta tag
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-            $('#saveMoveOutButton').click(function(e) {
-                e.preventDefault();
-
-                // Ambil data form
-                var moveoutDate = $('#out_date').val();
-                var moveoutFromloc = $('#from_loc').val();
-                var moveoutDestloc = $('#dest_loc').val();
-                var moveoutDesc = $('#out_desc').val();
-                var moveoutReason = $('#reason_id').val();
-                var moveoutAsset = $('#asset_id').val();
-                var moveoutRegcode = $('#register_code').val();
-                var moveoutMerk = $('#merk').val();
-                var moveoutQty = $('#qty').val();
-                var moveoutUom = $('#satuan').val();
-                var moveoutSernum = $('#serial_number').val();
-                var moveoutCond = $('#condition_id').val();
-
-                // Kirimkan data menggunakan Ajax
-                $.ajax({
-                    url: '/add-moveout' + $('#out_id').val(), // Pastikan ini adalah URL yang benar
-                    method: 'POST', // Pastikan ini menggunakan metode PUT
-                    data: {
-                        out_date: moveoutDate,
-                        from_loc: moveoutFromloc,
-                        dest_loc: moveoutDestloc,
-                        out_desc: moveoutDesc,
-                        reason_id: moveoutReason,
-                        asset_id: moveoutAsset,
-                        register_code: moveoutRegcode,
-                        merk: moveoutMerk,
-                        qty: moveoutQty,
-                        satuan: moveoutUom,
-                        serial_number: moveoutSernum,
-                        condition_id: moveoutCond
-                    }, // Kirim data dari form
-                    success: function(response) {
-                        console.log(response);
-                        // Cek apakah response berisi error atau success
-                        if (response.status === 'success') {
-                            $('#addDataMoveOut').modal('hide');
-                            window.location.href = response.redirect_url;
-                        } else {
-                            alert(response.message);
-                        }
-                    },
-                    error: function(jqXHR) {
-                        const message = jqXHR.responseJSON?.message ||
-                            'Failed to update moveout.';
-                        alert(message); // Tampilkan pesan kesalahan
-                    }
-                });
-            });
-        });
-    </script>
-
     {{-- Update Data moveout --}}
     <script>
         $(document).on('click', '.edit-button', function() {
             const moveoutId = $(this).data('id'); // Ambil out_id dari atribut data
-            const moveoutNo = $(this).data('no'); // Ambil out_no dari atribut data
-            const moveoutApproval = $(this).data('approval'); // Ambil out_no dari atribut data
+            const moveoutNo = $(this).data('no'); // Ambil id dari atribut data
+            const moveoutApproval = $(this).data('approval'); // Ambil id dari atribut data
 
             // Isi input dengan data
             $('#out_id').val(moveoutId);
-            $('#out_no').val(moveoutNo);
+            $('#id').val(moveoutNo);
             $('#appr_2').val(moveoutApproval);
 
             // Tampilkan modal
@@ -700,65 +592,6 @@
                     alert(message); // Tampilkan pesan error jika gagal
                 }
             });
-        });
-    </script>
-
-    {{-- Detail --}}
-    <script>
-        $(document).ready(function() {
-            // Event listener for detail button
-            $('.detail-button').on('click', function() {
-                // Get brand data from the clicked button
-                var moveoutId = $(this).data('id');
-                var moveoutNo = $(this).data('no');
-                const moveoutDate = $(this).data('date'); // Ambil out_no dari atribut data
-                const moveoutFromloc = $(this).data('from'); // Ambil out_no dari atribut data
-                const moveoutDestloc = $(this).data('dest'); // Ambil out_no dari atribut data
-                const moveoutDesc = $(this).data('desc'); // Ambil out_no dari atribut data
-                const moveoutReason = $(this).data('reason'); // Ambil out_no dari atribut data
-
-                // Set the data into the modal
-                $('#moveout-id').text(moveoutId);
-                $('#moveout-no').text(moveoutNo);
-                $('#out_date').text(moveoutDate);
-                $('#from_loc').text(moveoutFromloc);
-                $('#dest_loc').text(moveoutDestloc);
-                $('#out_desc').text(moveoutDesc);
-                $('#reason_id').text(moveoutReason);
-
-                // Show the modal
-                $('#MoveOutDetailModal').modal('show');
-            });
-        });
-    </script>
-
-    {{-- Delete data moveout --}}
-    <script>
-        $(document).on('click', '.delete-button', function(e) {
-            e.preventDefault(); // Mencegah submit form default
-            const form = $(this).closest('form'); // Ambil form yang terdekat dari tombol
-
-            // Tampilkan dialog konfirmasi
-            if (confirm('Apakah Anda yakin ingin menghapus moveout ini?')) {
-                // Ambil URL dari action form
-                const actionUrl = form.attr('action');
-
-                $.ajax({
-                    url: actionUrl, // URL dari form
-                    method: 'DELETE', // Method untuk delete
-                    data: form.serialize(), // Kirim data form
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            window.location.href = response.redirect_url; // Redirect ke Admin.moveout
-                        } else {
-                            alert(response.message); // Tampilkan pesan error jika gagal
-                        }
-                    },
-                    error: function(jqXHR) {
-                        alert('Gagal menghapus data. Coba lagi.');
-                    }
-                });
-            }
         });
     </script>
 
@@ -799,32 +632,6 @@
         });
     </script>
 
-    <script>
-        document.getElementById('asset_id').addEventListener('change', function() {
-            const assetId = this.value;
-
-            if (assetId) {
-                fetch(`/get-asset-details/${assetId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('merk').value = data.merk || '';
-                        document.getElementById('qty').value = data.qty || '';
-                        document.getElementById('satuan').value = data.satuan || '';
-                        document.getElementById('serial_number').value = data.serial_number || '';
-                        document.getElementById('register_code').value = data.register_code || '';
-                    })
-                    .catch(error => console.error('Error fetching asset details:', error));
-            } else {
-                document.getElementById('merk').value = '';
-                document.getElementById('qty').value = '';
-                document.getElementById('satuan').value = '';
-                document.getElementById('serial_number').value = '';
-                document.getElementById('register_code').value = '';
-            }
-        });
-    </script>
-    <!-- login js-->
-    <!-- Plugin used-->
 </body>
 
 </html>

@@ -132,6 +132,13 @@ class RequestMoveout extends Controller
         $moveoutsQuery = DB::table('t_out as a')
             ->select(
                 'a.*',
+                DB::raw("
+                    CASE
+                        WHEN LENGTH(a.out_desc) > 50
+                            THEN CONCAT(SUBSTRING(a.out_desc, 1, 50), '...')
+                        ELSE a.out_desc
+                    END as out_desc
+                "),
                 'b.qty',
                 'c.reason_name',
                 'd.approval_name',
@@ -176,7 +183,6 @@ class RequestMoveout extends Controller
                 });
             }
             
-            // Ambil data paginated
             $moveouts = $moveoutsQuery->paginate(10);
 
         // dd($fromLoc);
@@ -196,9 +202,16 @@ class RequestMoveout extends Controller
 
     public function LihatFormMoveOut()
     {
+
+        $movement_id = 1;
+
         $user = Auth::user();
 
-        $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
+        $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->where('reason_id', $movement_id)->first();
+
+        $id_reason = $reasons->reason_id;
+
+        $name_reason = $reasons->reason_name;
 
         $restos = DB::table('miegacoa_keluhan.master_resto')->select('store_code', 'name_store_street')->get();
 
@@ -255,21 +268,6 @@ class RequestMoveout extends Controller
             ->select('t_out.*', 'm_reason.reason_name', 'mc_approval.approval_name');
 
 
-
-
-        // if ($request->filled('start_date') && $request->filled('end_date')) {
-
-        //     $startDate = $request->input('start_date') . ' 00:00:00'; // mulai dari awal hari
-
-        //     $endDate = $request->input('end_date') . ' 23:59:59'; // sampai akhir hari
-
-        //     $moveoutsQuery->whereBetween('t_out.out_date', [$startDate, $endDate]);
-
-        // }
-
-
-
-
         $moveouts = $moveoutsQuery->paginate(10);
 
 
@@ -284,7 +282,9 @@ class RequestMoveout extends Controller
 
             'fromLoc' => $fromLoc,
 
-            'reasons' => $reasons,
+            'id_reason' => $id_reason,
+
+            'name_reason' => $name_reason,
 
             'assets' => $assets,
 
@@ -745,7 +745,7 @@ class RequestMoveout extends Controller
 
             'out_id' => $moveOut->out_id,
 
-            'out_no' => $moveOut->out_no,
+            'id' => $moveOut->id,
 
             'out_date' => $moveOut->out_date,
 
@@ -849,10 +849,10 @@ class RequestMoveout extends Controller
     //     $moveout->is_confirm = '1';
     //     $moveout->create_by = Auth::user()->username;
 
-    //     // Set the out_no
-    //     $maxMoveoutId = MasterMoveOut::max('out_no');
-    //     $out_no_base = $maxMoveoutId ? $maxMoveoutId + 1 : 1;
-    //     $moveout->out_no = $out_no_base;
+    //     // Set the id
+    //     $maxMoveoutId = MasterMoveOut::max('id');
+    //     $id_base = $maxMoveoutId ? $maxMoveoutId + 1 : 1;
+    //     $moveout->id = $id_base;
 
 
     //     $moveout->out_id = $out_id;
@@ -904,7 +904,7 @@ class RequestMoveout extends Controller
 
     //         // Insert into t_out_detail
     //         DB::table('t_out_detail')->insert([
-    //             'out_det_id' => $moveout->out_no, 
+    //             'out_det_id' => $moveout->id, 
     //             'out_id' => $out_id,
     //             'asset_id' => $assetId,
     //             'asset_tag' => $registerCode,
@@ -981,9 +981,9 @@ class RequestMoveout extends Controller
         $moveout->create_by = Auth::user()->username;
 
 
-        $maxMoveoutId = MasterMoveOut::max('out_no');
-        $out_no_base = $maxMoveoutId ? $maxMoveoutId + 1 : 1;
-        $moveout->out_no = $out_no_base;
+        $maxMoveoutId = MasterMoveOut::max('id');
+        $id_base = $maxMoveoutId ? $maxMoveoutId + 1 : 1;
+        $moveout->id = $id_base;
 
 
         $moveout->out_id = $out_id;
@@ -996,7 +996,7 @@ class RequestMoveout extends Controller
             $imagePath = null;
 
             if ($request->hasFile("image.$index") && $request->file("image.$index")->isValid()) {
-                $imagePath = $request->file("image.$index")->store('moveout_item/images', 'public');
+                $imagePath = $request->file("image.$index")->store('/moveout_item/images', 'public');
             }
 
             $moveoutQty = $request->input('qty')[$index];
@@ -1025,7 +1025,7 @@ class RequestMoveout extends Controller
 
             // Insert a new detail record into `t_out_detail`
             DB::table('t_out_detail')->insert([
-                'out_det_id' => $moveout->out_no,
+                'out_det_id' => $moveout->id,
                 'out_id' => $out_id,
                 'asset_id' => $assetId,
                 'asset_tag' => $registerCode,
@@ -1042,28 +1042,6 @@ class RequestMoveout extends Controller
             ]);
 
             $moveoutData = DB::table('t_out')->where('out_id', $out_id)->first();
-
-            DB::table('t_transaction_qty')->insert([
-                'out_id' => $out_id,
-                'asset_tag' => $registerCode,
-                'asset_id' => $assetId,
-                'from_loc' => $moveoutData->from_loc,
-                'dest_loc' => $moveoutData->dest_loc,
-                'qty' => $moveoutQty,
-                'qty_continue' => 0,
-                //    'qty_continue' => DB::table('t_transaction_qty')
-                //        ->where('asset_tag', $registerCode)
-                //        ->sum('qty_continue') + $moveoutQty,
-                'qty_total' => DB::table('t_transaction_qty')
-                    ->where('asset_tag', $registerCode)
-                    ->sum('qty_total') + $moveoutQty,
-                'qty_disposal' => 0,
-                'qty_difference' => DB::table('t_transaction_qty')
-                    ->where('asset_tag', $registerCode)
-                    ->sum('qty_total') - $moveoutQty,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
         }
 
 
@@ -1113,10 +1091,10 @@ class RequestMoveout extends Controller
     //     $moveout->is_confirm = '1';
     //     $moveout->create_by = Auth::user()->username;
 
-    //     // Menghasilkan out_no secara otomatis untuk setiap aset
-    //     $maxMoveoutId = MasterMoveOut::max('out_no');
-    //     $out_no_base = $maxMoveoutId ? $maxMoveoutId + 1 : 1;
-    //     $moveout->out_no = $out_no_base;
+    //     // Menghasilkan id secara otomatis untuk setiap aset
+    //     $maxMoveoutId = MasterMoveOut::max('id');
+    //     $id_base = $maxMoveoutId ? $maxMoveoutId + 1 : 1;
+    //     $moveout->id = $id_base;
 
     //     // Format out_id
     //     $trx_code = DB::table('t_trx')->where('trx_name', 'Asset Movement')->value('trx_code');
@@ -1152,7 +1130,7 @@ class RequestMoveout extends Controller
 
     //         // Simpan data detail untuk aset
     //         DB::table('t_out_detail')->insert([
-    //             'out_det_id' => $moveout->out_no,  
+    //             'out_det_id' => $moveout->id,  
     //             'out_id' => $out_id,
     //             'asset_id' => $assetId,
     //             'asset_tag' => $request->input('register_code')[$index],

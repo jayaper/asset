@@ -91,21 +91,7 @@ class ApprovalOpsSDG extends Controller
         $moveout->appr_3_user = auth()->user()->username;
         if ($request->appr_3 == '3') {
             $moveout->is_confirm = '3';
-            $newInId = DB::table('t_in')->insertGetId([
-                'in_id' => $moveout->in_id,  // Ambil dari out_id
-                'out_id' => $moveout->out_id,  // Ambil dari out_id
-                'in_date' => $moveout->out_date,  // Ambil dari out_id
-                'from_loc' => $moveout->from_loc,  // Ambil dari out_id
-                'dest_loc' => $moveout->dest_loc,  // Ambil dari out_id
-                'out_desc' => $moveout->out_desc,  // Ambil dari out_id
-                'reason_id' => $moveout->reason_id,  // Ambil dari out_id
-                'appr_1' => 1, // Set appr_1 di tabel t_in menjadi 1
-                
-                // Tambahkan kolom lain yang perlu diambil dari $moveout jika ada
-                'create_date' => now(),
-                'modified_date' => now()
-            ]);
-            // Salin data dari t_out_detail ke t_in_detail
+            $moveout->dest_loc = $moveout->from_loc;
             $moveoutDetails = DB::table('t_out_detail')->where('out_id', $id)->get();
 
             foreach ($moveoutDetails as $detail) {
@@ -117,6 +103,7 @@ class ApprovalOpsSDG extends Controller
                         DB::table('table_registrasi_asset')
                         ->where('id', $table->id)
                         ->update([
+                            'last_transaction_code' => $id,
                             'status_asset' => 4
                         ]);
                     }
@@ -127,18 +114,6 @@ class ApprovalOpsSDG extends Controller
                     ->update([
                         'qty' => $newQty,
                     ]);
-
-                DB::table('t_in_detail')->insert([
-                    'in_id' => $moveout->in_id,  // Menghubungkan dengan data baru di t_in
-                    'in_det_id' => $detail->out_det_id,
-                    'asset_tag' => $detail->asset_tag,
-                    'asset_id' => $detail->asset_id,
-                    'serial_number' => $detail->serial_number,
-                    'brand' => $detail->brand,
-                    'qty' => $detail->qty,
-                    'uom' => $detail->uom,
-                    'condition' => $detail->condition,
-                ]);
 
                 DB::table('asset_tracking')->insert([
                     'start_date' => $moveout->created_at,
@@ -223,13 +198,12 @@ class ApprovalOpsSDG extends Controller
 
         $assets = DB::table('table_registrasi_asset')
         ->leftjoin('t_out_detail', 'table_registrasi_asset.register_code', 't_out_detail.asset_tag')
-        ->leftjoin('t_transaction_qty', 't_out_detail.out_id', '=', 't_transaction_qty.out_id')
-        ->leftjoin('t_out', 't_transaction_qty.out_id', 't_out.out_id')
+        ->leftjoin('t_out', 't_out_detail.out_id', 't_out.out_id')
         ->leftjoin('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
         ->leftjoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
         ->leftjoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
         ->leftjoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-        ->select('m_assets.asset_model', 'm_brand.brand_name', 't_transaction_qty.qty', 'm_uom.uom_name', 'table_registrasi_asset.serial_number', 'table_registrasi_asset.register_code', 'm_condition.condition_name', 't_out_detail.image')
+        ->select('m_assets.asset_model', 'm_brand.brand_name', 't_out_detail.qty', 'm_uom.uom_name', 'table_registrasi_asset.serial_number', 'table_registrasi_asset.register_code', 'm_condition.condition_name', 't_out_detail.image')
         ->where('t_out.out_id', 'like', 'DA%')
         ->where('t_out_detail.out_id', $id)
         ->get();

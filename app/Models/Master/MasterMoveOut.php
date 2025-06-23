@@ -17,7 +17,7 @@ class MasterMoveOut extends Model
     
     protected $fillable = [
         'out_id',
-        'out_no',
+        'id',
         'out_date',
         'from_loc',
         'dest_loc',
@@ -43,12 +43,12 @@ class MasterMoveOut extends Model
     
     // public function details()
     // {
-    //     return $this->hasMany(TOutDetail::class, 'out_no', 'out_no');
+    //     return $this->hasMany(TOutDetail::class, 'id', 'id');
     // }
 
     // public function tOutDetails() // Change 'details' to 'tOutDetails'
     // {
-    //     return $this->hasMany(TOutDetail::class, 'out_no', 'out_no');
+    //     return $this->hasMany(TOutDetail::class, 'id', 'id');
     // }
 
     public $timestamps = true; // Nonaktifkan pengelolaan otomatis kolom created_at dan updated_at
@@ -62,9 +62,9 @@ class MasterMoveOut extends Model
             $model->create_date = Carbon::now(); // Mengisi create_date dengan tanggal saat ini
             $model->create_by = Auth::user()->username ?? 'system'; // Mengisi create_by dengan username user yang login
 
-            // Menghasilkan out_no secara otomatis
-            $maxMtcId = MasterMoveOut::max('out_no'); // Ambil nilai out_no maksimum
-            $model->out_no = $maxMtcId ? $maxMtcId + 1 : 1; // Set out_no, mulai dari 1 jika tidak ada
+            // Menghasilkan id secara otomatis
+            $maxMtcId = MasterMoveOut::max('id'); // Ambil nilai id maksimum
+            $model->id = $maxMtcId ? $maxMtcId + 1 : 1; // Set id, mulai dari 1 jika tidak ada
         });
 
         // Event ketika mengupdate data (updating)

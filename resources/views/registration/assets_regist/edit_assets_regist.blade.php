@@ -284,7 +284,7 @@
                         <form action="{{ url('/registration/update-assets-registration/' . $asset->id) }}"
                             method="POST">
                             @csrf
-                            <input type="hidden" name="_method" value="PUT">
+                            <input type="hidden" name="_method" value="POST">
                             <div class="row">
                                 <!-- Asset Tag -->
                                 <div class="col-sm-6 mb-3">

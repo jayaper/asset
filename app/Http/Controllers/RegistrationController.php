@@ -64,6 +64,7 @@ class RegistrationController extends Controller
                 'm_uom.uom_name',
                 'miegacoa_keluhan.master_resto.name_store_street',
                 'restoo.name_store_street as location_now',
+                'table_registrasi_asset.last_transaction_code',
                 'm_layout.layout_name',
                 'm_supplier.supplier_name',
                 'm_condition.condition_name',
@@ -510,7 +511,7 @@ class RegistrationController extends Controller
         }
 
         // Buat URL publik
-        $qrCodeUrlPath = asset('public/storage/qrcodes/' . $fileName);
+        $qrCodeUrlPath = asset('storage/qrcodes/' . $fileName);
 
 
         // Store asset data in the database
@@ -561,6 +562,8 @@ class RegistrationController extends Controller
         $asset->height = $height;
 
         $asset->depth = $depth;
+
+        $asset->created_at = Carbon::now();
 
         $asset->location_now = $location_now;
 
@@ -661,82 +664,38 @@ class RegistrationController extends Controller
 
     public function UpdateAssetsRegist(Request $request, $id)
     {
-        $request->validate([
-            'register_code' => 'required|string|max:255',
-            'asset_name' => 'required|string|max:255',
-            'serial_number' => 'nullable|string|max:255',
-            'type_asset' => 'nullable|string|max:255',
-            'category_asset' => 'nullable|string|max:255',
-            'prioritas' => 'nullable|string|max:100',
-            'merk' => 'nullable|string|max:255',
-            'qty' => 'required|integer|min:1',
-            'satuan' => 'nullable|string|max:100',
-            'register_location' => 'required|string|max:255',
-            'location_now' => 'required|string|max:255',
-            'layout' => 'nullable|string|max:255',
-            'register_date' => 'nullable|date',
-            'supplier' => 'nullable|string|max:255',
-            'condition' => 'nullable|string|max:100',
-            'purchase_number' => 'nullable|string|max:255',
-            'purchase_date' => 'nullable|date',
-            'warranty' => 'nullable|string|max:255',
-            'periodic_maintenance' => 'nullable|string|max:255',
-        ]);
+      $request->validate([
+        'register_code' => 'required|string|max:255',
+        'asset_name' => 'required|string|max:255',
+        'serial_number' => 'nullable|string|max:255',
+        'type_asset' => 'nullable|string|max:255',
+        'category_asset' => 'nullable|string|max:255',
+        'prioritas' => 'nullable|string|max:100',
+        'merk' => 'nullable|string|max:255',
+        'qty' => 'required|integer|min:1',
+        'satuan' => 'nullable|string|max:100',
+        'register_location' => 'required|string|max:255',
+        'location_now' => 'required|string|max:255',
+        'layout' => 'nullable|string|max:255',
+        'register_date' => 'nullable|date',
+        'supplier' => 'nullable|string|max:255',
+        'condition' => 'nullable|string|max:100',
+        'purchase_number' => 'nullable|string|max:255',
+        'purchase_date' => 'nullable|date',
+        'warranty' => 'nullable|string|max:255',
+        'periodic_maintenance' => 'nullable|string|max:255',
+    ]);
 
-        // Retrieve the existing asset record
-        $asset = MasterRegistrasiModel::findOrFail($id);
+    // Retrieve the existing asset record
+    $asset = MasterRegistrasiModel::findOrFail($id);
 
-        // Update the asset data
+    // Update the asset data
+    $updateData = $request->all();
+    $asset->update($updateData);
 
-        $updateData = $request->all();
-        $asset->update($updateData);
+    // Tidak perlu generate ulang QR code karena register_code tidak berubah
+    return redirect()->to('/registration/assets-registration')->with('success', 'Data Asset berhasil ter-Update!');
 
-        // Generate the new QR code URL
-        $url = route('assets.details', ['register_code' => $asset->register_code]);
-
-        // Generate the QR Code with the URL
-        $qrCode = QrCode::format('png')->size(300)->generate($url);
-
-        // Create an image resource from the QR code
-        $qrImage = imagecreatefromstring($qrCode);
-        if ($qrImage === false) {
-            return response()->json(['status' => 'error', 'message' => 'Failed to create image from QR code.'], 500);
-        }
-
-        // Define the color based on the updated status
-        $squareColor = match ($asset->prioritas) {
-            'HIGH' => imagecolorallocate($qrImage, 255, 0, 0), // Red
-            'MEDIUM' => imagecolorallocate($qrImage, 255, 255, 0), // Yellow
-            'LOW' => imagecolorallocate($qrImage, 0, 0, 255), // Blue
-            default => imagecolorallocate($qrImage, 0, 0, 0), // Default to black
-        };
-
-        // Calculate position for the square
-        $squareSize = 50; // Size of the small square
-        $xPosition = (imagesx($qrImage) / 2) - ($squareSize / 2);
-        $yPosition = (imagesy($qrImage) / 2) - ($squareSize / 2);
-
-        // Draw the square on the QR code
-        imagefilledrectangle($qrImage, $xPosition, $yPosition, $xPosition + $squareSize, $yPosition + $squareSize, $squareColor);
-
-        // Define the file path for the updated QR code
-        $filePath = public_path('/qrcodes');
-        $fileName = $asset->register_code . '.png';
-
-        // Create the directory if it doesn't exist
-        if (!File::exists($filePath)) {
-            File::makeDirectory($filePath, 0755, true);
-        }
-
-        // Save the modified QR code image
-        imagepng($qrImage, $filePath . '/' . $fileName);
-        imagedestroy($qrImage); // Free memory
-
-        // Update the asset's QR code path in the database
-        $asset->qr_code_path = asset('qrcodes/' . $fileName);
-        $asset->save();
-
-        return redirect()->to('/registration/assets-registration')->with('success', 'Data Asset berhasil ter-Update!');
     }
 
 
@@ -954,7 +913,7 @@ class RegistrationController extends Controller
                     }
 
                     // Buat URL publik
-                    $qrCodeUrlPath = asset('public/storage/qrcodes/' . $fileName);
+                    $qrCodeUrlPath = asset('storage/qrcodes/' . $fileName);
 
 
                     // ------------------------------------
@@ -993,7 +952,7 @@ class RegistrationController extends Controller
                         'height' => $heightAsset,
                         'depth' => $depthAsset,
                         'qr_code_path' => $qrCodeUrlPath,
-                        'created_at' => now(),
+                        'created_at' => Carbon::now()
                     ]);
                 }
             }, $request->file('file'));

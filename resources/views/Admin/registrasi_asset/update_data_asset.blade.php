@@ -238,7 +238,7 @@
     <div class="card-body">
         <form action="{{ url('/admin/registrasi_asset/update_data_registrasi_asset/'. $asset->id)}}" method="POST">
             @csrf
-            <input type="hidden" name="_method" value="PUT">
+            <input type="hidden" name="_method" value="POST">
             <div class="row">
                 <!-- Asset Tag -->
                 <div class="col-sm-6 mb-3">
@@ -861,7 +861,7 @@ $('#coba').on('click', '.delete-btn', function(){
             if (result.isConfirmed) {
                 $.ajax({
                     url: `/admin/registrasi_asset/delete_data_registrasi_asset/${assetId}`,
-                    type: 'DELETE',
+                    type: 'POST',
                     success: function(response) {
                         Swal.fire(
                             'Deleted!',

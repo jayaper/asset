@@ -50,12 +50,12 @@ class LoginController extends Controller
         $user = MasterUser::where('username', $request->username)->first();
     
         // Cek hash password
-        if ($user && Hash::check($request->password, $user->password)) {
+        if ($user && is_null($user->deleted_at) && Hash::check($request->password, $user->password)) {
             Auth::login($user);
             return redirect()->intended('/dashboard')->with('message', 'Admin login successful');
         }
     
-        return redirect()->back()->withErrors(['Invalid credentials'])->withInput();
+        return redirect()->back()->with('error', 'Login Gagal, Silahkan login kembali !!');
     }
 
     public function logout()

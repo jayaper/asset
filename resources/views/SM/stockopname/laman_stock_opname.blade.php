@@ -592,7 +592,7 @@
                                             
                                             <form class="delete-form" action="{{ url('admin/stockopnames/delete', $moveout->opname_id) }}" method="POST" style="display:inline;">
                                               @csrf
-                                              @method('DELETE')
+                                              {{-- @method('DELETE') --}}
                                               <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;" onclick="confirmDelete(event, this)">
                                                   <i class="fas fa-trash-alt" style="color: red;"></i>
                                               </button>
@@ -712,14 +712,14 @@
                         rows += `
                             <tr>
                                 <td>${moveout.out_id}</td> <!-- Tampilkan ID moveout -->
-                                <td>${moveout.out_no}</td> <!-- Tampilkan Nama moveout -->
+                                <td>${moveout.id}</td> <!-- Tampilkan Nama moveout -->
                                 <td>
-                                <a href="javascript:void(0);" class="edit-button" data-id="${moveout.out_id}" data-name="${moveout.out_no}" title="Edit">
+                                <a href="javascript:void(0);" class="edit-button" data-id="${moveout.out_id}" data-name="${moveout.id}" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form class="delete-form" action="{{ url('admin/moveouts/delete') }}/${moveout.out_id}" method="POST" style="display:inline;">
                                     @csrf
-                                    @method('DELETE')
+                                    {{-- @method('DELETE') --}}
                                     <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">
                                         <i class="fas fa-trash-alt" style="color: red;"></i>
                                     </button>
@@ -939,7 +939,7 @@ $('#updateForm').on('submit', function(e) {
                         url: actionUrl,
                         method: 'POST', // Use POST instead of DELETE
                         data: {
-                            _method: 'DELETE', // Laravel will treat this as DELETE
+                            _method: 'POST', // Laravel will treat this as DELETE
                             _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
                         },
                         success: function(response) {

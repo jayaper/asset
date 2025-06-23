@@ -271,7 +271,6 @@
                                                         <th style="width: 10%;">Asset Name</th>
                                                         <th>Serial Number</th>
                                                         <th>Type Asset</th>
-                                                        <th>Qty</th>
                                                         <th>Category Asset</th>
                                                         <th>Priority</th>
                                                         <th>Merk</th>
@@ -417,9 +416,6 @@
                 },
                 {
                     "data": "type_name"
-                },
-                {
-                    "data": "qty"
                 },
                 {
                     "data": "cat_name"

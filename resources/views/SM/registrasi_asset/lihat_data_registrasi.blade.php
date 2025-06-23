@@ -861,7 +861,7 @@ var table = $('#coba').DataTable({
                 if (result.isConfirmed) {
                     $.ajax({
                         url: `/admin/registrasi_asset/delete_data_registrasi_asset/${assetId}`,
-                        type: 'DELETE',
+                        type: 'POST',
                         success: function(response) {
                             Swal.fire(
                                 'Deleted!',

@@ -248,7 +248,6 @@
                                                         <th>Approval 3</th>
                                                         <th>Approval 3 Date</th>
                                                         <th>Asset Name</th>
-                                                        <th>QTY</th>
                                                         <th>Satuan</th>
                                                         <th>From Location</th>
                                                         <th>Destination Location</th>
@@ -274,7 +273,6 @@
                                                             <td>{{ $item->appr_3_user }}</td>
                                                             <td>{{ $item->appr_3_date }}</td>
                                                             <td>{{ $item->asset_model }}</td>
-                                                            <td>{{ $item->qty }}</td>
                                                             <td>{{ $item->uom_name }}</td>
                                                             <td>{{ $item->lokasi_asal }}</td>
                                                             <td>{{ $item->lokasi_akhir }}</td>

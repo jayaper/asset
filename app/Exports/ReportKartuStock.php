@@ -26,13 +26,13 @@ class ReportKartuStock implements FromCollection, WithHeadings, WithMapping
             ->select(
                 'asset_tracking.start_date',
                 'asset_tracking.end_date',
+                'asset_tracking.out_id',
                 'r.reason_name',
                 'asset_tracking.description',
                 'ma.asset_model',
                 'mr1.name_store_street as asal',
                 'mr2.name_store_street as menuju',
                 'mr3.name_store_street as reg_loc',
-                'a.qty AS saldo'
             )
             ->leftJoin('miegacoa_keluhan.master_resto as mr1', 'asset_tracking.from_loc', '=', 'mr1.id')
             ->leftJoin('miegacoa_keluhan.master_resto as mr2', 'asset_tracking.dest_loc', '=', 'mr2.id')
@@ -58,12 +58,12 @@ class ReportKartuStock implements FromCollection, WithHeadings, WithMapping
         return [
             Carbon::parse($row->start_date)->format('H:i, d-m-Y'),
             Carbon::parse($row->end_date)->format('H:i, d-m-Y'),
+            $row->out_id,
             $row->reason_name,
             $row->description,
             $row->asset_model,
             $row->reg_loc,
             (is_null($row->menuju)) ? $row->asal . ' → DISPOSAL' : $row->asal . ' → ' . $row->menuju,
-            ($row->saldo == 0) ? '0' : $row->saldo,
         ];
     }
 
@@ -73,12 +73,12 @@ class ReportKartuStock implements FromCollection, WithHeadings, WithMapping
         return [
             'Start Date',
             'End Date',
+            'Transaction Number',
             'Reason',
             'Description',
             'Asset Model',
             'Register Location',
             'Location',
-            'Saldo',
         ];
     }
 }

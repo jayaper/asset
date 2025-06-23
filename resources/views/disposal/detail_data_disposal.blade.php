@@ -363,16 +363,12 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <th>Tanggal Movement Out</th>
+                                        <th class="col-md-4">Tanggal Movement Out</th>
                                         <td>{{ $moveOutAssets->out_date }}</td>
                                     </tr>
                                     <tr>
                                         <th>Lokasi Asal</th>
                                         <td>{{ $moveOutAssets->from_location }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Deskripsi</th>
-                                        <td>{{ $moveOutAssets->out_desc }}</td>
                                     </tr>
                                     <tr>
                                         <th>Alasan</th>
@@ -382,6 +378,10 @@
                                             @endphp
                                             {{ $reason ? $reason->reason_name : '-' }}
                                         </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Deskripsi</th>
+                                        <td>{{ $moveOutAssets->out_desc }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -394,7 +394,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <th>Asset Tag</th>
+                                            <th class="col-md-4">Asset Tag</th>
                                             <td>{{ $asset->register_code }}</td>
                                         </tr>
                                         <tr>
@@ -427,8 +427,8 @@
                                             <th>Gambar</th>
                                             <td>
                                                 @if ($asset->image)
-                                                    <a href="/storage/{{ $asset->image }}" target="_blank">
-                                                        <img src="/storage/{{ $asset->image }}" width="200">
+                                                    <a href="{{ asset('storage/' . $asset->image) }}" target="_blank">
+                                                        <img src="{{ asset('storage/' . $asset->image) }}" width="200">
                                                     </a>
                                                 @else
                                                     Tidak ada gambar

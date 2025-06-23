@@ -374,8 +374,8 @@ public function AddDataStockOpname(Request $request)
         $data_stock_opname->is_active = '1';
 
         $maxMoveoutId = MasterStockOpnameModel::max('opname_no');
-        $out_no_base = $maxMoveoutId ? $maxMoveoutId + 1 : 1;
-        $data_stock_opname->opname_no = $out_no_base;
+        $id_base = $maxMoveoutId ? $maxMoveoutId + 1 : 1;
+        $data_stock_opname->opname_no = $id_base;
         
         $data_stock_opname->save();
 
@@ -409,7 +409,7 @@ public function AddDataStockOpname(Request $request)
 
             // Insert detail record
             DB::table('t_opname_detail')->insert([
-                'opname_det_id' => $out_no_base,
+                'opname_det_id' => $id_base,
                 'opname_id' => $stock_opname_code,
                 'asset_id' => $assetId,
                 'register_code' => $request->input('register_code.'.$index) ?? '',
@@ -617,21 +617,21 @@ public function AddDataStockOpname(Request $request)
             $moveout->is_confirm = '1';
             $moveout->create_by = Auth::user()->username;
 
-            // Menghasilkan out_no secara otomatis untuk setiap aset
-            $maxMoveoutId = MasterStockOpnameModel::max('out_no');
-            $out_no_base = $maxMoveoutId ? $maxMoveoutId + 1 : 1;
+            // Menghasilkan id secara otomatis untuk setiap aset
+            $maxMoveoutId = MasterStockOpnameModel::max('id');
+            $id_base = $maxMoveoutId ? $maxMoveoutId + 1 : 1;
 
             // Menyimpan data moveout ke database
-            $moveout->out_no = $out_no_base; // Set out_no untuk pertama
+            $moveout->id = $id_base; // Set id untuk pertama
             // Menghasilkan out_id secara otomatis
-            $moveout->out_id = str_pad($out_no_base, 2, '0', STR_PAD_LEFT) . '-01-' . Carbon::now()->format('mY'); // Misal, untuk out_id
+            $moveout->out_id = str_pad($id_base, 2, '0', STR_PAD_LEFT) . '-01-' . Carbon::now()->format('mY'); // Misal, untuk out_id
             
             $moveout->save(); // Simpan moveout
 
             // Loop melalui aset untuk menyimpan detail
             foreach ($request->input('asset_id') as $index => $assetId) {
                 // Menghasilkan out_det_id secara otomatis
-                $out_det_id = str_pad($out_no_base, 2, '0', STR_PAD_LEFT) . '-' . str_pad($index + 1, 4, '0', STR_PAD_LEFT) . '-' . Carbon::now()->format('mY');
+                $out_det_id = str_pad($id_base, 2, '0', STR_PAD_LEFT) . '-' . str_pad($index + 1, 4, '0', STR_PAD_LEFT) . '-' . Carbon::now()->format('mY');
 
                 // Simpan data detail untuk aset
                 DB::table('t_out_detail')->insert([

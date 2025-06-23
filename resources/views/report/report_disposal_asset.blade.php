@@ -126,63 +126,8 @@
                     <div class="toggle-sidebar"><i class="status_toggle middle sidebar-toggle"
                             data-feather="align-center"></i></div>
                 </div>
-                <!-- <div class="left-header col horizontal-wrapper ps-0">
-            <div class="input-group">
-              <div class="input-group-prepend"><span class="input-group-text mobile-search"><i class="fa fa-search"></i></span></div>
-              <input class="form-control" type="text" placeholder="Search Here........">
-            </div>
-          </div> -->
                 <div class="nav-right col-8 pull-right right-header p-0">
                     <ul class="nav-menus">
-                        <!-- <li class="onhover-dropdown">
-                <div class="notification-box"><i class="fa fa-bell-o"> </i><span class="badge rounded-pill badge-primary">4</span></div>
-                <ul class="notification-dropdown onhover-show-div">
-                  <li><i data-feather="bell">            </i>
-                    <h6 class="f-18 mb-0">Notifications</h6>
-                  </li>
-                  <li><a href="email_read.html">
-                      <p><i class="fa fa-circle-o me-3 font-primary"> </i>Delivery processing <span class="pull-right">10 min.</span></p></a></li>
-                  <li><a href="email_read.html">
-                      <p><i class="fa fa-circle-o me-3 font-success"></i>Order Complete<span class="pull-right">1 hr</span></p></a></li>
-                  <li><a href="email_read.html">
-                      <p><i class="fa fa-circle-o me-3 font-info"></i>Tickets Generated<span class="pull-right">3 hr</span></p></a></li>
-                  <li><a href="email_read.html">
-                      <p><i class="fa fa-circle-o me-3 font-danger"></i>Delivery Complete<span class="pull-right">6 hr</span></p></a></li>
-                  <li><a class="btn btn-primary" href="email_read.html">Check all notification</a></li>
-                </ul>
-              </li> -->
-                        <!-- <li class="onhover-dropdown"><i class="fa fa-comment-o"></i>
-                <ul class="chat-dropdown onhover-show-div">
-                  <li><i data-feather="message-square"></i>
-                    <h6 class="f-18 mb-0">Message Box</h6>
-                  </li>
-                  <li>
-                    <div class="d-flex"><img class="img-fluid rounded-circle me-3" src="{{ asset('assets/images/user/1.jpg') }}">
-                      <div class="status-circle online"></div>
-                      <div class="flex-grow-1"><a href="chat.html"> <span>Ain Chavez</span>
-                          <p>Do you want to go see movie?</p></a></div>
-                      <p class="f-12 font-success">1 mins ago</p>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="d-flex"><img class="img-fluid rounded-circle me-3" src="{{ asset('assets/images/user/2.png') }}">
-                      <div class="status-circle online"></div>
-                      <div class="flex-grow-1"><a href="chat.html"> <span>Kori Thomas</span>
-                          <p>What`s the project report update?</p></a></div>
-                      <p class="f-12 font-success">3 mins ago</p>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="d-flex"><img class="img-fluid rounded-circle me-3" src="{{ asset('assets/images/dashboard/admins.png') }}">
-                      <div class="status-circle offline"></div>
-                      <div class="flex-grow-1"><a href="chat.html"> <span>Ain Chavez</span>
-                          <p>Thank you for rating us.</p></a></div>
-                      <p class="f-12 font-danger">9 mins ago</p>
-                    </div>
-                  </li>
-                  <li class="text-center"> <a class="btn btn-primary" href="chat.html">View All</a></li>
-                </ul>
-              </li> -->
                         <li>
                             <div class="mode"><i class="fa fa-moon-o"></i></div>
                         </li>
@@ -232,247 +177,174 @@
                     <div class="page-title">
                         <div class="row">
                             <div class="col-sm-6">
-                                <h3>Report Disposal </h3>
+                                <h3>Report Disposal Asset</h3>
                             </div>
                             <div class="col-sm-6">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a>
                                     </li>
                                     <li class="breadcrumb-item">ASMI</li>
-                                    <li class="breadcrumb-item active">Report Disposal</li>
+                                    <li class="breadcrumb-item active">Report Disposal Asset</li>
                                 </ol>
                             </div>
                         </div>
                     </div>
                 </div>
 
-
                 <div class="container-fluid">
                     <div class="page-title">
                         <div class="row">
                             <div class="col-sm-6">
-                                <!-- <h3>Report Data Registrasi Asset</h3> -->
                             </div>
                             <div class="container">
                                 <div class="card">
                                     <div class="card-body">
-                                        <form class="mb-4" action="{{ route('admin.filterdisout') }}"
-                                            method="POST">
+                                        <form class="mt-3 mb-5" action="/reports/export_excel_disposal_out" method="GET">
                                             @csrf
-                                            <div class="row mb-4">
-                                                <div class="col-md-4">
-                                                    <label for="start_date">Wilayah</label>
-                                                    <select class="form-select" name="wilayah">
-                                                        <option value="">-- Pilih --</option>
-                                                        @foreach ($wilayahs as $wilayah)
-                                                            <option value="{{ $wilayah->id }}">
-                                                                {{ $wilayah->nama_wilayah }}</option>
-                                                        @endforeach
-                                                    </select>
+                                            <input type="hidden" name="start_date"
+                                                class="form-control" value="{{ request('start_date') }}">
+                                            <input type="hidden" name="end_Date"
+                                                class="form-control" value="{{ request('end_date') }}">
+                                            <input type="hidden" name="location"
+                                                class="form-control" value="{{ request('location') }}">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fa fa-file-excel-o" aria-hidden="true"></i> Download Excel Data
+                                            </button>
+                                        </form>
+                                        <form class="row my-4" action="/reports/disposal_asset" method="GET">
+                                        @csrf
+                                            <div class="col-md-6">
+                                                <div class="row">
+                                                    <div class="col-md-10 mb-4">
+                                                        <label>Location</label>
+                                                        @if ($user->hasRole('SM'))
+                                                            @foreach ($selectLoc as $item)
+                                                                <input type="hidden" name="location" value="{{ $item->id }}" readonly>
+                                                                <input type="text" class="form-control" value="{{ $item->name_store_street }}" readonly>
+                                                            @endforeach
+                                                        @else
+                                                            <select class="form-select" name="location">
+                                                                @foreach ($selectLoc as $item)
+                                                                    <option value="{{ $item->id }}" {{ request('location') == $item->id ? 'selected' : '' }}>{{ $item->name_store_street }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        @endif
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <label for="start_date">Start Date (Opsional)</label>
-                                                    <input type="date" id="start_date" name="start_date"
-                                                        class="form-control" value="{{ old('start_date') }}">
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label for="end_date">End Date (Opsional)</label>
-                                                    <input type="date" id="end_date" name="end_date"
-                                                        class="form-control" value="{{ old('end_date') }}">
-                                                </div>
-                                                <div class="col-md-4 d-flex align-items-end">
-                                                    <button type="submit" class="btn btn-primary">Filter</button>
-                                                    <a href="/disposal/request-disposal"
-                                                        class="btn btn-secondary ml-2">Reset</a>
+                                                <div class="row">
+                                                    <div class="col-md-5 mb-3">
+                                                        <label>Start Date (Opsional)</label>
+                                                        <input type="date" name="start_date"
+                                                            class="form-control" value="{{ request('start_date') }}">
+                                                    </div>
+                                                    <div class="col-md-5 mb-3">
+                                                        <label>End Date (Opsional)</label>
+                                                        <input type="date" name="end_date"
+                                                            class="form-control" value="{{ request('end_date') }}">
+                                                    </div>
+                                                    <div class="col-md-2 d-flex">
+                                                        <button type="submit" class="btn btn-primary">Filter</button>
+                                                        <a href="/reports/disposal_asset"
+                                                            class="btn btn-secondary ml-2">Reset</a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </form>
-                                        <a href="{{ url('/reports/export_excel_disposal_out') }}"
-                                            class="btn btn-square btn-primary mb-4" role="button">
-                                            <i class="fa fa-file-excel-o" aria-hidden="true"></i> Download Excel Data
-                                        </a>
                                         <div class="table-responsive product-table">
-                                            <table class="display" id="coba"
-                                                style="min-width: 100%; border-collapse: separate; border-radius: 8px; overflow: hidden;">
+                                            <table class="table table-striped" style="min-width: 100%; border-collapse: separate; border-radius: 8px; overflow: hidden;">
                                                 <thead>
                                                     <tr>
-                                                        <th>Kode Disposal Asset</th>
+                                                        <th>Code Asset</th>
                                                         <th>Asset Name</th>
-                                                        <th>Disposal Location</th>
-                                                        <th>Date Register</th>
-                                                        <th>Date Disposal</th>
+                                                        <th>Category Asset</th>
+                                                        <th>Serial Number</th>
+                                                        <th>Register Date</th>
+                                                        <th>Disposal Date</th>
                                                         <th>Reason</th>
-                                                        <th>Approval</th>
-                                                        <!-- <th>Action</th> -->
+                                                        <th>Execution</th>
+                                                        <th>Approval Date</th>
+                                                        <th>Approval By</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    @foreach ($tRegist as $item)
+                                                        <tr>
+                                                            <td>{{ $item->asset_tag }}</td>
+                                                            <td>{{ $item->asset_model }}</td>
+                                                            <td>{{ $item->cat_name }}</td>
+                                                            <td>{{ $item->serial_number }}</td>
+                                                            <td>{{ $item->register_date }}</td>
+                                                            <td>{{ $item->out_date }}</td>
+                                                            <td>{{ $item->out_desc }}</td>
+                                                            <td>{{ $item->reason_name }}</td>
+                                                            <td>{{ $item->confirm_date }}</td>
+                                                            <td>{{ $item->appr_3_user }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
-                                    <!-- Correct order: jQuery first, then Bootstrap JS -->
-                                    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-                                    <!-- Popper.js next (use the CDN) -->
-                                    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-                                        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
-                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Correct order: jQuery first, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- Popper.js next (use the CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
+    </script>
 
-                                    <!-- Bootstrap JS (use the CDN or your local version) -->
-                                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"
-                                        integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous">
-                                    </script>
-
-
-
-                                    <script src="{{ asset('assets/js/icons/feather-icon/feather.min.js') }}"></script>
-                                    <script src="{{ asset('assets/js/icons/feather-icon/feather-icon.js') }}"></script>
-                                    <!-- scrollbar js-->
-                                    <script src="{{ asset('assets/js/scrollbar/simplebar.js') }}"></script>
-                                    <script src="{{ asset('assets/js/scrollbar/custom.js') }}"></script>
-                                    <!-- Sidebar jquery-->
-                                    <script src="{{ asset('assets/js/config.js') }}"></script>
-                                    <!-- Plugins JS start-->
-                                    <script src="{{ asset('assets/js/sidebar-menu.js') }}"></script>
-                                    <script src="{{ asset('assets/js/chart/chartist/chartist.js') }}"></script>
-                                    <script src="{{ asset('assets/js/chart/chartist/chartist-plugin-tooltip.js') }}"></script>
-                                    <script src="{{ asset('assets/js/chart/knob/knob.min.js') }}"></script>
-                                    <script src="{{ asset('assets/js/chart/knob/knob-chart.js') }}"></script>
-                                    <script src="{{ asset('assets/js/chart/apex-chart/apex-chart.js') }}"></script>
-                                    <script src="{{ asset('assets/js/chart/apex-chart/stock-prices.js') }}"></script>
-                                    <script src="{{ asset('assets/js/prism/prism.min.js') }}"></script>
-                                    <script src="{{ asset('assets/js/clipboard/clipboard.min.js') }}"></script>
-                                    <script src="{{ asset('assets/js/custom-card/custom-card.js') }}"></script>
-                                    <script src="{{ asset('assets/js/notify/bootstrap-notify.min.js') }}"></script>
-                                    <script src="{{ asset('assets/js/dashboard/default.js') }}"></script>
-                                    <script src="{{ asset('assets/js/slick-slider/slick.min.js') }}"></script>
-                                    <script src="{{ asset('assets/js/slick-slider/slick-theme.js') }}"></script>
-                                    <script src="{{ asset('assets/js/typeahead/handlebars.js') }}"></script>
-                                    <script src="{{ asset('assets/js/typeahead/typeahead.bundle.js') }}"></script>
-                                    <script src="{{ asset('assets/js/typeahead/typeahead.custom.js') }}"></script>
-                                    <script src="{{ asset('assets/js/typeahead-search/handlebars.js') }}"></script>
-                                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                                    <meta name="csrf-token" content="{{ csrf_token() }}">
-
-                                    <!-- Plugins JS Ends-->
-                                    <!-- Theme js-->
-                                    <script src="{{ asset('assets/js/script.js') }}"></script>
-                                    <script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>
-                                    <script src="{{ asset('assets/js/data-registrasi-asset.js') }}"></script>
-                                    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-                                        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
-                                    </script>
-                                    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-                                    <script>
-                                        var table = $('#coba').DataTable({
-                                            scrollX: true,
-                                            columnDefs: [{
-                                                    targets: 0, // Targeting the Asset Tag column
-                                                    width: "250px", // Ensure enough space for Asset Tag
-                                                    render: function(data, type, row) {
-                                                        return `<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${data}">${data}</div>`;
-                                                    },
-                                                },
-                                                {
-                                                    targets: "_all",
-                                                    width: "auto"
-                                                }, // Default auto-width for other columns
-                                            ],
-                                            "ajax": {
-                                                "url": "/reports/get_data_disposal_asset",
-                                                "type": "GET",
-                                                "dataSrc": ""
-                                            },
-                                            "columns": [{
-                                                    "data": "out_id"
-                                                },
-                                                {
-                                                    "data": "asset_model"
-                                                },
-                                                {
-                                                    "data": "name_store_street"
-                                                },
-                                                {
-                                                    "data": "register_date"
-                                                },
-                                                {
-                                                    "data": "out_date"
-                                                },
-                                                {
-                                                    "data": "out_desc"
-                                                },
-                                                {
-                                                    "data": "approval_name"
-                                                },
+    <!-- Bootstrap JS (use the CDN or your local version) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"
+        integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous">
+    </script>
 
 
-                                            ]
-                                            // "columns": [
-                                            //   {
-                                            //         data: "register_code",
-                                            //         render: function(data, type, row) {
-                                            //             return `<span title="${data}">${data}</span>`; // Show full value on hover
-                                            //         }
-                                            //     },
-                                            //     {"data": "asset_model"},
-                                            //     {"data": "serial_number"},
-                                            //     {"data": "type_name"},
-                                            //     {"data": "cat_name"},
-                                            //     {
-                                            //         "data": "priority_name",
-                                            //         "render": function(data, type, row) {
-                                            //             let color, bgColor;
-                                            //             if (data === "PRIORITY") {
-                                            //                 bgColor = 'red';
-                                            //                 color = 'white';
-                                            //             } else if (data === "NOT PRIORITY") {
-                                            //                 bgColor = 'yellow';
-                                            //                 color = 'black';
-                                            //             } else if (data === "BASIC") {
-                                            //                 bgColor = 'blue';
-                                            //                 color = 'white';
-                                            //             }
-                                            //             return `<span style="display: inline-block; padding: 5px 10px; background-color: ${bgColor}; border-radius: 4px; color: ${color};">${data}</span>`;
-                                            //         }
-                                            //     },
-                                            //     {"data": "brand_name"},
-                                            //     {"data": "uom_name"},
-                                            //     {"data": "name_store_street"},
-                                            //     {"data": "layout_name"},
-                                            //     {"data": "register_date"},
-                                            //     {"data": "supplier_name"},
-                                            //     {"data": "condition_name"},
-                                            //     {"data": "purchase_date"},
-                                            //     {"data": "warranty_name"},
-                                            //     {"data": "periodic_mtc_name"},
-                                            //     {
-                                            //         "data": "data_registrasi_asset_status",
-                                            //         "render": function(data, type, row) {
-                                            //             return `<span style="color: ${data === 'active' ? 'green' : 'red'};">${data}</span>`;
-                                            //         }
-                                            //     },
-                                            //     {
-                                            //         "data": "null",
-                                            //         "render": function(data, type, row) {
-                                            //             let approveButton = '';
-                                            //             if (row.approve_status !== 'sudah approve') {
-                                            //                 approveButton = `<button class="dropdown-item approve-btn" data-id="${row.id}">Submit Approve</button>`;
-                                            //             }
 
-                                            //             return `
-        //             <div class="dropdown">
-        //                 <button class="btn btn-large btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton${row.id}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        //                     Actions
-        //                 </button>
-        //                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton${row.id}">
-        //                     <a class="dropdown-item" href="/generate-pdf/${row.register_code}" target="_blank">Cetak QR Code</a>
-        //                     <a class="dropdown-item" href="/admin/registrasi_asset/detail_data_registrasi_asset/${row.id}" target="_blank">Detail Barang Asset</a>
-        //                     ${approveButton}
-        //                 </div>
-        //             </div>`;
-                                            //         }
-                                            //     }
-                                        });
-                                    </script>
+    <script src="{{ asset('assets/js/icons/feather-icon/feather.min.js') }}"></script>
+    <script src="{{ asset('assets/js/icons/feather-icon/feather-icon.js') }}"></script>
+    <!-- scrollbar js-->
+    <script src="{{ asset('assets/js/scrollbar/simplebar.js') }}"></script>
+    <script src="{{ asset('assets/js/scrollbar/custom.js') }}"></script>
+    <!-- Sidebar jquery-->
+    <script src="{{ asset('assets/js/config.js') }}"></script>
+    <!-- Plugins JS start-->
+    <script src="{{ asset('assets/js/sidebar-menu.js') }}"></script>
+    <script src="{{ asset('assets/js/chart/chartist/chartist.js') }}"></script>
+    <script src="{{ asset('assets/js/chart/chartist/chartist-plugin-tooltip.js') }}"></script>
+    <script src="{{ asset('assets/js/chart/knob/knob.min.js') }}"></script>
+    <script src="{{ asset('assets/js/chart/knob/knob-chart.js') }}"></script>
+    <script src="{{ asset('assets/js/chart/apex-chart/apex-chart.js') }}"></script>
+    <script src="{{ asset('assets/js/chart/apex-chart/stock-prices.js') }}"></script>
+    <script src="{{ asset('assets/js/prism/prism.min.js') }}"></script>
+    <script src="{{ asset('assets/js/clipboard/clipboard.min.js') }}"></script>
+    <script src="{{ asset('assets/js/custom-card/custom-card.js') }}"></script>
+    <script src="{{ asset('assets/js/notify/bootstrap-notify.min.js') }}"></script>
+    <script src="{{ asset('assets/js/dashboard/default.js') }}"></script>
+    <script src="{{ asset('assets/js/slick-slider/slick.min.js') }}"></script>
+    <script src="{{ asset('assets/js/slick-slider/slick-theme.js') }}"></script>
+    <script src="{{ asset('assets/js/typeahead/handlebars.js') }}"></script>
+    <script src="{{ asset('assets/js/typeahead/typeahead.bundle.js') }}"></script>
+    <script src="{{ asset('assets/js/typeahead/typeahead.custom.js') }}"></script>
+    <script src="{{ asset('assets/js/typeahead-search/handlebars.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- Plugins JS Ends-->
+    <!-- Theme js-->
+    <script src="{{ asset('assets/js/script.js') }}"></script>
+    <script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/data-registrasi-asset.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 
 </html>

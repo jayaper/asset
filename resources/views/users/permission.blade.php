@@ -270,9 +270,19 @@
                             <div class="card">
                                 <div class="card-header pb-0">
                                     <h5>Permission List</h5>
-                                    <span>adalah daftar atau kumpulan aset yang dimiliki oleh seseorang, organisasi,
-                                        atau perusahaan. Daftar ini biasanya mencakup rincian tentang setiap aset,
-                                        seperti jenis aset, nilai, lokasi, dan informasi relevan lainnya.</span>
+                                    <span>
+                                        adalah daftar atau kumpulan data permission yang dimiliki oleh role tertentu. Konfigurasi permission untuk role bisa di lakukan disini!
+                                        <br>
+                                        <b>*Catatan Kode : </b>
+                                        <ol>
+                                            <li>btn = button</li>
+                                            <li>view = halaman</li>
+                                            <li>at = Asset Transfer</li>
+                                            <li>dis = Disposal Asset</li>
+                                            <li>so = Stock Opname</li>
+                                            <li>md = Master Data</li>
+                                        </ol>
+                                    </span>
                                 </div>
                                 <div class="card-body">
                                     <div class="btn-showcase">
@@ -535,7 +545,7 @@
                                                             <form class="delete-form" action="" method="POST"
                                                                 style="display:inline;">
                                                                 @csrf
-                                                                @method('DELETE')
+                                                                {{-- @method('DELETE') --}}
                                                                 <button type="button" class="delete-button"
                                                                     title="Delete"
                                                                     style="border: none; background: none; cursor: pointer;">
@@ -650,7 +660,7 @@
                                 </a>
                                 <form class="delete-form" action="{{ url('admin/users/delete') }}/${user.id}" method="POST" style="display:inline;">
                                     @csrf
-                                    @method('DELETE')
+                                    {{-- @method('DELETE') --}}
                                     <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">
                                         <i class="fas fa-trash-alt" style="color: red;"></i>
                                     </button>
@@ -741,7 +751,7 @@
                 var formData = new FormData(this);  // Mengambil semua data dari form
 
                 // Menambahkan _method PUT di data form untuk menyimulasikan metode PUT
-                formData.append('_method', 'PUT');
+                formData.append('_method', 'POST');
 
                 // URL dengan ID dinamis yang didapatkan dari form
                 var url = "{{ route('permission.update', ':id') }}".replace(':id', $('#edit_id').val());
@@ -807,7 +817,7 @@
 
                 $.ajax({
                     url: actionUrl, // URL dari form
-                    method: 'DELETE', // Method untuk delete
+                    method: 'POST', // Method untuk delete
                     data: form.serialize(), // Kirim data form
                     success: function(response) {
                         if (response.status === 'success') {

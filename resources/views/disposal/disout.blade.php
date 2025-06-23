@@ -258,9 +258,7 @@
                             <div class="card">
                                 <div class="card-header pb-0">
                                     <h5>Disposal Out Name List</h5>
-                                    <span>adalah daftar atau kumpulan aset yang dimiliki oleh seseorang, organisasi,
-                                        atau perusahaan. Daftar ini biasanya mencakup rincian tentang setiap aset,
-                                        seperti jenis aset, nilai, lokasi, dan informasi relevan lainnya.</span>
+                                    <span>adalah daftar atau kumpulan aset yang telah di request untuk disposal!</span>
                                 </div>
                                 <div class="card-body">
                                     <div class="btn-showcase">
@@ -649,7 +647,7 @@
                                                     <th>ID Disposal Out</th>
                                                     <th>Tanggal Disposal Out</th>
                                                     <th>Lokasi Asal</th>
-                                                    <th>Quantity Barang</th>
+                                                    {{-- <th>Quantity Barang</th> --}}
                                                     <th>Deskripsi</th>
                                                     <th>Alasan</th>
                                                     <th>Status Disposal</th>
@@ -669,7 +667,7 @@
                                                         <td>{{ $moveout->out_id }}</td>
                                                         <td>{{ $moveout->out_date }}</td>
                                                         <td>{{ $moveout->name_store_street }}</td>
-                                                        <td>{{ $moveout->qty }}</td>
+                                                        {{-- <td>{{ $moveout->qty }}</td> --}}
                                                         <td>{{ $moveout->out_desc }}</td>
                                                         <td>{{ $moveout->reason_name }}</td>
                                                         <td>{{ $moveout->approval_name }}</td>
@@ -702,7 +700,7 @@
                                                                     action="{{ url('disposal/request-disposal/delete', $moveout->out_id) }}"
                                                                     method="POST" style="display:inline;">
                                                                     @csrf
-                                                                    @method('DELETE')
+                                                                    {{-- @method('DELETE') --}}
                                                                     <button type="button" class="delete-button"
                                                                         title="Delete"
                                                                         style="border: none; background: none; cursor: pointer;"
@@ -863,7 +861,7 @@
                     // Perform AJAX DELETE request
                     $.ajax({
                         url: actionUrl, // Form action URL
-                        method: 'DELETE', // HTTP method
+                        method: 'POST', // HTTP method
                         data: form.serialize(), // Serialize form data
                         success: function(response) {
                             if (response.status === 'success') {

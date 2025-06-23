@@ -14,6 +14,7 @@ use App\Exports\ReportMutasiStock;
 use App\Exports\ReportDisposalData;
 use App\Exports\ReportKartuStock;
 use App\Exports\ReportStockAssetPerLocation;
+use App\Exports\ReportStockopname;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -143,7 +144,6 @@ class ReportController extends Controller {
                         'c.appr_3_user',
                         'c.appr_3_date',
                         'd.asset_model',
-                        'a.qty',
                         'e.uom_name',
                         'f.name_store_street AS lokasi_asal',
                         'g.name_store_street AS lokasi_akhir',
@@ -335,7 +335,12 @@ class ReportController extends Controller {
         $user = Auth::user();
         $final = collect();
 
-        if ($request->filled('date') && $request->filled('location')) {
+        if ($request->filled('location')) {
+            $tanggal  = $request->input('date') ?? Carbon::now()->format('Y-m-d');
+            $jam      = $request->input('time') ?? '23:59';
+            $datetime = $tanggal . ' ' . $jam . ':00';
+            $lokasi   = $request->input('location');
+
             $T_regist = DB::table('table_registrasi_asset AS a')
                 ->select(
                     'a.register_date',
@@ -349,7 +354,7 @@ class ReportController extends Controller {
                     'f.type_name',
                     'g.cat_name',
                     'h.name_store_street AS lokasi_sekarang',
-                    'i.layout_name',
+                    'i.layout_name'
                 )
                 ->leftJoin('m_assets AS b', 'b.asset_id', '=', 'a.asset_name')
                 ->leftJoin('m_uom AS c', 'c.uom_id', '=', 'a.satuan')
@@ -359,10 +364,38 @@ class ReportController extends Controller {
                 ->leftJoin('m_category AS g', 'g.cat_code', '=', 'a.category_asset')
                 ->leftJoin('miegacoa_keluhan.master_resto AS h', 'h.id', '=', 'a.location_now')
                 ->leftJoin('m_layout AS i', 'i.layout_id', '=', 'a.layout')
-                ->where('a.register_date', $request->input('date'))
-                ->where('a.location_now', $request->input('location'));
+                ->leftJoin('t_out AS j', 'j.out_id', '=', 'a.last_transaction_code') // last confirmed transaction only
 
-            $final = $T_regist->get();
+                // FILTER KONDISI
+                ->where(function ($query) use ($lokasi, $datetime) {
+                    $query
+                        // Aset belum pernah ditransaksikan
+                        ->orWhere(function ($q) use ($lokasi, $datetime) {
+                            $q->whereNull('a.last_transaction_code')
+                            ->where('a.location_now', $lokasi)
+                            ->where('a.created_at', '<=', $datetime);
+                        })
+
+                        // Aset sudah ditransaksikan dan sekarang berada di lokasi tujuan
+                        ->orWhere(function ($q) use ($lokasi, $datetime) {
+                            $q->whereNotNull('a.last_transaction_code')
+                            ->where('j.is_confirm', 3)
+                            ->where('j.dest_loc', $lokasi)
+                            ->where('j.confirm_date', '<=', $datetime);
+                        })
+
+                        // Aset pertama kali ditransaksikan, tapi belum sampai lokasi tujuan
+                        ->orWhere(function ($q) use ($lokasi, $datetime) {
+                            $q->whereNotNull('a.last_transaction_code')
+                            ->where('j.is_confirm', 3)
+                            ->where('a.location_now', $lokasi)
+                            ->where('a.created_at', '<=', $datetime)
+                            ->where('j.confirm_date', '>', $datetime);
+                        });
+                });
+
+
+            $final = $T_regist->orderBy('a.id', 'ASC')->get();
         }
 
         $q_loc = DB::table('miegacoa_keluhan.master_resto AS a');
@@ -420,75 +453,122 @@ class ReportController extends Controller {
         return view('Admin.report.report_garansi_asset');
     }
 
-    public function ReportDisposalAsset() {
-        $wilayahs = DB::table('miegacoa_keluhan.master_resto')
-                    ->select('id', 'name_store_street AS nama_wilayah')
-                    ->get();
+    public function ReportDisposalAsset(Request $request) {
+        $user = Auth::user();
+        $final = collect();
+
+        if ($request->filled('location')) {
+            $T_regist = DB::table('t_out_detail AS a')
+                ->select(
+                    'a.asset_tag',
+                    'c.asset_model',
+                    'd.cat_name',
+                    'b.serial_number',
+                    'b.register_date',
+                    'e.out_date',
+                    'e.out_desc',
+                    'f.reason_name',
+                    'e.confirm_date',
+                    'e.appr_3_user',
+                )
+                ->leftJoin('table_registrasi_asset AS b', 'b.register_code', '=', 'a.asset_tag')
+                ->leftJoin('m_assets AS c', 'c.asset_id', '=', 'b.asset_name')
+                ->leftJoin('m_category AS d', 'd.cat_code', '=', 'b.category_asset')
+                ->leftJoin('t_out AS e', 'e.out_id', '=', 'a.out_id')
+                ->leftJoin('m_reason AS f', 'f.reason_id', '=', 'e.reason_id')
+                ->where('e.out_id', 'like', 'DA%')
+                ->where('e.is_confirm', 3)
+                ->where('b.location_now', $request->input('location'));
+
+                if($request->filled('start_date') && $request->filled('end_date')){
+                    $T_regist->whereBetween('e.out_date', [
+                        $request->input('start_date') . ' 00:00:00',
+                        $request->input('end_date') . ' 23:59:59'
+                    ]);
+                }
+
+            $final = $T_regist->get();
+        }
+
+        $q_loc = DB::table('miegacoa_keluhan.master_resto AS a');
+        if($user->hasRole('SM')){
+            $q_loc->where('a.id', $user->location_now);
+        }else if($user->hasRole('AM')){
+            $q_loc->where('a.kode_city', $user->location_now);
+        }else if($user->hasRole('RM')){
+            $q_loc->where('a.id_regional', $user->location_now);
+        }
+        $select_loc = $q_loc->get();
+
         return view('report.report_disposal_asset', [
-            'wilayahs' => $wilayahs
+            'user' => $user,
+            'selectLoc' => $select_loc,
+            'tRegist' => $final
         ]);
     }
 
-    public function ReportDisposalAssetData() : JsonResponse {
-        $DataDisposal = DB::table('t_out')
-        ->select(
-            't_out.*',
-            't_out_detail.*',
-            'm_reason.reason_name',
-            'mc_approval.approval_name',
-            'miegacoa_keluhan.master_resto.*',
-            'table_registrasi_asset.*',
-            'm_assets.*'
-        )
-        ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id') // Added this join
-        ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-        ->join('miegacoa_keluhan.master_resto', 't_out.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
-        ->join('table_registrasi_asset', 't_out_detail.asset_id', '=', 'table_registrasi_asset.id')
-        ->join('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
-        ->where('t_out.out_id', 'like', 'DA%')
-        ->where('is_confirm', 3);
-        $user = Auth::User();
-        if(!$user->hasRole('Admin')){
-            $DataDisposal->where(function($q) use ($user){
-                $q->where('t_out.from_loc', $user->location_now);
-            });
+    public function ExportExcelDisposalAssetData(Request $request) {
+        return Excel::download(new ReportDisposalData($request),'data_disposal_asset.xlsx');
+    }
+
+    public function ReportStockOpname(Request $request) {
+        $user = Auth::user();
+        $TSO = collect();
+
+        if ($request->filled('location')) {
+            $tStockopname = DB::table('t_stockopname AS a')
+                        ->select(
+                            'a.*',
+                            'b.reason_name',
+                            'c.name_store_street',
+                            'd.condition_name',
+                            'e.approval_name',
+                        )
+                        ->leftJoin('m_reason AS b', 'b.reason_id', '=', 'a.reason')
+                        ->leftJoin('miegacoa_keluhan.master_resto AS c', 'c.id', '=', 'a.location')
+                        ->leftJoin('m_condition AS d', 'd.condition_id', '=', 'a.condition')
+                        ->leftJoin('mc_approval AS e', 'e.approval_id', '=', 'a.is_confirm')
+                        ->leftJoin('miegacoa_keluhan.master_resto AS f', 'f.id', '=', 'a.location');
+                        if($user->hasRole('SM')){
+                            $tStockopname->where(function($query) use ($user) {
+                                $query->where('f.id', $user->location_now);
+                            });
+                        }else if($user->hasRole('AM')){
+                            $tStockopname->where(function($query) use ($user) {
+                                $query->where('f.kode_city', $user->location_now);
+                            });
+                        }else if($user->hasRole('RM')){
+                            $tStockopname->where(function($query) use ($user) {
+                                $query->where('f.id_regional', $user->location_now);
+                            });
+                        }
+                        if($request->filled('date')){
+                            $tStockopname->where(function($query) use ($request) {
+                                $query->whereDate('a.create_date', $request->input('date'));
+                            });
+                        }
+                        $TSO = $tStockopname->get();
         }
 
-        $data = $DataDisposal->get();
-    
-    
-        return response()->json($data);
-    
+        $q_loc = DB::table('miegacoa_keluhan.master_resto AS a');
+        if($user->hasRole('SM')){
+            $q_loc->where('a.id', $user->location_now);
+        }else if($user->hasRole('AM')){
+            $q_loc->where('a.kode_city', $user->location_now);
+        }else if($user->hasRole('RM')){
+            $q_loc->where('a.id_regional', $user->location_now);
+        }
+        $select_loc = $q_loc->get();
+
+        return view('report.report_stock_opname', [
+            'user' => $user,
+            'selectLoc' => $select_loc,
+            'stockopnames' => $TSO
+        ]);
     }
 
-    public function ExportExcelDisposalAssetData() {
-        return Excel::download(new ReportDisposalData,'data_disposal_asset.xlsx');
-    }
-
-    public function ReportStockOpname() {
-        return view('report.report_stock_opname');
-    }
-
-
-    public function ReportStockOpnameData() : JsonResponse {
-        $dataStockOpname = DB::table('t_opname_header')
-        ->join('t_opname_detail', 't_opname_header.opname_id', '=', 't_opname_detail.opname_id')
-        ->join('miegacoa_keluhan.master_resto', 't_opname_header.loc_id', '=', 'miegacoa_keluhan.master_resto.id')
-        ->join('m_condition', 'm_condition.condition_id', '=', 't_opname_detail.condition')
-        ->join('m_uom', 'm_uom.uom_id', '=', 't_opname_detail.uom')
-        ->select(
-            't_opname_header.opname_id', 
-            't_opname_header.opname_desc',
-            't_opname_header.deleted_at',
-            't_opname_detail.*', 
-            'm_condition.condition_name', 
-            'm_uom.uom_name', 
-            'miegacoa_keluhan.master_resto.name_store_street AS location_now')
-        ->where('t_opname_header.is_active', '=', '1')
-        ->get();
-
-        return response()->json($dataStockOpname);
+    public function ExportStockopname(Request $request) {
+        return Excel::download(new ReportStockopname($request),'data_stock_opname.xlsx');
     }
 
     public function ReportTrendIssue() {

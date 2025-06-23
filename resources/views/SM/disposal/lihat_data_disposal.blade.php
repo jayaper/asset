@@ -989,7 +989,7 @@
                 success: function(response) {
                     // Assuming response is a JSON object containing the necessary data
                     $('#moveout-id').text(response.out_id);
-                    $('#moveout-no').text(response.out_no);
+                    $('#moveout-no').text(response.id);
                     $('#out-date').text(response.out_date);
                     $('#from-loc').text(response.from_loc);
                     $('#dest-loc').text(response.dest_loc);
@@ -1038,7 +1038,7 @@
                     // Perform AJAX DELETE request
                     $.ajax({
                         url: actionUrl, // Form action URL
-                        method: 'DELETE', // HTTP method
+                        method: 'POST', // HTTP method
                         data: form.serialize(), // Serialize form data
                         success: function(response) {
                             if (response.status === 'success') {

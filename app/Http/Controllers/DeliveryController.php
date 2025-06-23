@@ -207,8 +207,8 @@ class DeliveryController extends Controller
 
         // Combine the results (if necessary)
         $response = [
+            'id' => $moveOut->id,
             'out_id' => $moveOut->out_id,
-            'out_no' => $moveOut->out_no,
             'out_date' => $moveOut->out_date,
             'from_loc' => $moveOut->from_loc,
             'dest_loc' => $moveOut->dest_loc,

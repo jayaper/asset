@@ -31,6 +31,14 @@
                         <form class="mt-5" action="{{route('login')}}" method="post">
                             @csrf
                             <div class="container">
+                                @if (session('error'))
+                                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                        <div>
+                                            {{ session('error') }}
+                                        </div>
+                                    </div>
+                                @endif
+
                                 <label for="username"><h6>NIK (Nomor Induk Karyawan) : </h6></label>
                                 <br>
                                 <input type="text" name="username" id="username" class="form-control form-control-lg" placeholder="Masukkan NIK Anda...." required>

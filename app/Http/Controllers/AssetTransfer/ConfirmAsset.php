@@ -100,7 +100,8 @@ class ConfirmAsset extends Controller
                 DB::table('table_registrasi_asset')->where('register_code', $detail->asset_tag)->update([
                     'qty' => 1,
                     'status_asset' => 1,
-                    'location_now' => $moveout->dest_loc
+                    'location_now' => $moveout->dest_loc,
+                    'last_transaction_code' => $id
                 ]);
         
                 DB::table('asset_tracking')->insert([
@@ -147,20 +148,6 @@ class ConfirmAsset extends Controller
                         'qty' => 1
                     ]);
                 }
-            }
-
-            $transactions = DB::table('t_transaction_qty')
-                ->where('out_id', $id)
-                ->get();
-
-            foreach ($transactions as $transaction) {
-                DB::table('t_transaction_qty')
-                    ->where('id', $transaction->id)
-                    ->update([
-                        'qty' => $transaction->qty_continue,
-                        'qty_continue' => 0,
-                        'qty_disposal' => 0
-                    ]);
             }
         }
 

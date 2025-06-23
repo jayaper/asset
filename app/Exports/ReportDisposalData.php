@@ -6,57 +6,71 @@ use App\Models\Master\MasterRegistrasiModel;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use App\Exports\QrCode;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ReportDisposalData implements FromCollection, WithHeadings
 {
+    protected $request;
+
+    public function __construct(Request $request)
+    {
+        $this->request = $request;
+    }
+
     public function collection()
     {
-        $DataDisposal = DB::table('t_out')
-        ->select(
-            't_out.out_id',
-            't_out_detail.out_id',
-            'table_registrasi_asset.register_code',
-            'm_assets.asset_model',
-            'miegacoa_keluhan.master_resto.name_store_street',
-            'table_registrasi_asset.register_date AS registrasi_date',
-            't_out.create_date AS date_destruction',
-            't_out.out_desc',
-            'mc_approval.approval_name',
-            'm_condition.condition_name'
-        )
-        
-        ->join('t_out_detail', 't_out.out_id', '=', 't_out_detail.out_id')
-        ->join('miegacoa_keluhan.master_resto', 'miegacoa_keluhan.master_resto.id', '=', 't_out.from_loc')
-        ->join('table_registrasi_asset', 't_out_detail.asset_id', '=', 'table_registrasi_asset.id')
-        ->join('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
-        ->join('m_reason', 't_out.reason_id', '=', 'm_reason.reason_id')
-        ->join('mc_approval', 't_out.is_confirm', '=', 'mc_approval.approval_id')
-        ->join('m_condition', 't_out_detail.condition', '=', 'm_condition.condition_id')
-        ->where('t_out.out_id', 'like', 'DA%')
-        ->where('is_confirm', 3)
-        ->get();
-    
-        $dataWithIndex = $DataDisposal->values()->map(function ($item, $key) {
-            return array_merge(['No' => $key + 1], (array) $item);
-        });
+         $final = collect();
 
-        return collect($dataWithIndex);
+        if ($this->request->filled('location')) {
+            $T_regist = DB::table('t_out_detail AS a')
+                ->select(
+                    'a.asset_tag',
+                    'c.asset_model',
+                    'd.cat_name',
+                    'b.serial_number',
+                    'b.register_date',
+                    'e.out_date',
+                    'e.out_desc',
+                    'f.reason_name',
+                    'e.confirm_date',
+                    'e.appr_3_user',
+                )
+                ->leftJoin('table_registrasi_asset AS b', 'b.register_code', '=', 'a.asset_tag')
+                ->leftJoin('m_assets AS c', 'c.asset_id', '=', 'b.asset_name')
+                ->leftJoin('m_category AS d', 'd.cat_code', '=', 'b.category_asset')
+                ->leftJoin('t_out AS e', 'e.out_id', '=', 'a.out_id')
+                ->leftJoin('m_reason AS f', 'f.reason_id', '=', 'e.reason_id')
+                ->where('e.out_id', 'like', 'DA%')
+                ->where('e.is_confirm', 3)
+                ->where('b.location_now', $this->request->input('location'));
+
+                if($this->request->filled('start_date') && $this->request->filled('end_date')){
+                    $T_regist->whereBetween('e.out_date', [
+                        $this->request->input('start_date') . ' 00:00:00',
+                        $this->request->input('end_date') . ' 23:59:59'
+                    ]);
+                }
+
+            $final = $T_regist->get();
+        }
+
+        return collect($final);
     }
 
     public function headings(): array
     {
         return [
-            'No',
-            'Code Disposal Asset',
-            'Asset Tag',
+            'Code Asset',
             'Asset Name',
-            'Disposal Location',
-            'Date Register',
-            'Date Disposal',
+            'Category Asset',
+            'Serial Number',
+            'Register Date',
+            'Disposal Date',
             'Reason',
-            'Approval Status',
-            'Condition'
+            'Execution',
+            'Approval Date',
+            'Approval By',
         ];
     }
 }

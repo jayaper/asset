@@ -260,10 +260,11 @@
                                                         <tr>
                                                             <th style="width: 50px">#</th>
                                                             <th style="min-width: 200px">Tanggal</th>
+                                                            <th style="min-width: 150px">Transaction Number</th>
                                                             <th style="min-width: 150px">Reason</th>
                                                             <th style="min-width: 250px">Deskripsi</th>
                                                             <th style="min-width: 200px">Lokasi</th>
-                                                            <th style="min-width: 60px">Saldo</th>
+                                                            {{-- <th style="min-width: 60px">Saldo</th> --}}
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -273,6 +274,7 @@
                                                                 <td>{{ $item->start_date_formatted }}<br><strong
                                                                         class="fs-3">→</strong><br>{{ $item->end_date_formatted }}
                                                                 </td>
+                                                                <td>{{ $item->out_id }}</td>
                                                                 <td>{{ $item->reason_name }}</td>
                                                                 <td>{{ $item->description }}</td>
                                                                 <td>
@@ -283,7 +285,7 @@
                                                                     <span
                                                                         class="text-muted">{{ $item->menuju }}</span>
                                                                 </td>
-                                                                <td>{{ $item->saldo }}</td>
+                                                                {{-- <td>{{ $item->saldo }}</td> --}}
                                                             </tr>
                                                         @endforeach
                                                     </tbody>

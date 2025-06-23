@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Auth;
 
 class ApprovalOpsRM extends Controller
 {
-    function index(){
+    function index()
+    {
         $user = Auth::User();
         $from_loc = auth()->user()->location_now;
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
@@ -21,6 +22,13 @@ class ApprovalOpsRM extends Controller
         $moveouts = DB::table('t_out')
             ->select(
                 't_out.*',
+                DB::raw("
+                    CASE
+                        WHEN LENGTH(t_out.out_desc) > 50
+                            THEN CONCAT(SUBSTRING(t_out.out_desc, 1, 50), '...')
+                        ELSE t_out.out_desc
+                    END as out_desc
+                "),
                 'b.qty',
                 'm_reason.reason_name',
                 'mc_approval.approval_name',
@@ -35,7 +43,11 @@ class ApprovalOpsRM extends Controller
                     SUM(b.qty) as qty
                 FROM t_out_detail AS b
                 GROUP BY b.out_id
-                ) AS b'), 'b.out_id', '=', 't_out.out_id')
+                ) AS b'),
+                'b.out_id',
+                '=',
+                't_out.out_id'
+            )
             ->leftJoin('mc_approval', 'mc_approval.approval_id', '=', 't_out.appr_2')
             ->leftJoin('m_reason', 'm_reason.reason_id', '=', 't_out.reason_id')
             ->leftJoin('miegacoa_keluhan.master_resto as fromResto', 'fromResto.id', '=', 't_out.from_loc')
@@ -44,19 +56,19 @@ class ApprovalOpsRM extends Controller
             ->whereNull('t_out.deleted_at')
             ->where('t_out.out_id', 'like', 'AM%');
 
-            if (Auth::user()->hasRole('SM')){
-                $moveouts->where(function($q){
-                    $q->where('t_out.from_loc', Auth::user()->location_now);
-                });
-            }else if(Auth::user()->hasRole('AM')){
-                $moveouts->where(function($q){
-                    $q->where('fromResto.kode_city', Auth::user()->location_now);
-                });
-            }else if(Auth::user()->hasRole('RM')){
-                $moveouts->where(function($q){
-                    $q->where('fromResto.id_regional', Auth::user()->location_now);
-                });
-            }
+        if (Auth::user()->hasRole('SM')) {
+            $moveouts->where(function ($q) {
+                $q->where('t_out.from_loc', Auth::user()->location_now);
+            });
+        } else if (Auth::user()->hasRole('AM')) {
+            $moveouts->where(function ($q) {
+                $q->where('fromResto.kode_city', Auth::user()->location_now);
+            });
+        } else if (Auth::user()->hasRole('RM')) {
+            $moveouts->where(function ($q) {
+                $q->where('fromResto.id_regional', Auth::user()->location_now);
+            });
+        }
 
         $moveouts = $moveouts->orderBy('t_out.created_at', 'desc')->paginate(10);
 
@@ -72,7 +84,7 @@ class ApprovalOpsRM extends Controller
 
     public function updateDataApprRM(Request $request, $id)
     {
-        $moveout = MasterMoveOut::find($id); 
+        $moveout = MasterMoveOut::find($id);
 
         if (!$moveout) {
             return response()->json(['status' => 'error', 'message' => 'moveout not found.'], 404);
@@ -85,66 +97,45 @@ class ApprovalOpsRM extends Controller
 
         if ($request->appr_2 == '2') {
 
-            $moveout->appr_3 = '1'; 
-
+            $moveout->appr_3 = '1';
         } elseif ($request->appr_2 == '4') {
 
             $moveout->is_confirm = '4';
-    
+            $moveout->confirm_date = Carbon::now();
+
             DB::table('t_out_detail')
-            ->where('out_id', $id)
-            ->update(['status' => 4]);
+                ->where('out_id', $id)
+                ->update(['status' => 4]);
 
-        // Fetch details
-        $details = DB::table('t_out_detail')
-            ->where('out_id', $id)
-            ->get();
+            // Fetch details
+            $details = DB::table('t_out_detail')
+                ->where('out_id', $id)
+                ->get();
 
-        foreach ($details as $detail) {
-            // Reduce qty and store in qty_final
-            $newQty = max(0, $detail->qty - 1);
-            DB::table('t_out_detail')
-                ->where('out_id', $detail->out_id)
-                ->update([
-                    'qty' => $newQty,
-                ]);
-
-            // Increment qty in table_registrasi_asset
-            $t_regist = DB::table('table_registrasi_asset')
-                ->where('register_code', $detail->asset_tag)->get();
-
-            foreach($t_regist as $table){
-                DB::table('table_registrasi_asset')->where('register_code', $table->register_code)
-                ->update([
-                    'location_now' => $moveout->from_loc,
-                    'qty' => 1,
-                    'status_asset' => 1
-                ]);
-            }
-            
-        }
-
-        // Update t_transaction_qty
-        $transactions = DB::table('t_transaction_qty')
-            ->where('out_id', $id)
-            ->get();
-
-        foreach ($transactions as $transaction) {
-            // If appr_1 is 4, move qty_continue back to qty
-            if ($request->appr_2 == '4') {
-                DB::table('t_transaction_qty')
-                    ->where('id', $transaction->id)
+            foreach ($details as $detail) {
+                // Reduce qty and store in qty_final
+                $newQty = max(0, $detail->qty - 1);
+                DB::table('t_out_detail')
+                    ->where('out_id', $detail->out_id)
                     ->update([
-                        'qty' => $transaction->qty_continue,
-                        'qty_continue' => 0,
-                        'qty_disposal' => 0
+                        'qty' => $newQty,
                     ]);
+
+                // Increment qty in table_registrasi_asset
+                $t_regist = DB::table('table_registrasi_asset')
+                    ->where('register_code', $detail->asset_tag)->get();
+
+                foreach ($t_regist as $table) {
+                    DB::table('table_registrasi_asset')->where('register_code', $table->register_code)
+                        ->update([
+                            'location_now' => $moveout->from_loc,
+                            'qty' => 1,
+                            'status_asset' => 1
+                        ]);
+                }
             }
         }
-        } elseif ($request->appr_2 == '2') {
 
-        }
-        
         if ($moveout->save()) {
             return response()->json([
                 'status' => 'success',

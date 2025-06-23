@@ -753,7 +753,7 @@
             
             $.ajax({
                 url: actionUrl, // URL dari form
-                method: 'DELETE', // Method untuk delete
+                method: 'POST', // Method untuk delete
                 data: form.serialize(), // Kirim data form
                 success: function(response) {
                     if (response.status === 'success') {

@@ -40,7 +40,7 @@
                 @endcan
 
                 @csrf
-                @method('DELETE')
+                {{-- @method('DELETE') --}}
 
                 @can('product-delete')
                 <button type="submit" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i> Delete</button>

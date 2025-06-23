@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class Review extends Controller
 {
-    public function index() 
+    public function index(Request $request) 
     {
         $reasons = DB::table('m_reason')->select('reason_id', 'reason_name')->get();
 
@@ -28,14 +28,6 @@ class Review extends Controller
                 ->where('nip', $username)
 
                 ->value('loc_id'); 
-
-
-
-        $registerLocation = DB::table('master_resto')
-
-                ->where('store_code', $fromLoc)
-
-                ->value('resto');
 
     
 
@@ -93,8 +85,14 @@ class Review extends Controller
                 });
             }else if ($user->hasRole('RM')) {
                 $query->where(function ($q){
-                    $q->where('miegacoa_keluhan.id_regional.', Auth::User()->location_now);
+                    $q->where('miegacoa_keluhan.master_resto.id_regional', Auth::User()->location_now);
                 });
+            }
+            if($request->filled('start_date') && $request->filled('end_date')){
+                 $query->whereBetween('t_out.out_date', [
+                    $request->input('start_date') . ' 00:00:00',
+                    $request->input('end_date') . ' 23:59:59'
+                ]);
             }
         $moveouts = $query->paginate(10);
     
@@ -131,13 +129,12 @@ class Review extends Controller
 
         $assets = DB::table('table_registrasi_asset')
         ->leftjoin('t_out_detail', 'table_registrasi_asset.register_code', 't_out_detail.asset_tag')
-        ->leftjoin('t_transaction_qty', 't_out_detail.out_id', '=', 't_transaction_qty.out_id')
-        ->leftjoin('t_out', 't_transaction_qty.out_id', 't_out.out_id')
+        ->leftjoin('t_out', 't_out_detail.out_id', 't_out.out_id')
         ->leftjoin('m_assets', 'table_registrasi_asset.asset_name', '=', 'm_assets.asset_id')
         ->leftjoin('m_brand', 'table_registrasi_asset.merk', '=', 'm_brand.brand_id')
         ->leftjoin('m_condition', 'table_registrasi_asset.condition', '=', 'm_condition.condition_id')
         ->leftjoin('m_uom', 'table_registrasi_asset.satuan', '=', 'm_uom.uom_id')
-        ->select('m_assets.asset_model', 'm_brand.brand_name', 't_transaction_qty.qty', 'm_uom.uom_name', 'table_registrasi_asset.serial_number', 'table_registrasi_asset.register_code', 'm_condition.condition_name', 't_out_detail.image')
+        ->select('m_assets.asset_model', 'm_brand.brand_name', 't_out_detail.qty', 'm_uom.uom_name', 'table_registrasi_asset.serial_number', 'table_registrasi_asset.register_code', 'm_condition.condition_name', 't_out_detail.image')
         ->where('t_out.out_id', 'like', 'DA%')
         ->where('t_out_detail.out_id', $id)
         ->get();

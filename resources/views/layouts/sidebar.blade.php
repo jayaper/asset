@@ -132,12 +132,17 @@
                         </ul>
                     </li>
 
-                    <li class="sidebar-list"><a class="sidebar-link sidebar-title" href="javascript:void(0)"><i
-                                data-feather="archive"></i><span>Stock Opname</span></a>
+                    <li class="sidebar-list">
+                        <a class="sidebar-link sidebar-title" href="javascript:void(0)"><i data-feather="archive"></i><span>Stock Opname</span></a>
                         <ul class="sidebar-submenu">
-                            <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
-                                    href="/stockopname"><span>Data Stock Opname</span></a></li>
-                            <!-- <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav" href="/admin/adjustmentstock"><span>Adjustment Stock</span></a></li> -->
+                                @can('view stockopname')
+                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav" 
+                                        href="/stockopname"><span>Data Stock Opname</span></a></li>
+                                @endcan
+                                @can('view stockopname approval sdg')
+                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                        href="/stockopname/approval-sdg"><span>Approval SDG Assets</span></a></li>
+                                @endcan
                         </ul>
                     </li>
                 </ul>

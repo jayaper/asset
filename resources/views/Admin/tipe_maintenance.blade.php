@@ -404,7 +404,7 @@
                                             </a>
                                             <form class="delete-form" action="{{ url('/admin/tipe_maintenance/delete', $typeMaintenance->mtc_type_id) }}" method="POST" style="display:inline;">
                                                 @csrf
-                                                @method('DELETE')
+                                                {{-- @method('DELETE') --}}
                                                 <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">
                                                     <i class="fas fa-trash-alt" style="color: red;"></i>
                                                 </button>
@@ -615,7 +615,7 @@
             
             $.ajax({
                 url: actionUrl, // URL dari form
-                method: 'DELETE', // Method untuk delete
+                method: 'POST', // Method untuk delete
                 data: form.serialize(), // Kirim data form
                 success: function(response) {
                     if (response.status === 'success') {

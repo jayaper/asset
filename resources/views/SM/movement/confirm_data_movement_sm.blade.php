@@ -1224,11 +1224,11 @@
 
                                 <td>${movein.out_id}</td> <!-- Tampilkan ID movein -->
 
-                                <td>${movein.out_no}</td> <!-- Tampilkan Nama movein -->
+                                <td>${movein.id}</td> <!-- Tampilkan Nama movein -->
 
                                 <td>
 
-                                <a href="javascript:void(0);" class="edit-button" data-id="${movein.out_id}" data-name="${movein.out_no}" title="Edit">
+                                <a href="javascript:void(0);" class="edit-button" data-id="${movein.out_id}" data-name="${movein.id}" title="Edit">
 
                                     <i class="fas fa-edit"></i>
 
@@ -1238,7 +1238,7 @@
 
                                     @csrf
 
-                                    @method('DELETE')
+                                    {{-- @method('DELETE') --}}
 
                                     <button type="button" class="delete-button" title="Delete" style="border: none; background: none; cursor: pointer;">
 
@@ -1454,7 +1454,7 @@
 
                 method: 'POST',  // Use POST instead of PUT
 
-                data: $(this).serialize() + '&_method=PUT', // Add _method=PUT manually
+                data: $(this).serialize() + '&_method=POST', // Add _method=PUT manually
 
                 headers: {
 
@@ -1510,7 +1510,7 @@
 
                 $('#movein-id').text(response.out_id);
 
-                $('#movein-no').text(response.out_no);
+                $('#movein-no').text(response.id);
 
                 $('#out-date').text(response.out_date);
 
@@ -1590,7 +1590,7 @@
 
                 url: actionUrl, // URL dari form
 
-                method: 'DELETE', // Method untuk delete
+                method: 'POST', // Method untuk delete
 
                 data: form.serialize(), // Kirim data form
 
