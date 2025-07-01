@@ -371,7 +371,7 @@
                                                             <td>{{ $item->create_by }}</td>
                                                             <td>{{ $item->approval_name }}</td>
                                                             <td class="text-center">
-                                                                @if ($item->is_confirm == 1)
+                                                                @if ($item->is_confirm !== 3)
                                                                     @can('btn so approval sdg edit')
                                                                         <a href="javascript:void(0);" class="edit-button"
                                                                             data-id="{{ $item->id }}"
@@ -384,7 +384,7 @@
                                                                     title="Detail">
                                                                     <i class="fas fa-book"></i>
                                                                 </a> --}}
-                                                                <a href="/asset-transfer/pdf-request-moveout/{{ $item->id }}"
+                                                                <a href="/stockopname/print-pdf/{{ $item->id }}"
                                                                     target="_blank"><i
                                                                         class="fas fa-print"></i></a>
                                                             </td>

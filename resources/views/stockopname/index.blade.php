@@ -310,6 +310,9 @@
                                                     </div>
                                                 </div>
                                             @endcan
+                                            @can('btn so add')
+                                                <a href="/stockopname/format-excel" class="btn btn-square btn-primary">Download Format Import</a>
+                                            @endcan
                                         </div>
                                     </div>
                                 </div>
@@ -464,7 +467,7 @@
                                                             @endif
                                                         </td>
                                                         <td class="text-center">
-                                                            @if ($item->is_confirm == 1)
+                                                            @if ($item->is_confirm !== 3)
                                                                 @can('btn so edit')
                                                                     @if (is_null($item->updated_3))
                                                                         <a href="javascript:void(0);" class="edit-button"
@@ -590,6 +593,28 @@
 
     {{-- Add Data moveout --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+    <script>
+        $('form[action="/stockopname/import"]').on('submit', function(e) {
+            e.preventDefault();
+
+            const formElement = this;
+
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: 'Sebelum melakukan submit, cek asset terkait pada transfer ataupun disposal terlebih dahulu!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, lanjutkan!',
+                cancelButtonText: 'Tidak, batalkan'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    formElement.submit();
+                }
+            });
+        });
+    </script>
 
 
     <script>

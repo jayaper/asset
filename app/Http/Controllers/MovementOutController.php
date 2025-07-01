@@ -1795,8 +1795,6 @@ public function searchRegisterAsset(Request $request)
         ->leftJoin('m_periodic_mtc', 'table_registrasi_asset.periodic_maintenance', '=', 'm_periodic_mtc.periodic_mtc_id')
         ->leftJoin('t_out_detail', 'table_registrasi_asset.id', '=', 't_out_detail.asset_id')
         ->leftJoin('t_stockopname', 'table_registrasi_asset.register_code', '=', 't_stockopname.asset_tag')
-        ->whereNull('t_stockopname.asset_tag')
-        ->whereNull('table_registrasi_asset.deleted_at')
         ->where('table_registrasi_asset.qty', '>', 0)
         ->where('table_registrasi_asset.location_now', '=', $lokasi_user)
         ->get();

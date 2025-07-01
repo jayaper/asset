@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\StockOpname;
 
+use App\Exports\ExportFormat;
 use App\Http\Controllers\Controller;
 use App\Imports\MasterRegistrasiImport;
 use App\Imports\MasterStockOpnameImport;
@@ -93,51 +94,76 @@ class StockOpnameController extends Controller
 
     }
 
-    function insert(Request $request){
+    public function insert(Request $request)
+    {
+        try {
+            $request->validate([
+                'out_date' => 'required|date',
+                'from_loc_id' => 'required|string|max:255',
+                'description' => 'required|string',
+                'reason_id' => 'required',
+                'asset_id' => 'required',
+                'register_code' => 'required',
+                'condition_id' => 'required',
+            ]);
 
-        $request->validate([
-            'out_date' => 'required|date',
-            'from_loc_id' => 'required|string|max:255',
-            'description' => 'required|string   ',
-            'reason_id' => 'required',
-            'asset_id' => 'required',
-            'register_code' => 'required',
-            'condition_id' => 'required',
-        ]);
+            $now = Carbon::now();
+            $cek = DB::table('t_stockopname')
+                ->where('asset_tag', $request->register_code)
+                ->whereDate('created_at', $now->format('Y-m-d'))
+                ->count();
 
-        $tRegist = DB::table('table_registrasi_asset')->where('register_code', $request->register_code)->first();
-        $outDetail = DB::table('t_out_detail')->where('asset_tag', $request->register_code)->orderBy('id', 'DESC')->first();
+            if ($cek > 0) {
+                return response()->json([
+                    'status' => 'Error',
+                    'message' => 'Asset sudah pernah diregistrasi hari ini. Silahkan untuk melakukan stock opname esok hari!'
+                ], 400);
+            }
 
-        $trx_code = DB::table('t_trx')->where('trx_name', 'Stock Opname')->value('trx_code');
-        $today = Carbon::now()->format('ymd');
-        $todayCount = DB::table('t_stockopname')->whereDate('create_date', Carbon::now())->count() + 1;
-        $transaction_number = str_pad($todayCount, 3, '0', STR_PAD_LEFT);
-        $stockopname_code = "{$trx_code}.{$today}.{$request->input('reason_id')}.{$request->input('from_loc_id')}.{$transaction_number}";
+            $tRegist = DB::table('table_registrasi_asset')->where('register_code', $request->register_code)->first();
+            $outDetail = DB::table('t_out_detail')->where('asset_tag', $request->register_code)->orderBy('id', 'DESC')->first();
 
-        $so_id = DB::table('t_stockopname')->insertGetId([
-            'code' => $stockopname_code,
-            'asset_tag' => $request->register_code,
-            'out_code' => $tRegist->last_transaction_code ?? null,
-            'out_det_id' => $outDetail->id ?? null,
-            'reason' => $request->reason_id,
-            'location' => $request->from_loc_id,
-            'condition' => $request->condition_id,
-            'description' => $request->description,
-            'create_date' => Carbon::now(),
-            'create_by' => Auth::user()->username,
-            'is_confirm' => 1,
-            'created_at' => Carbon::now()
-        ]);
+            $trx_code = DB::table('t_trx')->where('trx_name', 'Stock Opname')->value('trx_code');
+            $today = Carbon::now()->format('ymd');
+            $todayCount = DB::table('t_stockopname')->whereDate('create_date', Carbon::now())->count() + 1;
+            $transaction_number = str_pad($todayCount, 3, '0', STR_PAD_LEFT);
+            $stockopname_code = "{$trx_code}.{$today}.{$request->reason_id}.{$request->from_loc_id}.{$transaction_number}";
 
-        $so_asset_tag = DB::table('t_stockopname')->select('asset_tag')->where('id', $so_id)->first();
+            $so_id = DB::table('t_stockopname')->insertGetId([
+                'code' => $stockopname_code,
+                'asset_tag' => $request->register_code,
+                'out_code' => $tRegist->last_transaction_code ?? null,
+                'out_det_id' => $outDetail->id ?? null,
+                'reason' => $request->reason_id,
+                'location' => $request->from_loc_id,
+                'condition' => $request->condition_id,
+                'description' => $request->description,
+                'create_date' => Carbon::now(),
+                'create_by' => Auth::user()->username,
+                'is_confirm' => 1,
+                'deleted_at' => $tRegist->deleted_at ?? null,
+                'created_at' => Carbon::now()
+            ]);
 
-        DB::table('table_registrasi_asset')->where('register_code', $so_asset_tag->asset_tag)
-        ->update([
-            'qty' => 0,
-            'status_asset' => 5
-        ]);
+            DB::table('table_registrasi_asset')->where('register_code', $request->register_code)->update([
+                'qty' => 0,
+                'status_asset' => 5
+            ]);
 
+            return response()->json([
+                'status' => 'Success',
+                'message' => 'Stock opname berhasil disimpan.'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'Error',
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
     }
+
+
 
     function update(Request $request, $id){
 
@@ -262,6 +288,23 @@ class StockOpnameController extends Controller
                 'user_confirm' => $user->username
             ];
 
+            DB::table('asset_tracking')->insert([
+                    'start_date' => $stockOpname->created_at,
+                    'from_loc' => $stockOpname->location,
+                    'end_date' => $now,
+                    'dest_loc' => null,
+                    'reason' => $stockOpname->reason,
+                    'description' => $stockOpname->description,
+                    'register_code' => $stockOpname->asset_tag,
+                    'out_id' => $stockOpname->code,
+                ]);
+
+            DB::table('table_registrasi_asset')->where('register_code', $stockOpname->asset_tag)->update([
+                    'condition' => $stockOpname->condition,
+                    'qty' => 1,
+                    'status_asset' => 1
+                ]);
+
         }else{
 
             $updateData = [
@@ -273,14 +316,6 @@ class StockOpnameController extends Controller
         }
 
         $updated = DB::table('t_stockopname')->where('id', $id)->update($updateData);
-
-        $so_asset_tag = DB::table('t_stockopname')->select('asset_tag')->where('id', $id)->first();
-
-        DB::table('table_registrasi_asset')->where('register_code', $so_asset_tag->asset_tag)
-        ->update([
-            'qty' => 1,
-            'status_asset' => 1
-        ]);
 
         if ($updated) {
             return response()->json([
@@ -298,12 +333,13 @@ class StockOpnameController extends Controller
         $tStockopname = DB::table('t_stockopname AS a')
                         ->select(
                             'a.*',
-                            'b.store_code AS origin_site',
+                            'codeResto.cabang_new AS origin_site',
                             'c.approval_name',
                             'd.condition_name',
                             'f.asset_model',
                         )
                         ->leftJoin('miegacoa_keluhan.master_resto AS b', 'b.id', '=', 'a.location')
+                        ->leftJoin('miegacoa_keluhan.master_barcode_resto as codeResto', 'codeResto.id', '=', 'b.store_code')
                         ->leftJoin('mc_approval AS c', 'c.approval_id', '=', 'a.is_confirm')
                         ->leftJoin('m_condition AS d', 'd.condition_id', '=', 'a.condition')
                         ->leftJoin('table_registrasi_asset AS e', 'e.register_code', '=', 'a.asset_tag')
@@ -349,6 +385,11 @@ class StockOpnameController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
+    }
+
+    public function formatExcel()
+    {
+        return Excel::download(new ExportFormat, Carbon::now()->format('d-m-Y').' - format-stock-opname.xlsx');
     }
 
 }

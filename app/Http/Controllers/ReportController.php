@@ -285,13 +285,11 @@ class ReportController extends Controller {
             'miegacoa_keluhan.master_resto.name_store_street as asal',
             'des.name_store_street as menuju',
             'r.reason_name',
-            'a.qty AS saldo'
         )
         ->leftjoin('miegacoa_keluhan.master_resto', 'asset_tracking.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
         ->leftjoin('miegacoa_keluhan.master_resto as des', 'asset_tracking.dest_loc', '=', 'des.id')
         ->leftjoin('m_reason AS r', 'asset_tracking.reason', '=', 'r.reason_id')
-        ->leftjoin('t_out_detail AS a', 'a.out_id', '=', 'asset_tracking.out_id')
-        ->where('register_code', $register_code)->where('a.asset_tag', $register_code);
+        ->where('register_code', $register_code);
 
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $t_tracking->whereBetween('asset_tracking.start_date', [
@@ -338,16 +336,18 @@ class ReportController extends Controller {
         if ($request->filled('location')) {
             $tanggal  = $request->input('date') ?? Carbon::now()->format('Y-m-d');
             $jam      = $request->input('time') ?? '23:59';
-            $datetime = $tanggal . ' ' . $jam . ':00';
+            $datetime = $tanggal . ' ' . $jam . ':59';
             $lokasi   = $request->input('location');
 
             $T_regist = DB::table('table_registrasi_asset AS a')
                 ->select(
+                    'a.created_at',
+                    'k.confirm_date',
                     'a.register_date',
                     'a.register_code',
                     'b.asset_model',
                     'a.serial_number',
-                    'a.qty',
+                    'a.last_transaction_code',
                     'c.uom_name',
                     'd.name AS status_asset',
                     'e.condition_name',
@@ -364,38 +364,44 @@ class ReportController extends Controller {
                 ->leftJoin('m_category AS g', 'g.cat_code', '=', 'a.category_asset')
                 ->leftJoin('miegacoa_keluhan.master_resto AS h', 'h.id', '=', 'a.location_now')
                 ->leftJoin('m_layout AS i', 'i.layout_id', '=', 'a.layout')
-                ->leftJoin('t_out AS j', 'j.out_id', '=', 'a.last_transaction_code') // last confirmed transaction only
+                ->leftJoin('t_out_detail AS j', 'j.asset_tag', '=', 'a.register_code')
+                ->leftJoin('t_out AS k', 'k.out_id', '=', 'j.out_id')
 
                 // FILTER KONDISI
                 ->where(function ($query) use ($lokasi, $datetime) {
                     $query
                         // Aset belum pernah ditransaksikan
-                        ->orWhere(function ($q) use ($lokasi, $datetime) {
+                        ->where(function ($q) use ($lokasi, $datetime) {
                             $q->whereNull('a.last_transaction_code')
-                            ->where('a.location_now', $lokasi)
+                            ->where('a.register_location', $lokasi)
                             ->where('a.created_at', '<=', $datetime);
                         })
-
-                        // Aset sudah ditransaksikan dan sekarang berada di lokasi tujuan
+                        
+                        // Aset sudah ditransaksikan dan berada di lokasi tujuan
                         ->orWhere(function ($q) use ($lokasi, $datetime) {
                             $q->whereNotNull('a.last_transaction_code')
-                            ->where('j.is_confirm', 3)
-                            ->where('j.dest_loc', $lokasi)
-                            ->where('j.confirm_date', '<=', $datetime);
-                        })
-
-                        // Aset pertama kali ditransaksikan, tapi belum sampai lokasi tujuan
-                        ->orWhere(function ($q) use ($lokasi, $datetime) {
-                            $q->whereNotNull('a.last_transaction_code')
-                            ->where('j.is_confirm', 3)
-                            ->where('a.location_now', $lokasi)
-                            ->where('a.created_at', '<=', $datetime)
-                            ->where('j.confirm_date', '>', $datetime);
+                            ->where('k.is_confirm', 3)
+                            ->where(function ($sub) use ($lokasi, $datetime) {
+                                $sub
+                                    ->where(function ($s) use ($lokasi, $datetime) {
+                                        $s->whereNull('k.dest_loc')
+                                            ->where('a.register_location', $lokasi)
+                                            ->where('a.created_at', '<=', $datetime);
+                                    })
+                                    ->orWhere(function ($s) use ($lokasi, $datetime) {
+                                        $s->whereNotNull('k.dest_loc')
+                                            ->where('k.dest_loc', $lokasi)
+                                            ->where('k.confirm_date', '<=', $datetime);
+                                    });
+                            });
                         });
-                });
+                })
 
+                // ORDER BY DI LUAR WHERE
+                ->orderBy('k.id', 'DESC');
 
-            $final = $T_regist->orderBy('a.id', 'ASC')->get();
+            $final = $T_regist->get();
+
         }
 
         $q_loc = DB::table('miegacoa_keluhan.master_resto AS a');

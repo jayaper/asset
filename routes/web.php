@@ -275,6 +275,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/stockopname/approval-sdg/update/{id}', 'approvalSDGUpdate')->middleware(['permission:view stockopname approval sdg update']);
         Route::get('/stockopname/print-pdf/{id}', 'printPDF')->middleware(['permission:view stockopname']);
         Route::post('/stockopname/import', 'import')->middleware(['permission:view stockopname']);
+        Route::get('/stockopname/format-excel', 'formatExcel')->middleware(['permission:view stockopname']);
     });
     Route::controller(MDAsset::class)->group(function(){
         Route::get('/master-data/asset', 'HalamanAssets')->middleware(['permission:view md asset']);

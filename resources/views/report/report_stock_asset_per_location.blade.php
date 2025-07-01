@@ -251,11 +251,11 @@
                                             <table class="table table-striped" style="min-width: 100%; border-collapse: separate; border-radius: 8px; overflow: hidden;">
                                                 <thead>
                                                     <tr>
+                                                        <th>Assets In</th>
                                                         <th>Register Date</th>
                                                         <th>Register Code</th>
                                                         <th>Asset Name</th>
                                                         <th>Serial No.</th>
-                                                        <th>Qty</th>
                                                         <th>Satuan</th>
                                                         <th>Status</th>
                                                         <th>Condition</th>
@@ -268,11 +268,17 @@
                                                 <tbody>
                                                     @foreach ($tRegist as $item)
                                                         <tr>
+                                                            <td>
+                                                                @if (is_null($item->last_transaction_code))
+                                                                    {{ $item->created_at }}
+                                                                @else
+                                                                    {{ $item->confirm_date }}
+                                                                @endif
+                                                            </td>
                                                             <td>{{ $item->register_date }}</td>
                                                             <td>{{ $item->register_code }}</td>
                                                             <td>{{ $item->asset_model }}</td>
                                                             <td>{{ $item->serial_number }}</td>
-                                                            <td>{{ $item->qty }}</td>
                                                             <td>{{ $item->uom_name }}</td>
                                                             <td>{{ $item->status_asset }}</td>
                                                             <td>{{ $item->condition_name }}</td>

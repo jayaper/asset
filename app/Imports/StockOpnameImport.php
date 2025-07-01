@@ -21,7 +21,7 @@ class StockOpnameImport implements ToCollection
     public function collection(Collection $rows)
     {
         $isFirst = true;
-        $rowIndex = 1; // Mulai dari 1 untuk header
+        $rowIndex = 1;
 
         foreach ($rows as $row) {
             $rowIndex++;
@@ -31,42 +31,51 @@ class StockOpnameImport implements ToCollection
                 continue;
             }
 
-            $asset_tag     = $row[1] ?? null;
-            $reason_name   = $row[2] ?? null;
-            $condition_name= $row[3] ?? null;
-            $description   = $row[4] ?? null;
+            $asset_tag      = $row[1] ?? null;
+            $reason_name    = $row[2] ?? null;
+            $condition_name = $row[3] ?? null;
+            $description    = $row[4] ?? null;
 
-            // Validasi reason
             $reason_id = $this->getReasonId($reason_name);
             if (!$reason_id) {
                 $this->errors[] = "Baris $rowIndex: Reason harus 'STOCK OPNAME'.";
                 continue;
             }
 
-            // Gunakan lokasi user login
             $location_id = $this->user->location_now;
 
-            // Validasi condition
             $condition_id = $this->getConditionId($condition_name);
             if (!$condition_id) {
                 $this->errors[] = "Baris $rowIndex: Condition '$condition_name' tidak valid. Gunakan POOR, BROKEN, GOOD, atau MINT.";
                 continue;
             }
 
-            // Validasi asset_tag
             if (!$this->isValidAssetTag($asset_tag)) {
-                $this->errors[] = "Baris $rowIndex: Asset tag '$asset_tag' tidak ditemukan atau tidak sesuai lokasi.";
+                $this->errors[] = "Baris $rowIndex: Asset tag '$asset_tag' asset sedang di tahap proses atau tidak sesuai lokasi.";
                 continue;
             }
 
-            // Generate kode transaksi
+            // ✅ Cek apakah asset_tag sudah ada di t_stockopname hari ini
+            $alreadyExistsToday = DB::table('t_stockopname')
+                ->where('asset_tag', $asset_tag)
+                ->whereDate('create_date', Carbon::now())
+                ->exists();
+
+            if ($alreadyExistsToday) {
+                $this->errors[] = "Baris $rowIndex: Asset tag '$asset_tag' sudah pernah diinput hari ini.";
+                continue;
+            }
+
+            $deletedAt = DB::table('table_registrasi_asset')
+                ->where('register_code', $asset_tag)
+                ->value('deleted_at');
+
             $trx_code = DB::table('t_trx')->where('trx_name', 'Stock Opname')->value('trx_code');
             $today = Carbon::now()->format('ymd');
             $todayCount = DB::table('t_stockopname')->whereDate('create_date', Carbon::now())->count() + 1;
             $transaction_number = str_pad($todayCount, 3, '0', STR_PAD_LEFT);
             $generated_code = "{$trx_code}.{$today}.{$reason_id}.{$location_id}.{$transaction_number}";
 
-            // Insert ke t_stockopname
             $inserted = DB::table('t_stockopname')->insert([
                 'code'        => $generated_code,
                 'asset_tag'   => $asset_tag,
@@ -77,6 +86,7 @@ class StockOpnameImport implements ToCollection
                 'create_date' => now(),
                 'create_by'   => $this->user->username,
                 'is_confirm'  => 1,
+                'deleted_at'  => $deletedAt,
                 'created_at'  => now(),
             ]);
 
@@ -88,7 +98,6 @@ class StockOpnameImport implements ToCollection
                         'status_asset' => 5
                     ]);
             }
-
         }
     }
 
