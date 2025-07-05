@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -19,46 +20,52 @@ class ReportStockAssetPerLocation implements FromCollection, WithHeadings
 
     public function collection()
     {
+    
+        $tanggal  = $this->request->input('date') ?? Carbon::now()->format('Y-m-d');
+        $jam      = $this->request->input('time') ?? '23:59';
+        $datetime = $tanggal . ' ' . $jam . ':59';
+        $lokasi   = $this->request->input('location');
+        $T_regist = DB::table('t_out_detail as b')
+            ->join('t_out as c', 'c.out_id', '=', 'b.out_id')
+            ->where('c.confirm_date', '<=', $datetime)
+            ->select(
+                'b.asset_tag',
+                'c.dest_loc',
+                'c.confirm_date',
+                DB::raw('ROW_NUMBER() OVER (PARTITION BY b.asset_tag ORDER BY c.confirm_date DESC) as rn')
+            );
 
-        $T_regist = DB::table('table_registrasi_asset AS a')
-                ->select(
-                    'a.register_date',
-                    'a.register_code',
-                    'b.asset_model',
-                    'a.serial_number',
-                    'a.qty',
-                    'c.uom_name',
-                    'd.name AS status_asset',
-                    'e.condition_name',
-                    'f.type_name',
-                    'g.cat_name',
-                    'h.name_store_street AS lokasi_sekarang',
-                    'i.layout_name',
-                )
-                ->leftJoin('m_assets AS b', 'b.asset_id', '=', 'a.asset_name')
-                ->leftJoin('m_uom AS c', 'c.uom_id', '=', 'a.satuan')
-                ->leftJoin('m_status_asset AS d', 'd.id', '=', 'a.status_asset')
-                ->leftJoin('m_condition AS e', 'e.condition_id', '=', 'a.condition')
-                ->leftJoin('m_type AS f', 'f.type_id', '=', 'a.type_asset')
-                ->leftJoin('m_category AS g', 'g.cat_code', '=', 'a.category_asset')
-                ->leftJoin('miegacoa_keluhan.master_resto AS h', 'h.id', '=', 'a.location_now')
-                ->leftJoin('m_layout AS i', 'i.layout_id', '=', 'a.layout')
-                ->leftJoin('t_out_detail AS j', 'j.asset_tag', '=', 'a.register_code')
-                ->where('a.location_now', $this->request->input('location'));
-                if ($this->request->filled('date')) {
-                    $T_regist->where(function ($q) {
-                        $q->whereRaw('DATE(a.last_transaction_date) = ?', [$this->request->input('date')]);
-                    });
-                } else {
-                    $today = Carbon::now()->toDateString();
-                    $T_regist->where(function ($q) use ($today) {
-                        $q->whereRaw('DATE(a.last_transaction_date) = ?', [$today]);
-                    });
-                }
-
-
-
-            $final = $T_regist->get();
+        $final = DB::table('table_registrasi_asset as a')
+            ->leftJoinSub($T_regist, 'latest_movement', function ($join) {
+                $join->on('a.register_code', '=', 'latest_movement.asset_tag')
+                    ->where('latest_movement.rn', '=', 1);
+            })
+            ->select(
+                'a.register_date',
+                'a.register_code',
+                'b.asset_model',
+                'a.serial_number',
+                'c.uom_name',
+                'd.name AS status_asset',
+                'e.condition_name',
+                'f.type_name',
+                'g.cat_name',
+                'h.name_store_street',
+                'i.layout_name'
+            )
+            ->leftJoin('m_assets AS b', 'b.asset_id', '=', 'a.asset_name')
+            ->leftJoin('m_uom AS c', 'c.uom_id', '=', 'a.satuan')
+            ->leftJoin('m_status_asset AS d', 'd.id', '=', 'a.status_asset')
+            ->leftJoin('m_condition AS e', 'e.condition_id', '=', 'a.condition')
+            ->leftJoin('m_type AS f', 'f.type_id', '=', 'a.type_asset')
+            ->leftJoin('m_category AS g', 'g.cat_code', '=', 'a.category_asset')
+            ->leftJoin('miegacoa_keluhan.master_resto AS h', function ($join) {
+                $join->on(DB::raw('COALESCE(latest_movement.dest_loc, a.register_location)'), '=', 'h.id');
+            })
+            ->leftJoin('m_layout AS i', 'i.layout_id', '=', 'a.layout')
+            ->whereRaw('COALESCE(latest_movement.confirm_date, a.created_at) <= ?', [$datetime])
+            ->whereRaw('COALESCE(latest_movement.dest_loc, a.register_location) = ?', [$lokasi])
+            ->get();
 
         return $final;
     }
@@ -71,7 +78,6 @@ class ReportStockAssetPerLocation implements FromCollection, WithHeadings
             $row->register_code,
             $row->asset_model,
             $row->serial_number,
-            ($row->qty == 1) ? 1 : "0",
             $row->uom_name,
             $row->status_asset,
             $row->condition_name,
@@ -89,7 +95,6 @@ class ReportStockAssetPerLocation implements FromCollection, WithHeadings
             'Asset Code',
             'Asset Name',
             'Serial Number',
-            'Quantity',
             'Satuan',
             'Status Asset',
             'Condition',

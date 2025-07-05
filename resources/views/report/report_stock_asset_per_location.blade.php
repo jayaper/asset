@@ -268,13 +268,7 @@
                                                 <tbody>
                                                     @foreach ($tRegist as $item)
                                                         <tr>
-                                                            <td>
-                                                                @if (is_null($item->last_transaction_code))
-                                                                    {{ $item->created_at }}
-                                                                @else
-                                                                    {{ $item->confirm_date }}
-                                                                @endif
-                                                            </td>
+                                                            <td>{{ $item->last_known_date }}</td>
                                                             <td>{{ $item->register_date }}</td>
                                                             <td>{{ $item->register_code }}</td>
                                                             <td>{{ $item->asset_model }}</td>

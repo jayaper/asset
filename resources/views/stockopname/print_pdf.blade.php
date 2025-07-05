@@ -138,20 +138,21 @@
                 <tr>
                     <th>Asset Tag</th>
                     <th>Asset Name</th>
-                    <th>Asset Description</th>
-                    <th>Asset Condition</th>
+                    <th>Description</th>
+                    <th>Stock Opname Condition</th>
                 </tr>
             </thead>
-            <tbody>
-
-            <tr>
-                <td>{{ $stockopnames->asset_tag}}</td>
-                <td>{{ $stockopnames->asset_model}}</td>
-                <td>{{ $stockopnames->description}}</td>
-                <td>{{ $stockopnames->condition_name}}</td>
-                
-            </tr>
-            </tbody>
+            @foreach ($tso_det as $item)
+                <tbody>
+                    <tr>
+                        <td>{{ $item->asset_tag}}</td>
+                        <td>{{ $item->asset_model}}</td>
+                        <td>{{ $item->description}}</td>
+                        <td>{{ $item->condition_name}}</td>
+                        
+                    </tr>
+                </tbody>
+            @endforeach
         </table>
     </div>
 

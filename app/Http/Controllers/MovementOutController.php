@@ -1763,6 +1763,7 @@ public function searchRegisterAsset(Request $request)
                 ,'table_registrasi_asset.depth'
                 ,'table_registrasi_asset.qty'
                 ,'table_registrasi_asset.location_now'
+                ,'table_registrasi_asset.condition'
                 ,'lokasi_sekarang.name_store_street as nama_lokasi_sekarang'
                 ,'m_assets.asset_model'
                 ,'m_type.type_name'
@@ -1794,7 +1795,6 @@ public function searchRegisterAsset(Request $request)
         ->leftJoin('m_warranty', 'table_registrasi_asset.warranty', '=', 'm_warranty.warranty_id')
         ->leftJoin('m_periodic_mtc', 'table_registrasi_asset.periodic_maintenance', '=', 'm_periodic_mtc.periodic_mtc_id')
         ->leftJoin('t_out_detail', 'table_registrasi_asset.id', '=', 't_out_detail.asset_id')
-        ->leftJoin('t_stockopname', 'table_registrasi_asset.register_code', '=', 't_stockopname.asset_tag')
         ->where('table_registrasi_asset.qty', '>', 0)
         ->where('table_registrasi_asset.location_now', '=', $lokasi_user)
         ->get();

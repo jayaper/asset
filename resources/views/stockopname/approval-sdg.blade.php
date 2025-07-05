@@ -333,9 +333,7 @@
                                                 <thead>
                                                     <tr class="text-center">
                                                         <th>Stock Opname Code</th>
-                                                        <th>Asset Tag</th>
                                                         <th>Location</th>
-                                                        <th>Condition</th>
                                                         <th>Description</th>
                                                         <th>Create Date</th>
                                                         <th>Create By</th>
@@ -348,24 +346,7 @@
                                                     @foreach ($stockopnames as $item)
                                                         <tr class="text-center">
                                                             <td class="text-center">{{ $item->code }}</td>
-                                                            <td>{{ $item->asset_tag }}</td>
                                                             <td>{{ $item->name_store_street }}</td>
-                                                            <td>
-                                                                @switch($item->condition)
-                                                                    @case(1)
-                                                                        <b class="text-success">{{ $item->condition_name }}</b>
-                                                                        @break
-                                                                    @case(2)
-                                                                        <b class="text-danger">{{ $item->condition_name }}</b>
-                                                                        @break
-                                                                    @case(3)
-                                                                        <b class="text-success">{{ $item->condition_name }}</b>
-                                                                        @break
-                                                                    @case(4)
-                                                                        <b class="text-danger">{{ $item->condition_name }}</b>
-                                                                        @break
-                                                                @endswitch
-                                                            </td>
                                                             <td>{{ $item->description }}</td>
                                                             <td>{{ $item->create_date }}</td>
                                                             <td>{{ $item->create_by }}</td>

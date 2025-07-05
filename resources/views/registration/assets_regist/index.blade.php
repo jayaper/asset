@@ -185,13 +185,17 @@
                                     <div class="btn-showcase">
                                         <div class="button_between">
                                             @can('btn add registration')
-                                                <a href="/registration/add-assets-registration"
+
+                                                    <a href="/registration/add-assets-registration"
                                                     class="btn btn-square btn-primary">Add Data Asset</a>
+                                                    
                                             @endcan
                                             @can('btn import registration')
-                                                <button class="btn btn-square btn-primary" type="button"
+                                                
+                                                    <button class="btn btn-square btn-primary" type="button"
                                                     data-toggle="modal" data-target="#importDataExcel"> <i
-                                                        class="fa fa-file-excel-o"></i> Import Data Excel </button>
+                                                    class="fa fa-file-excel-o"></i> Import Data Excel </button>
+                                                    
                                             @endcan
                                             @can('btn export registration')
                                                 <a href="{{ url('/registration/export-data-assets') }}"

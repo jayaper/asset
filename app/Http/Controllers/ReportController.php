@@ -271,6 +271,7 @@ class ReportController extends Controller {
 
         $t_regist = DB::table('table_registrasi_asset AS a')
         ->select(
+            'a.register_date',
             'b.name_store_street AS lokasi_sekarang',
             'c.name_store_street AS register_lokasi'
         )
@@ -338,11 +339,23 @@ class ReportController extends Controller {
             $jam      = $request->input('time') ?? '23:59';
             $datetime = $tanggal . ' ' . $jam . ':59';
             $lokasi   = $request->input('location');
-
-            $T_regist = DB::table('table_registrasi_asset AS a')
+            $T_regist = DB::table('t_out_detail as b')
+                ->join('t_out as c', 'c.out_id', '=', 'b.out_id')
+                ->where('c.confirm_date', '<=', $datetime)
                 ->select(
-                    'a.created_at',
-                    'k.confirm_date',
+                    'b.asset_tag',
+                    'c.dest_loc',
+                    'c.confirm_date',
+                    DB::raw('ROW_NUMBER() OVER (PARTITION BY b.asset_tag ORDER BY c.confirm_date DESC) as rn')
+                );
+
+            $final = DB::table('table_registrasi_asset as a')
+                ->leftJoinSub($T_regist, 'latest_movement', function ($join) {
+                    $join->on('a.register_code', '=', 'latest_movement.asset_tag')
+                        ->where('latest_movement.rn', '=', 1);
+                })
+                ->select(
+                    DB::raw('COALESCE(latest_movement.confirm_date, a.created_at) as last_known_date'),
                     'a.register_date',
                     'a.register_code',
                     'b.asset_model',
@@ -362,46 +375,14 @@ class ReportController extends Controller {
                 ->leftJoin('m_condition AS e', 'e.condition_id', '=', 'a.condition')
                 ->leftJoin('m_type AS f', 'f.type_id', '=', 'a.type_asset')
                 ->leftJoin('m_category AS g', 'g.cat_code', '=', 'a.category_asset')
-                ->leftJoin('miegacoa_keluhan.master_resto AS h', 'h.id', '=', 'a.location_now')
-                ->leftJoin('m_layout AS i', 'i.layout_id', '=', 'a.layout')
-                ->leftJoin('t_out_detail AS j', 'j.asset_tag', '=', 'a.register_code')
-                ->leftJoin('t_out AS k', 'k.out_id', '=', 'j.out_id')
-
-                // FILTER KONDISI
-                ->where(function ($query) use ($lokasi, $datetime) {
-                    $query
-                        // Aset belum pernah ditransaksikan
-                        ->where(function ($q) use ($lokasi, $datetime) {
-                            $q->whereNull('a.last_transaction_code')
-                            ->where('a.register_location', $lokasi)
-                            ->where('a.created_at', '<=', $datetime);
-                        })
-                        
-                        // Aset sudah ditransaksikan dan berada di lokasi tujuan
-                        ->orWhere(function ($q) use ($lokasi, $datetime) {
-                            $q->whereNotNull('a.last_transaction_code')
-                            ->where('k.is_confirm', 3)
-                            ->where(function ($sub) use ($lokasi, $datetime) {
-                                $sub
-                                    ->where(function ($s) use ($lokasi, $datetime) {
-                                        $s->whereNull('k.dest_loc')
-                                            ->where('a.register_location', $lokasi)
-                                            ->where('a.created_at', '<=', $datetime);
-                                    })
-                                    ->orWhere(function ($s) use ($lokasi, $datetime) {
-                                        $s->whereNotNull('k.dest_loc')
-                                            ->where('k.dest_loc', $lokasi)
-                                            ->where('k.confirm_date', '<=', $datetime);
-                                    });
-                            });
-                        });
+                ->leftJoin('miegacoa_keluhan.master_resto AS h', function ($join) {
+                    $join->on(DB::raw('COALESCE(latest_movement.dest_loc, a.register_location)'), '=', 'h.id');
                 })
 
-                // ORDER BY DI LUAR WHERE
-                ->orderBy('k.id', 'DESC');
-
-            $final = $T_regist->get();
-
+                ->leftJoin('m_layout AS i', 'i.layout_id', '=', 'a.layout')
+                ->whereRaw('COALESCE(latest_movement.confirm_date, a.created_at) <= ?', [$datetime])
+                ->whereRaw('COALESCE(latest_movement.dest_loc, a.register_location) = ?', [$lokasi])
+                ->get();
         }
 
         $q_loc = DB::table('miegacoa_keluhan.master_resto AS a');
@@ -524,17 +505,26 @@ class ReportController extends Controller {
         if ($request->filled('location')) {
             $tStockopname = DB::table('t_stockopname AS a')
                         ->select(
-                            'a.*',
+                            'a.code',
+                            'a.description',
+                            'a.create_date',
+                            'a.create_by',
+                            'a.user_confirm',
+                            'a.deleted_at',
                             'b.reason_name',
                             'c.name_store_street',
-                            'd.condition_name',
+                            'd.asset_tag',
+                            'd.condition',
+                            'g.condition_name',
                             'e.approval_name',
                         )
                         ->leftJoin('m_reason AS b', 'b.reason_id', '=', 'a.reason')
                         ->leftJoin('miegacoa_keluhan.master_resto AS c', 'c.id', '=', 'a.location')
-                        ->leftJoin('m_condition AS d', 'd.condition_id', '=', 'a.condition')
+                        ->leftJoin('t_stockopname_detail AS d', 'd.so_code', '=', 'a.code')
                         ->leftJoin('mc_approval AS e', 'e.approval_id', '=', 'a.is_confirm')
-                        ->leftJoin('miegacoa_keluhan.master_resto AS f', 'f.id', '=', 'a.location');
+                        ->leftJoin('miegacoa_keluhan.master_resto AS f', 'f.id', '=', 'a.location')
+                        ->leftJoin('m_condition AS g', 'g.condition_id', '=', 'd.condition')
+                        ->where('a.is_confirm', 3);
                         if($user->hasRole('SM')){
                             $tStockopname->where(function($query) use ($user) {
                                 $query->where('f.id', $user->location_now);

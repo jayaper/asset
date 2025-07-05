@@ -27,10 +27,10 @@ class ReportStockopname implements FromCollection, WithHeadings
             $tStockopname = DB::table('t_stockopname AS a')
                         ->select(
                             'a.code',
-                            'a.asset_tag',
+                            'd.asset_tag',
                             'b.reason_name',
                             'c.name_store_street',
-                            'd.condition_name',
+                            'g.condition_name',
                             'a.description',
                             'a.create_date',
                             'a.create_by',
@@ -40,9 +40,11 @@ class ReportStockopname implements FromCollection, WithHeadings
                         )
                         ->leftJoin('m_reason AS b', 'b.reason_id', '=', 'a.reason')
                         ->leftJoin('miegacoa_keluhan.master_resto AS c', 'c.id', '=', 'a.location')
-                        ->leftJoin('m_condition AS d', 'd.condition_id', '=', 'a.condition')
+                        ->leftJoin('t_stockopname_detail AS d', 'd.so_code', '=', 'a.code')
                         ->leftJoin('mc_approval AS e', 'e.approval_id', '=', 'a.is_confirm')
-                        ->leftJoin('miegacoa_keluhan.master_resto AS f', 'f.id', '=', 'a.location');
+                        ->leftJoin('miegacoa_keluhan.master_resto AS f', 'f.id', '=', 'a.location')
+                        ->leftJoin('m_condition AS g', 'g.condition_id', '=', 'd.condition')
+                        ->where('a.is_confirm', 3);
                         if($user->hasRole('SM')){
                             $tStockopname->where(function($query) use ($user) {
                                 $query->where('f.id', $user->location_now);
@@ -57,7 +59,7 @@ class ReportStockopname implements FromCollection, WithHeadings
                             });
                         }
                         if($this->request->filled('date')){
-                            $tStockopname->where(function($query) {
+                            $tStockopname->where(function($query){
                                 $query->whereDate('a.create_date', $this->request->input('date'));
                             });
                         }

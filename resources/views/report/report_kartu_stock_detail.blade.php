@@ -217,19 +217,24 @@
                                             <div class="col-sm-6 mb-3">
                                                 <table>
                                                     <tr>
-                                                        <th class="text-end"><h3>Asset</h3></th>
+                                                        <th class="text-end"><h3>Register Location</h3></th>
                                                         <th class="px-4"><h3>:</h3></th>
-                                                        <td class="fw-light"><h3>{{ $registerCode }}</h3></td>
+                                                        <td><h3 class="fw-light">{{ $tRegist->register_lokasi }}</h3></td>
                                                     </tr>
                                                     <tr>
-                                                        <th class="text-end"><h3>Location</h3></th>
+                                                        <th class="text-end"><h3>Register Date</h3></th>
+                                                        <th class="px-4"><h3>:</h3></th>
+                                                        <td><h3 class="fw-light">{{ $tRegist->register_date }}</h3></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="text-end"><h3>Location Now</h3></th>
                                                         <th class="px-4"><h3>:</h3></th>
                                                         <td><h3 class="fw-light">{{ $tRegist->lokasi_sekarang }}</h3></td>
                                                     </tr>
                                                     <tr>
-                                                        <th class="text-end"><h3>Register Location</h3></th>
+                                                        <th class="text-end"><h3>Asset</h3></th>
                                                         <th class="px-4"><h3>:</h3></th>
-                                                        <td><h3 class="fw-light">{{ $tRegist->register_lokasi }}</h3></td>
+                                                        <td class="fw-light"><h3>{{ $registerCode }}</h3></td>
                                                     </tr>
                                                 </table>
                                             </div>

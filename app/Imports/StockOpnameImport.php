@@ -23,9 +23,19 @@ class StockOpnameImport implements ToCollection
         $isFirst = true;
         $rowIndex = 1;
 
+        $location_id = $this->user->location_now;
+        $trx_code = DB::table('t_trx')->where('trx_name', 'Stock Opname')->value('trx_code');
+        $today = Carbon::now()->format('ymd');
+        $todayCount = DB::table('t_stockopname')->whereDate('create_date', Carbon::now())->count() + 1;
+        $transaction_number = str_pad($todayCount, 3, '0', STR_PAD_LEFT);
+        $so_code = "{$trx_code}.{$today}.2.{$location_id}.{$transaction_number}";
+
+        $description = null;
+        $reason_id = null;
+        $detailData = [];
+
         foreach ($rows as $row) {
             $rowIndex++;
-
             if ($isFirst) {
                 $isFirst = false;
                 continue;
@@ -36,13 +46,13 @@ class StockOpnameImport implements ToCollection
             $condition_name = $row[3] ?? null;
             $description    = $row[4] ?? null;
 
-            $reason_id = $this->getReasonId($reason_name);
-            if (!$reason_id) {
-                $this->errors[] = "Baris $rowIndex: Reason harus 'STOCK OPNAME'.";
-                continue;
+            if ($reason_id === null) {
+                $reason_id = $this->getReasonId($reason_name);
+                if (!$reason_id) {
+                    $this->errors[] = "Baris $rowIndex: Reason harus 'STOCK OPNAME'.";
+                    continue;
+                }
             }
-
-            $location_id = $this->user->location_now;
 
             $condition_id = $this->getConditionId($condition_name);
             if (!$condition_id) {
@@ -51,14 +61,13 @@ class StockOpnameImport implements ToCollection
             }
 
             if (!$this->isValidAssetTag($asset_tag)) {
-                $this->errors[] = "Baris $rowIndex: Asset tag '$asset_tag' asset sedang di tahap proses atau tidak sesuai lokasi.";
+                $this->errors[] = "Baris $rowIndex: Asset tag '$asset_tag' sedang diproses atau tidak berada di lokasi Anda.";
                 continue;
             }
 
-            // ✅ Cek apakah asset_tag sudah ada di t_stockopname hari ini
-            $alreadyExistsToday = DB::table('t_stockopname')
+            $alreadyExistsToday = DB::table('t_stockopname_detail')
                 ->where('asset_tag', $asset_tag)
-                ->whereDate('create_date', Carbon::now())
+                ->whereDate('created_at', Carbon::now())
                 ->exists();
 
             if ($alreadyExistsToday) {
@@ -66,38 +75,50 @@ class StockOpnameImport implements ToCollection
                 continue;
             }
 
-            $deletedAt = DB::table('table_registrasi_asset')
-                ->where('register_code', $asset_tag)
-                ->value('deleted_at');
+            $detailData[] = [
+                'so_code'    => $so_code,
+                'asset_tag'  => $asset_tag,
+                'condition'  => $condition_id,
+                'created_at' => now()
+            ];
+        }
 
-            $trx_code = DB::table('t_trx')->where('trx_name', 'Stock Opname')->value('trx_code');
-            $today = Carbon::now()->format('ymd');
-            $todayCount = DB::table('t_stockopname')->whereDate('create_date', Carbon::now())->count() + 1;
-            $transaction_number = str_pad($todayCount, 3, '0', STR_PAD_LEFT);
-            $generated_code = "{$trx_code}.{$today}.{$reason_id}.{$location_id}.{$transaction_number}";
+        if (empty($detailData)) {
+            $this->errors[] = 'Tidak ada asset valid untuk diproses.';
+            return;
+        }
 
-            $inserted = DB::table('t_stockopname')->insert([
-                'code'        => $generated_code,
-                'asset_tag'   => $asset_tag,
-                'reason'      => $reason_id,
-                'location'    => $location_id,
-                'condition'   => $condition_id,
-                'description' => $description,
-                'create_date' => now(),
-                'create_by'   => $this->user->username,
-                'is_confirm'  => 1,
-                'deleted_at'  => $deletedAt,
-                'created_at'  => now(),
-            ]);
+        // Ambil deleted_at dari salah satu asset valid (jika ada)
+        $deletedAt = DB::table('table_registrasi_asset')
+            ->where('register_code', $detailData[0]['asset_tag'])
+            ->value('deleted_at');
 
-            if ($inserted) {
-                DB::table('table_registrasi_asset')
-                    ->where('register_code', $asset_tag)
-                    ->update([
-                        'qty' => 0,
-                        'status_asset' => 5
-                    ]);
-            }
+        // Insert ke t_stockopname (sekali saja)
+        DB::table('t_stockopname')->insert([
+            'code'        => $so_code,
+            'reason'      => $reason_id,
+            'location'    => $location_id,
+            'description' => $description,
+            'is_verify'   => 1,
+            'qty'         => count($detailData),
+            'create_date' => now(),
+            'create_by'   => $this->user->username,
+            'is_confirm'  => 1,
+            'deleted_at'  => $deletedAt,
+            'created_at'  => now(),
+        ]);
+
+        // Insert semua detail sekaligus
+        DB::table('t_stockopname_detail')->insert($detailData);
+
+        // Update asset satu per satu
+        foreach ($detailData as $detail) {
+            DB::table('table_registrasi_asset')
+                ->where('register_code', $detail['asset_tag'])
+                ->update([
+                    'qty' => 0,
+                    'status_asset' => 5
+                ]);
         }
     }
 

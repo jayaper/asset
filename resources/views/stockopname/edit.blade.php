@@ -340,7 +340,7 @@
                     <div class="page-title mt-4">
                         <div class="row">
                             <div class="col-sm-6">
-                                <h3>Create Data Stock Opname</h3>
+                                <h3>Edit Data Stock Opname</h3>
                             </div>
                             <div class="col-sm-6">
                                 <ol class="breadcrumb">
@@ -348,7 +348,7 @@
                                     </li>
                                     <li class="breadcrumb-item">ASMI</li>
                                     <li class="breadcrumb-item active">Request Stock Opname Name List</li>
-                                    <li class="breadcrumb-item active">Create Data Stock Opname</li>
+                                    <li class="breadcrumb-item active">Edit Data Stock Opname</li>
                                 </ol>
                             </div>
                         </div>
@@ -392,125 +392,107 @@
                         <div class="container-fluid">
                             <div class="section">
                                 <div class="form-group">
-                                    <form action="/stockopname/add" method="POST">
+                                    <form action="/stockopname/update/{{ $tso->id }}" method="POST">
                                         @csrf
                                         <div class="row">
                                             <div class="col-sm-6">
                                                 <div class="form-group">
+                                                    <label for="out_date">Stock Opname Code:</label>
+                                                    <input type="text"
+                                                        class="form-control" value="{{ $tso->code }}" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
                                                     <label for="out_date">Tanggal Stock Opname:</label>
                                                     <input type="date" name="out_date" id="out_date"
-                                                        class="form-control" value="{{ $date_now }}" readonly required>
+                                                        class="form-control" value="{{ $tso->create_date }}" readonly required>
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
                                                 <div class="form-group">
                                                     <label for="from_loc">Lokasi Asal:</label>
                                                     <input class="form-control" type="text"
-                                                        value="{{ $location_user_display }}" readonly>
+                                                        value="{{ $tso->lokasi }}" readonly>
                                                     <input type="hidden" name="from_loc_id"
-                                                        value="{{ $user->location_now }}">
-                                                    <!-- <input type="text" id="from_loc" class="form-control" readonly>
-                                    <input type="hidden" name="from_loc_id" id="from_loc_id"> -->
-                                                </div>
-                                            </div>
-                                            <!-- <div class="col-sm-12">
-                                        <label for="dest_loc">Lokasi Tujuan:</label>
-                                        <select name="dest_loc" id="dest_loc" class="form-control" required></select>
-                                        </div> -->
-
-                                            <div class="col-sm-6">
-                                                <div class="form-group">
-                                                    <label for="out_desc">Deskripsi Stock Opname:</label>
-                                                    <textarea class="form-control" name="description" id="description" rows="5" placeholder="Description here..." required></textarea>
+                                                        value="{{ $tso->location }}">
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
                                                 <div class="form-group">
                                                     <label for="reason_id">Alasan:</label>
-                                                    <input type="text" class="form-control" value="{{ $name_reason }}" readonly>
-                                                    <input type="hidden" name="reason_id" value="{{ $id_reason }}" required>
+                                                    <input type="text" class="form-control" value="{{ $tso->alasan }}" readonly>
+                                                    <input type="hidden" name="reason_id" value="{{ $tso->reason }}" required>
                                                 </div>
                                             </div>
-                                            <div class="btn-showcase mt-4">
-                                                <div class="button_between">
-                                                    <button class="btn btn-square btn-primary" type="button"
-                                                        data-toggle="modal" data-target="#searchRegistData"> <i
-                                                            class="fa fa-search"></i> Search Data </button>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="out_desc">Deskripsi Stock Opname:</label>
+                                                    <textarea class="form-control" name="description" id="description" rows="5" placeholder="Description here..." required>{{ $tso->description }}</textarea>
                                                 </div>
                                             </div>
-                                            <div id="assetFieldsContainer" class="mt-4">
-                                                <!-- Field Asset Pertama -->
-                                                <div class="asset-fields">
-                                                    <hr class="mb-4">
-                                                    <div class="row">
-                                                        <div class="col-sm-4">
-                                                            <div class="form-group">
-                                                                <label for="asset_id">Data Asset:</label>
-                                                                <input type="hidden" name="asset_id[]" id="asset_id" class="form-control asset-select" readonly required>
-                                                                <input type="text" name="asset_name[]" class="form-control asset-select" readonly required>
+                                            @foreach ($t_so_det as $item)
+                                                <div id="assetFieldsContainer" class="mt-4">
+                                                    <!-- Field Asset Pertama -->
+                                                    <div class="asset-fields">
+                                                        <hr class="mb-4">
+                                                        <div class="row">
+                                                            <div class="col-sm-4">
+                                                                <div class="form-group">
+                                                                    <label for="asset_id">Data Asset:</label>
+                                                                    <input type="text" name="asset_name[]" value="{{ $item->asset_model }}" class="form-control" readonly required>
+                                                                    <input type="hidden" name="asset_id[]" value="{{ $item->id }}" id="asset_id" class="form-control" readonly required>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <div class="form-group">
-                                                                <label for="merk">Merk:</label>
-                                                                <input class="form-control" type="text"
-                                                                    name="merk_display[]" readonly>
-                                                                <!-- Displayed to the user -->
-                                                                <input type="hidden" name="merk[]">
-                                                                <!-- Submitted to the database -->
+                                                            <div class="col-sm-4">
+                                                                <div class="form-group">
+                                                                    <label for="merk">Merk:</label>
+                                                                    <input class="form-control" type="text"
+                                                                        value="{{ $item->brand_name }}" readonly>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <div class="form-group">
-                                                                <label for="satuan">Satuan:</label>
-                                                                <input class="form-control" type="text"
-                                                                    name="satuan_display[]" readonly>
-                                                                <!-- Displayed to the user -->
-                                                                <input type="hidden" name="satuan[]">
-                                                                <!-- Submitted to the database -->
-                                                                <!-- <input type="text" name="satuan[]" id="satuan" class="form-control" readonly> -->
+                                                            <div class="col-sm-4">
+                                                                <div class="form-group">
+                                                                    <label for="satuan">Satuan:</label>
+                                                                    <input class="form-control" type="text"
+                                                                        value="{{ $item->uom_name }}" readonly>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <div class="form-group">
-                                                                <label for="serial_number">Serial Number:</label>
-                                                                <input type="text" name="serial_number[]"
-                                                                    id="serial_number" class="form-control" readonly>
+                                                            <div class="col-sm-4">
+                                                                <div class="form-group">
+                                                                    <label for="serial_number">Serial Number:</label>
+                                                                    <input type="text" name="serial_number[]"
+                                                                        value="{{ $item->serial_number }}" class="form-control" readonly>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <div class="form-group">
-                                                                <label for="register_code">Register Code:</label>
-                                                                <input type="text" name="register_code[]"
-                                                                    id="register_code" class="form-control" readonly>
+                                                            <div class="col-sm-4">
+                                                                <div class="form-group">
+                                                                    <label for="register_code">Register Code:</label>
+                                                                    <input type="text" name="register_code[]"
+                                                                        value="{{ $item->register_code }}" class="form-control" readonly>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <div class="form-group">
-                                                                <label for="condition_id_0">Kondisi Asset:</label>
-                                                                <select name="condition_id[]" id="condition_id_0"
-                                                                    class="form-select" required>
-                                                                    <option value="">Pilih Kondisi</option>
-                                                                    @foreach ($conditions as $condition)
-                                                                        <option
-                                                                            value="{{ $condition->condition_id }}">
-                                                                            {{ $condition->condition_name }}</option>
-                                                                    @endforeach
-                                                                </select>
+                                                            <div class="col-sm-4">
+                                                                <div class="form-group">
+                                                                    <label for="condition_id_0">Kondisi Asset:</label>
+                                                                    <select name="condition_id[]"
+                                                                        class="form-select" required>
+                                                                        <option value="">Pilih Kondisi</option>
+                                                                        @foreach ($conditions as $condition)
+                                                                            <option value="{{ $condition->condition_id }}" {{ ($condition->condition_id == $item->condition) ? 'selected' : "" }}>
+                                                                                {{ $condition->condition_name }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <button type="button"
-                                                        class="btn btn-success btn-add-asset mt-2">+</button>
-                                                    <button type="button"
-                                                        class="btn btn-danger btn-remove-asset mt-2">-</button>
                                                 </div>
-                                            </div>
+                                            @endforeach
                                         </div>
                                 </div>
                                 <div class="d-flex justify-content-end">
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                                    <button type="submit" id="submit-btn" class="btn btn-primary ms-2">Submit</button>
+                                    <button type="submit" id="submit-btn" class="btn btn-primary ms-2">Update</button>
                                 </div>
                                 </form>
                             </div>
@@ -642,100 +624,6 @@
                     width: '100%'
                 });
             }
-
-
-            // Function to create a fresh asset field
-            function createFreshAssetField() {
-                // Clone the template
-                const $template = $('.asset-fields').first();
-                const $newField = $template.clone();
-
-                // Generate unique ID
-                const uniqueId = 'asset_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-
-                // Reset and update all form elements
-                $newField.find('input').each(function() {
-                    $(this).val('');
-                    $(this).attr('id', $(this).attr('id') + '_' + uniqueId);
-                });
-
-                // Clear and update asset select
-                const $assetSelect = $newField.find('.asset-select');
-                $assetSelect.empty();
-                $assetSelect.attr('id', 'asset_select_' + uniqueId);
-                $assetSelect.removeData();
-                $assetSelect.removeClass('select2-hidden-accessible');
-                $assetSelect.find('option').remove();
-
-                // Clear and update condition select
-                const $conditionSelect = $newField.find('select[name="condition_id[]"]');
-                $conditionSelect.attr('id', 'condition_' + uniqueId);
-                $conditionSelect.val('');
-                $conditionSelect.removeData();
-                $conditionSelect.removeClass('select2-hidden-accessible');
-
-                // Remove any existing select2 containers
-                $newField.find('.select2-container').remove();
-
-                return $newField;
-            }
-
-            // Initialize existing fields
-            $(document).ready(function() {
-                $('.asset-select').each(function() {
-                    initializeAssetSelect2(this);
-                });
-
-                $('select[name="condition_id[]"]').each(function() {
-                    initializeConditionSelect2(this);
-                });
-            });
-
-            // Handle asset selection change
-            $(document).on('change', '.asset-select', function() {
-                const assetId = $(this).val();
-                const $parent = $(this).closest('.asset-fields');
-
-                if (!assetId) {
-                    $parent.find('input').val('');
-                    return;
-                }
-
-                $.ajax({
-                    url: '/api/get-asset-details/' + assetId,
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function(data) {
-                        $parent.find('input[name="merk_display[]"]').val(data.brand_name);
-                        $parent.find('input[name="merk[]"]').val(data.brand_id);
-                        $parent.find('input[name="qty[]"]').val(data.qty);
-                        $parent.find('input[name="satuan_display[]"]').val(data.uom_name);
-                        $parent.find('input[name="satuan[]"]').val(data.uom_id);
-                        $parent.find('input[name="serial_number[]"]').val(data.serial_number ||
-                            '');
-                        $parent.find('input[name="register_code[]"]').val(data.register_code ||
-                            '');
-                    },
-                    error: function() {
-                        alert('Error fetching asset details.');
-                        $parent.find('input').val('');
-                    }
-                });
-            });
-
-            // Add new asset field
-            $(document).on('click', '.btn-add-asset', function() {
-                // Create fresh field
-                const $newField = createFreshAssetField();
-
-                // Append the new field
-                $('#assetFieldsContainer').append($newField);
-
-                // Initialize Select2 on new fields
-                initializeAssetSelect2($newField.find('.asset-select'));
-                initializeConditionSelect2($newField.find('select[name="condition_id[]"]'));
-            });
-
             // Remove asset field
             $(document).on('click', '.btn-remove-asset', function() {
                 if ($('#assetFieldsContainer .asset-fields').length > 1) {
@@ -756,7 +644,7 @@
 
                 Swal.fire({
                     title: 'Apakah Anda yakin?',
-                    text: 'Sebelum melakukan submit, cek asset terkait pada transfer ataupun disposal terlebih dahulu!',
+                    text: 'Data hanya bisa diubah Maksimal 3 Kali!',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Ya, lanjutkan!',

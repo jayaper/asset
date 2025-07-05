@@ -236,14 +236,15 @@
                     <div class="page-title">
                         <div class="row">
                             <div class="col-sm-6">
-                                <h3>Stock Opname List</h3>
+                                <h3>Stock Opname Approval SM</h3>
                             </div>
                             <div class="col-sm-6">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a>
                                     </li>
                                     <li class="breadcrumb-item">ASMI</li>
-                                    <li class="breadcrumb-item active">Stock Opname List</li>
+                                    <li class="breadcrumb-item">Stock Opname List</li>
+                                    <li class="breadcrumb-item active">Stock Opname Approval SM</li>
                                 </ol>
                             </div>
                         </div>
@@ -257,94 +258,30 @@
                         <div class="col-sm-12">
                             <div class="card">
                                 <div class="card-header pb-0">
-                                    <h5>Stock Opname</h5>
+                                    <h5>Stock Opname Approval SM</h5>
                                     <span>adalah daftar atau kumpulan aset yang dimiliki oleh seseorang, organisasi,
                                         atau perusahaan. Daftar ini biasanya mencakup rincian tentang setiap aset,
                                         seperti jenis aset, nilai, lokasi, dan informasi relevan lainnya.</span>
                                 </div>
-                                <div class="card-body">
-                                    <div class="btn-showcase">
-                                        <div class="button_between">
-                                            @can('btn so add')
-                                                <a href="/stockopname/add" class="btn btn-square btn-primary">+ Add Data
-                                                    Stock Opname</a>
-                                            @endcan
-                                            @can('btn so import')
-                                                <button class="btn btn-square btn-primary" type="button"
-                                                    data-toggle="modal" data-target="#importDataExcel"> <i
-                                                        class="fa fa-file-excel-o"></i> Import Data Excel </button>
-                                                <div class="modal fade" id="importDataExcel" tabindex="-1"
-                                                    role="dialog" aria-labelledby="importDataExcelLabel"
-                                                    aria-hidden="true">
-                                                    <div class="modal-dialog modal-lg" role="document">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title" id="importDataExcelLabel">Import
-                                                                    Data Excel</h5>
-                                                                <button type="button" class="close"
-                                                                    data-dismiss="modal" aria-label="Close">
-                                                                    <span aria-hidden="true">&times;</span>
-                                                                </button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <form
-                                                                    action="/stockopname/import"
-                                                                    method="POST" enctype="multipart/form-data">
-                                                                    @csrf
-                                                                    <div class="form-group">
-                                                                        <label for="data_excel">Import Data Excel:</label>
-                                                                        <input type="file" name="file"
-                                                                            class="form-control"
-                                                                            placeholder="Upload File Excel" required
-                                                                            accept=".xlsx,.xls,.csv">
-                                                                    </div>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="submit"
-                                                                    class="btn btn-primary">Submit</button>
-                                                                <button type="button" class="btn btn-danger"
-                                                                    data-dismiss="modal">Close</button>
-                                                            </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endcan
-                                            @can('btn so add')
-                                                <a href="/stockopname/format-excel" class="btn btn-square btn-primary">Download Format Import</a>
-                                            @endcan
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                @if(session('success'))
-                                    <div class="alert alert-success">{{ session('success') }}</div>
-                                @endif
-
-                                @if(session('partial_success'))
-                                    <div class="alert alert-warning">
-                                        <strong>Import sebagian berhasil.</strong>
-                                        <ul>
-                                            @foreach (session('errors_import') as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
-                                        </ul>
+                                <!-- Button trigger modal -->
+                                @if (session('success'))
+                                    <div class="alert alert-success">
+                                        {{ session('success') }}
                                     </div>
                                 @endif
 
-                                @if(session('error'))
-                                    <div class="alert alert-danger">{{ session('error') }}</div>
+                                @if (session('error'))
+                                    <div class="alert alert-danger">
+                                        {{ session('error') }}
+                                    </div>
                                 @endif
-
 
                                 <div id="updateModal" class="modal fade" tabindex="-1"
                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-md">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Update Condition
-                                                    StockOpname</h5>
+                                                <h5 class="modal-title" id="exampleModalLabel">Update Confirm StockOpname</h5>
                                                 <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
@@ -356,12 +293,15 @@
                                                 <div class="modal-body">
                                                     <div class="row">
                                                         <div class="col-sm-12">
-                                                            <label for="appr_1">Condition: </label>
-                                                            <select name="condition_so" id="condition_so"
+                                                            <label for="appr_1">Confirmation: </label>
+                                                            <select name="confirm_so" id="confirm_so"
                                                                 class="form-control" required>
-                                                                @foreach ($conditions as $condition)
-                                                                    <option value="{{ $condition->condition_id }}">
-                                                                        {{ $condition->condition_name }}</option>
+                                                                <option value="">~~ Select Confirmation ~~</option>
+                                                                @foreach ($approvals as $approval)
+                                                                    @if ($approval->approval_id != 3 && $approval->approval_id != 1)
+                                                                        <option value="{{ $approval->approval_id }}">
+                                                                            {{ $approval->approval_name }}</option>
+                                                                    @endif
                                                                 @endforeach
                                                             </select>
                                                         </div>
@@ -380,28 +320,6 @@
                                 </div>
 
                                 <div class="card-body">
-                                    <div class="d-flex justify-content-stary mb-5">
-                                        <h5>Stock Opname Data</h5>
-                                    </div>
-                                    <form action="/stockopname" method="GET" class="mb-4">
-                                        @csrf
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <label for="start_date">Start Date</label>
-                                                <input type="date" id="start_date" name="start_date"
-                                                    class="form-control" value="{{ request('start_date') }}">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label for="end_date">End Date</label>
-                                                <input type="date" id="end_date" name="end_date"
-                                                    class="form-control" value="{{ request('end_date') }}">
-                                            </div>
-                                            <div class="col-md-4 d-flex align-items-end">
-                                                <button type="submit" class="btn btn-primary">Filter</button>
-                                                <a href="/stockopname" class="btn btn-secondary ml-2">Reset</a>
-                                            </div>
-                                        </div>
-                                    </form>
                                     <div class="d-flex justify-content-end mb-3 mt-3">
                                         <div class="input-group" style="width: 250px;">
                                             <input type="text" id="searchInput" class="form-control"
@@ -410,80 +328,50 @@
                                     </div>
                                     <div class="table-responsive product-table"
                                         style="max-width: 100%; overflow-x: auto;">
-                                        <table class="table table-striped display" id="coba"
-                                            style="width: 100%;">
-                                            <thead>
-                                                <tr class="text-center">
-                                                    <th>Stock Opname Code</th>
-                                                    <th>Reason</th>
-                                                    <th>Location</th>
-                                                    <th>Jumlah Asset</th>
-                                                    <th>Description</th>
-                                                    <th>Create Date</th>
-                                                    <th>Create By</th>
-                                                    <th>Is Verify</th>
-                                                    <th>Confirmation</th>
-                                                    <th>Confirmated By</th>
-                                                    <th>Is Active</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($stockopnames as $item)
+                                            <table class="table table-striped display" id="coba"
+                                                style="width: 100%;">
+                                                <thead>
                                                     <tr class="text-center">
-                                                        <td class="text-center">{{ $item->code }}</td>
-                                                        <td>{{ $item->reason_name }}</td>
-                                                        <td>{{ $item->name_store_street }}</td>
-                                                        <td>{{ $item->qty }}</td>
-                                                        <td>{{ $item->description }}</td>
-                                                        <td>{{ $item->create_date }}</td>
-                                                        <td>{{ $item->create_by }}</td>
-                                                        <td>{{ $item->verify_name }}</td>
-                                                        <td>{{ $item->approval_name }}</td>
-                                                        <td>{{ $item->user_confirm }}</td>
-                                                        <td>
-                                                            @if (is_null($item->deleted_at))
-                                                                <b class="text-success">Active</b>
-                                                            @else
-                                                                <b class="text-danger">Deactive</b>
-                                                            @endif
-                                                        </td>
-                                                        <td class="text-center">
-                                                            @if ($item->is_confirm !== 3)
-                                                                @can('btn so edit')
-                                                                    @if ($item->is_verify !== 2 && is_null($item->deleted_at))
-                                                                        @if (is_null($item->updated_3))
-                                                                            <a href="/stockopname/edit/{{ $item->code }}">
-                                                                                <i class="fas fa-edit"></i>
-                                                                            </a>
-                                                                        @endif
-                                                                    @endif
-                                                                @endcan
-                                                                @can('btn so delete')
-                                                                    <form class="delete-form"
-                                                                        action="{{ url('/stockopname/delete', $item->id) }}"
-                                                                        method="POST" style="display:inline;">
-                                                                        @csrf
-                                                                        {{-- @method('DELETE') --}}
-                                                                        @if (is_null($item->deleted_at))
-                                                                            <button type="button" class="delete-button"
-                                                                                title="Delete"
-                                                                                style="border: none; background: none; cursor: pointer;"
-                                                                                onclick="confirmDelete(event, this)">
-                                                                                <i class="fas fa-trash-alt"
-                                                                                    style="color: red;"></i>
-                                                                            </button>
-                                                                        @endif
-                                                                    </form>
-                                                                @endcan
-                                                            @endif
-                                                            <a href="/stockopname/print-pdf/{{ $item->code }}"
-                                                                target="_blank"><i class="fas fa-print"></i></a>
-                                                        </td>
+                                                        <th>Stock Opname Code</th>
+                                                        <th>Location</th>
+                                                        <th>Description</th>
+                                                        <th>Create Date</th>
+                                                        <th>Create By</th>
+                                                        <th>Confirmation</th>
+                                                        <th>Actions</th>
                                                     </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($stockopnames as $item)
+                                                        <tr class="text-center">
+                                                            <td class="text-center">{{ $item->code }}</td>
+                                                            <td>{{ $item->name_store_street }}</td>
+                                                            <td>{{ $item->description }}</td>
+                                                            <td>{{ $item->create_date }}</td>
+                                                            <td>{{ $item->create_by }}</td>
+                                                            <td>{{ $item->approval_name }}</td>
+                                                            <td class="text-center">
+                                                                @if ($item->is_verify !== 2 && is_null($item->deleted_at))
+                                                                    @can('btn so approval sm edit')
+                                                                        <a href="javascript:void(0);" class="edit-button"
+                                                                            data-id="{{ $item->id }}"
+                                                                            data-confirm="{{ $item->is_confirm }}" title="Edit">
+                                                                            <i class="fas fa-edit"></i>
+                                                                        </a>
+                                                                    @endcan
+                                                                @endif
+                                                                {{-- <a href="{{ url('/asset-transfer/detail-request-moveout/' . $item->id) }}"
+                                                                    title="Detail">
+                                                                    <i class="fas fa-book"></i>
+                                                                </a> --}}
+                                                                <a href="/stockopname/print-pdf/{{ $item->id }}"
+                                                                    target="_blank"><i
+                                                                        class="fas fa-print"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
                                     </div>
                                 </div>
                             </div>
@@ -566,37 +454,13 @@
 
     {{-- Add Data moveout --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
-    <script>
-        $('form[action="/stockopname/import"]').on('submit', function(e) {
-            e.preventDefault();
-
-            const formElement = this;
-
-            Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: 'Sebelum melakukan submit, cek asset terkait pada transfer ataupun disposal terlebih dahulu!',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, lanjutkan!',
-                cancelButtonText: 'Tidak, batalkan'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    formElement.submit();
-                }
-            });
-        });
-    </script>
-
+ 
 
     <script>
-        $(document).on('click', '.edit-button', function() {
+        $(document).on('click', '.edit-button', function () {
             const soId = $(this).data('id'); // Ambil out_id dari atribut data
-            const soCondition = $(this).data('condition'); // Ambil id dari atribut data
 
             $('#id_so').val(soId);
-            $('#condition_so').val(soCondition).trigger('change'); // set dan trigger change kalau pakai select2
 
             // Tampilkan modal
             $('#updateModal').modal('show');
@@ -606,13 +470,13 @@
             e.preventDefault(); // Cegah form reload halaman
 
             $.ajax({
-                url: '/stockopname/update/' + $('#id_so').val(),
+                url: '/stockopname/approval-sm/update/' + $('#id_so').val(),
                 method: 'POST', // Menggunakan PUT untuk memperbarui data
                 data: $(this).serialize(), // Serialisasi data form untuk dikirim
                 success: function(response) {
                     if (response.status === 'success') {
                         window.location.href =
-                            '/stockopname'; // Redirect ke halaman yang sudah diatur
+                        '/stockopname/approval-sm'; // Redirect ke halaman yang sudah diatur
                     }
                 },
                 error: function(jqXHR) {
@@ -621,6 +485,7 @@
                 }
             });
         });
+
     </script>
     {{-- Delete data moveout --}}
     <script>
@@ -651,12 +516,12 @@
                                 window.location.href = '/stockopname'; // Redirect on success
                             } else {
                                 Swal.fire('Error!', response.message,
-                                    'error'); // Show error message
+                                'error'); // Show error message
                             }
                         },
                         error: function(jqXHR) {
                             Swal.fire('Gagal!', 'Gagal menghapus data. Coba lagi.',
-                                'error'); // Error message
+                            'error'); // Error message
                         }
                     });
                 }

@@ -139,6 +139,10 @@
                                         <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav" 
                                         href="/stockopname"><span>Data Stock Opname</span></a></li>
                                 @endcan
+                                @can('view stockopname approval sm')
+                                        <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
+                                        href="/stockopname/approval-sm"><span>Verifikasi SM</span></a></li>
+                                @endcan
                                 @can('view stockopname approval sdg')
                                         <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav"
                                         href="/stockopname/approval-sdg"><span>Approval SDG Assets</span></a></li>

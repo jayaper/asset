@@ -110,7 +110,25 @@ class RegistrationController extends Controller
             $Asset->data_registrasi_asset_status = is_null($Asset->deleted_at) ? 'active' : 'nonactive';
         }
 
+        $q_so = DB::table('table_registrasi_asset')->where('status_asset', 5)
+                ->leftJoin('miegacoa_keluhan.master_resto as restoo', 'table_registrasi_asset.location_now', '=', 'restoo.id');
+                if (Auth::User()->hasRole('SM')) {
+                    $q_so->where(function ($q) {
+                        $q->where('table_registrasi_asset.location_now', Auth::user()->location_now);
+                    });
+                } else if (Auth::User()->hasRole('AM')) {
+                    $q_so->where(function ($q) {
+                        $q->where('restoo.kode_city', Auth::user()->location_now);
+                    });
+                } else if (Auth::User()->hasRole('RM')) {
+                    $q_so->where(function ($q) {
+                        $q->where('restoo.id_regional', Auth::user()->location_now);
+                    });
+                }
+        $cek_so = $q_so->get();
+
         return view("registration.assets_regist.index", [
+            'cek_so' => $cek_so,
             'assets' => $dataAsset
         ]);
     }
