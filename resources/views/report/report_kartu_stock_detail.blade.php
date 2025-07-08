@@ -269,6 +269,7 @@
                                                             <th style="min-width: 150px">Reason</th>
                                                             <th style="min-width: 250px">Deskripsi</th>
                                                             <th style="min-width: 200px">Lokasi</th>
+                                                            <th style="min-width: 150px">Condition</th>
                                                             {{-- <th style="min-width: 60px">Saldo</th> --}}
                                                         </tr>
                                                     </thead>
@@ -283,13 +284,11 @@
                                                                 <td>{{ $item->reason_name }}</td>
                                                                 <td>{{ $item->description }}</td>
                                                                 <td>
-                                                                    <span
-                                                                        class="text-muted">{{ $item->asal }}</span>
-                                                                    <br><strong
-                                                                        class="fs-3">{{ $item->reason == 1 ? '→' : '' }}</strong><br>
-                                                                    <span
-                                                                        class="text-muted">{{ $item->menuju }}</span>
+                                                                    <span class="text-muted">{{ $item->asal }}</span>
+                                                                    <br><strong class="fs-3">→</strong><br>
+                                                                    <span class="text-muted">{{ $item->menuju }}</span>
                                                                 </td>
+                                                                <td>{{ $item->condition_name }}</td>
                                                                 {{-- <td>{{ $item->saldo }}</td> --}}
                                                             </tr>
                                                         @endforeach

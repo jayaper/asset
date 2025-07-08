@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-    <title>Asset Disposal & Recondition Form</title>
+    <title>Asset Stock Opname & Adjustment Form</title>
 <head>
     <meta charset="UTF-8">
     <style>

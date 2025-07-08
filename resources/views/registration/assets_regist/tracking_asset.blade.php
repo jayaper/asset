@@ -261,6 +261,7 @@
                                                         <th style="min-width: 250px">Deskripsi</th>
                                                         <th style="min-width: 200px">Tanggal</th>
                                                         <th style="min-width: 200px">Lokasi</th>
+                                                        <th style="min-width: 200px">Condition</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -273,9 +274,10 @@
                                                             </td>
                                                             <td>
                                                                 <span class="text-muted">{{ $item->asal }}</span>
-                                                                <br><strong class="fs-3">{{ ($item->reason == 1) ? '→' : ''}}</strong><br>
+                                                                <br><strong class="fs-3">→</strong><br>
                                                                 <span class="text-muted">{{ $item->menuju }}</span>
                                                             </td>
+                                                            <td>{{ $item->condition_name }}</td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>

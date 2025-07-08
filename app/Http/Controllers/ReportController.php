@@ -286,10 +286,12 @@ class ReportController extends Controller {
             'miegacoa_keluhan.master_resto.name_store_street as asal',
             'des.name_store_street as menuju',
             'r.reason_name',
+            'c.condition_name',
         )
         ->leftjoin('miegacoa_keluhan.master_resto', 'asset_tracking.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
         ->leftjoin('miegacoa_keluhan.master_resto as des', 'asset_tracking.dest_loc', '=', 'des.id')
         ->leftjoin('m_reason AS r', 'asset_tracking.reason', '=', 'r.reason_id')
+        ->leftjoin('m_condition AS c', 'c.condition_id', '=', 'asset_tracking.condition')
         ->where('register_code', $register_code);
 
         if ($request->filled('start_date') && $request->filled('end_date')) {
@@ -402,35 +404,6 @@ class ReportController extends Controller {
         ]);
     }
 
-    public function GetDataStockAssetPerLocation() {
-        $DataStockAssetPerLocation = DB::table('table_registrasi_asset AS a')
-        ->select(
-            'a.register_date',
-            'a.register_code',
-            'b.asset_model',
-            'a.serial_number',
-            'a.qty',
-            'c.uom_name',
-            'd.condition_name',
-            'g.type_name',
-            'h.cat_name',
-            'e.name_store_street AS lokasi',
-            'f.layout_name'
-        )
-        ->leftjoin('m_assets AS b', 'b.asset_id', '=', 'a.asset_name')
-        ->leftjoin('m_uom AS c', 'c.uom_id', '=', 'a.satuan')
-        ->leftjoin('m_condition AS d', 'd.condition_id', '=', 'a.condition')
-        ->leftjoin('miegacoa_keluhan.master_resto AS e', 'e.id', '=', 'a.location_now')
-        ->leftjoin('m_layout AS f', 'f.layout_id', '=', 'a.layout')
-        ->leftjoin('m_type AS g', 'g.type_id', '=', 'a.type_asset')
-        ->leftjoin('m_category AS h', 'h.cat_code', '=', 'a.category_asset')
-        ->where('a.qty', '>', 0)
-        ->get();
-
-
-        return response()->json($DataStockAssetPerLocation);
-    }
-
     public function ExportStockAssetPerLocation(Request $request) {
         return Excel::download(new ReportStockAssetPerLocation($request), 'data_stock_asset_per_location.xlsx');
     }
@@ -522,27 +495,16 @@ class ReportController extends Controller {
                         ->leftJoin('miegacoa_keluhan.master_resto AS c', 'c.id', '=', 'a.location')
                         ->leftJoin('t_stockopname_detail AS d', 'd.so_code', '=', 'a.code')
                         ->leftJoin('mc_approval AS e', 'e.approval_id', '=', 'a.is_confirm')
-                        ->leftJoin('miegacoa_keluhan.master_resto AS f', 'f.id', '=', 'a.location')
                         ->leftJoin('m_condition AS g', 'g.condition_id', '=', 'd.condition')
-                        ->where('a.is_confirm', 3);
-                        if($user->hasRole('SM')){
-                            $tStockopname->where(function($query) use ($user) {
-                                $query->where('f.id', $user->location_now);
-                            });
-                        }else if($user->hasRole('AM')){
-                            $tStockopname->where(function($query) use ($user) {
-                                $query->where('f.kode_city', $user->location_now);
-                            });
-                        }else if($user->hasRole('RM')){
-                            $tStockopname->where(function($query) use ($user) {
-                                $query->where('f.id_regional', $user->location_now);
-                            });
+                        ->where('a.is_confirm', 3)
+                        ->where('a.location', $request->input('location'));
+                        if ($request->filled('start_date') && $request->filled('end_date')) {
+                            $tStockopname->whereBetween(DB::raw('DATE(a.create_date)'), [
+                                $request->input('start_date'),
+                                $request->input('end_date')
+                            ]);
                         }
-                        if($request->filled('date')){
-                            $tStockopname->where(function($query) use ($request) {
-                                $query->whereDate('a.create_date', $request->input('date'));
-                            });
-                        }
+
                         $TSO = $tStockopname->get();
         }
 

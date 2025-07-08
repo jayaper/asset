@@ -279,8 +279,15 @@
 
 
                                 <div class="card-body">
-                                    <div class="table-responsive product-table"
-                                        style="border-radius: 8px; overflow-x: auto; scrollbar-width: thin;">
+                                    <div class="d-flex justify-content-between mb-3 mt-3">
+                                        <h5>Asset Registration Data</h5> <!-- Add a heading for the table if needed -->
+                                        <!-- Search Input Field aligned to the right -->
+                                        <div class="input-group" style="width: 250px;">
+                                            <input type="text" id="searchInput" class="form-control"
+                                                placeholder="Search for assets..." />
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive product-table" style="border-radius: 8px; overflow-x: auto; scrollbar-width: thin;">
                                         <table id="coba" class="table table-responsive table-striped">
                                             <thead>
                                                 <tr>
@@ -616,7 +623,33 @@
             ]
         });
     </script> --}}
+    <script>
+            // JavaScript for searching/filtering the table rows
+            document.getElementById('searchInput').addEventListener('keyup', function() {
+            var input, filter, table, tr, td, i, j, txtValue;
+            input = document.getElementById('searchInput');
+            filter = input.value.toLowerCase();
+            table = document.getElementById('coba');
+            tr = table.getElementsByTagName('tr');
 
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 1; i < tr.length; i++) { // Start from 1 to skip table header
+                tr[i].style.display = "none"; // Hide the row initially
+
+                // Loop through all columns in the row
+                for (j = 0; j < tr[i].getElementsByTagName('td').length; j++) {
+                    td = tr[i].getElementsByTagName('td')[j];
+                    if (td) {
+                        txtValue = td.textContent || td.innerText;
+                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                            tr[i].style.display = ""; // Show the row if match is found
+                            break; // Exit loop once a match is found
+                        }
+                    }
+                }
+            }
+        });
+    </script>
     <script>
         $.ajaxSetup({
             headers: {

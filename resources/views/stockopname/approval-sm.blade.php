@@ -364,7 +364,7 @@
                                                                     title="Detail">
                                                                     <i class="fas fa-book"></i>
                                                                 </a> --}}
-                                                                <a href="/stockopname/print-pdf/{{ $item->id }}"
+                                                                <a href="/stockopname/print-pdf/{{ $item->code }}"
                                                                     target="_blank"><i
                                                                         class="fas fa-print"></i></a>
                                                             </td>

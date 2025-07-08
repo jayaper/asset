@@ -44,24 +44,13 @@ class ReportStockopname implements FromCollection, WithHeadings
                         ->leftJoin('mc_approval AS e', 'e.approval_id', '=', 'a.is_confirm')
                         ->leftJoin('miegacoa_keluhan.master_resto AS f', 'f.id', '=', 'a.location')
                         ->leftJoin('m_condition AS g', 'g.condition_id', '=', 'd.condition')
-                        ->where('a.is_confirm', 3);
-                        if($user->hasRole('SM')){
-                            $tStockopname->where(function($query) use ($user) {
-                                $query->where('f.id', $user->location_now);
-                            });
-                        }else if($user->hasRole('AM')){
-                            $tStockopname->where(function($query) use ($user) {
-                                $query->where('f.kode_city', $user->location_now);
-                            });
-                        }else if($user->hasRole('RM')){
-                            $tStockopname->where(function($query) use ($user) {
-                                $query->where('f.id_regional', $user->location_now);
-                            });
-                        }
-                        if($this->request->filled('date')){
-                            $tStockopname->where(function($query){
-                                $query->whereDate('a.create_date', $this->request->input('date'));
-                            });
+                        ->where('a.is_confirm', 3)
+                        ->where('a.location', $this->request->input('location'));
+                        if ($this->request->filled('start_date') && $this->request->filled('end_date')) {
+                            $tStockopname->whereBetween(DB::raw('DATE(a.create_date)'), [
+                                $this->request->input('start_date'),
+                                $this->request->input('end_date')
+                            ]);
                         }
                         $TSO = $tStockopname->get();
         }

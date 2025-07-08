@@ -201,8 +201,10 @@
                                     <div class="card-body">
                                         <form class="mt-3 mb-5" action="/reports/export_stock_opname" method="GET">
                                             @csrf
-                                            <input type="hidden" name="date"
-                                                class="form-control" value="{{ request('date') }}">
+                                            <input type="hidden" name="start_date"
+                                                class="form-control" value="{{ request('start_date') }}">
+                                            <input type="hidden" name="end_date"
+                                                class="form-control" value="{{ request('end_date') }}">
                                             <input type="hidden" name="location"
                                                 class="form-control" value="{{ request('location') }}">
                                             <button type="submit" class="btn btn-primary">
@@ -230,10 +232,15 @@
                                                     </div>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col-md-8 mb-3">
-                                                        <label>Date (Opsional)</label>
-                                                        <input type="date" name="date"
-                                                            class="form-control" value="{{ request('date') }}">
+                                                    <div class="col-md-4 mb-3">
+                                                        <label>Start Date (Opsional)</label>
+                                                        <input type="date" name="start_date"
+                                                            class="form-control" value="{{ request('start_date') }}">
+                                                    </div>
+                                                    <div class="col-md-4 mb-3">
+                                                        <label>Start Date (Opsional)</label>
+                                                        <input type="date" name="end_date"
+                                                            class="form-control" value="{{ request('end_date') }}">
                                                     </div>
                                                     <div class="col-md-4 d-flex">
                                                         <button type="submit" class="btn btn-primary">Filter</button>

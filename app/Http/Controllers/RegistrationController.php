@@ -140,11 +140,13 @@ class RegistrationController extends Controller
                 'asset_tracking.*',
                 'miegacoa_keluhan.master_resto.name_store_street as asal',
                 'des.name_store_street as menuju',
-                'r.reason_name'
+                'r.reason_name',
+                'c.condition_name'
             )
             ->leftjoin('miegacoa_keluhan.master_resto', 'asset_tracking.from_loc', '=', 'miegacoa_keluhan.master_resto.id')
             ->leftjoin('miegacoa_keluhan.master_resto as des', 'asset_tracking.dest_loc', '=', 'des.id')
             ->leftjoin('m_reason AS r', 'asset_tracking.reason', '=', 'r.reason_id')
+            ->leftJoin('m_condition AS c', 'c.condition_id', '=', 'asset_tracking.condition')
             ->where('register_code', $id)
             ->get()
             ->map(function ($item) {

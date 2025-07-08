@@ -110,6 +110,7 @@ class ConfirmAsset extends Controller
                     'end_date' => Carbon::now(),
                     'dest_loc' => $moveout->dest_loc,
                     'reason' => $moveout->reason_id,
+                    'condition' => $detail->condition,
                     'description' => $moveout->out_desc,
                     'register_code' => $detail->asset_tag,
                     'out_id' => $id,

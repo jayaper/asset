@@ -50,7 +50,7 @@ class StockOpnameController extends Controller
                             });
                         }
                         if($request->filled('start_date') && $request->filled('end_date')){
-                            $tStockopname->whereBetween('a.create_date', [$request->input('start_date').' 00:00:00', $request->input('end_date'),' 23:59:59']);
+                            $tStockopname->whereBetween(DB::raw('DATE(a.create_date)'), [$request->input('start_date').' 00:00:00', $request->input('end_date'),' 23:59:59']);
                         }
                         $TSO = $tStockopname->get();
         return view('stockopname.index',[
@@ -108,9 +108,11 @@ class StockOpnameController extends Controller
             ]);
 
             $now = Carbon::now();
-            $cek = DB::table('t_stockopname_detail')
-                ->where('asset_tag', $request->register_code)
-                ->whereDate('created_at', $now->format('Y-m-d'))
+            $cek = DB::table('t_stockopname_detail AS sodet')
+                ->leftJoin('t_stockopname AS so', 'so.code', '=', 'sodet.so_code')
+                ->where('sodet.asset_tag', $request->register_code)
+                ->whereNull('so.deleted_at')
+                ->whereDate('sodet.created_at', $now->format('Y-m-d'))
                 ->count();
 
             if ($cek > 0) {
@@ -300,7 +302,11 @@ class StockOpnameController extends Controller
                 return response()->json(['status' => 'Error', 'message' => 'Data tidak ditemukan'], 404);
             }
 
-            $deletedData = ['deleted_at' => Carbon::now()];
+            $deletedData = [
+                'is_confirm' => 4,
+                'confirm_date' => Carbon::now(),
+                'deleted_at' => Carbon::now()
+            ];
 
             $deleted = DB::table('t_stockopname')->where('id', $id)->update($deletedData);
 
@@ -314,6 +320,12 @@ class StockOpnameController extends Controller
                         ->update([
                             'status_asset' => 1,
                             'qty' => 1,
+                        ]);
+
+                    DB::table('t_stockopname_detail')
+                        ->where('so_code', $item->so_code)
+                        ->update([
+                            'deleted_at' => Carbon::now()
                         ]);
                 }
 
@@ -478,6 +490,7 @@ class StockOpnameController extends Controller
                     'end_date' => $now,
                     'dest_loc' => $stockOpname->location,
                     'reason' => $stockOpname->reason,
+                    'condition' => $item->condition,
                     'description' => $stockOpname->description,
                     'register_code' => $item->asset_tag,
                     'out_id' => $stockOpname->code,

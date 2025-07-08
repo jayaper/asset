@@ -258,15 +258,6 @@
                                                 style="min-width: 100%; border-collapse: separate; border-radius: 8px; overflow: hidden;">
                                                 <thead>
                                                     <tr>
-                                                        <!-- <th>Asset Tag</th>
-                                            <th>Asset Name</th>
-                                            <th>Serial Number</th>
-                                            <th>Type Asset</th>
-                                            <th>Category Asset</th>
-                                            <th>Priority</th>
-                                            <th>Merk</th>
-                                            <th>Satuan</th> -->
-
                                                         <th style="width: 10%;">Asset Tag</th>
                                                         <th style="width: 10%;">Asset Name</th>
                                                         <th>Serial Number</th>

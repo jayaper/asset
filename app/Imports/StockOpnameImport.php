@@ -67,6 +67,7 @@ class StockOpnameImport implements ToCollection
 
             $alreadyExistsToday = DB::table('t_stockopname_detail')
                 ->where('asset_tag', $asset_tag)
+                ->whereNull('deleted_at')
                 ->whereDate('created_at', Carbon::now())
                 ->exists();
 

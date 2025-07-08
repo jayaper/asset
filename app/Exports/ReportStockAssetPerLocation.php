@@ -41,7 +41,7 @@ class ReportStockAssetPerLocation implements FromCollection, WithHeadings
                     ->where('latest_movement.rn', '=', 1);
             })
             ->select(
-                'a.register_date',
+                DB::raw('COALESCE(latest_movement.confirm_date, a.created_at) as last_known_date'),
                 'a.register_code',
                 'b.asset_model',
                 'a.serial_number',
@@ -91,7 +91,7 @@ class ReportStockAssetPerLocation implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'Date',
+            'Date Time',
             'Asset Code',
             'Asset Name',
             'Serial Number',
